@@ -9,7 +9,9 @@ export default function LoginScreen() {
 	const [form, setForm] = useState(false) // Toggle between Login and SignUp components
 
 	return (
-		<ScrollView style={[GlobalStyles.container, styles.screen]}>
+		<ScrollView
+			style={[GlobalStyles.container, styles.screen, { maxWidth: 1024, alignSelf: "center" }]}
+		>
 			{/* Introduction to Study Buddy: Contains the logo and small description */}
 			<View style={{ paddingBottom: 32 }}>
 				<Image

@@ -12,7 +12,7 @@ import { GlobalStyles } from "../../styles/global"
 import { useForm } from "react-hook-form"
 import CustomTouchableOpacity from "../common/CustomTouchableOpacity"
 import { useNavigation } from "@react-navigation/native"
-import { NavProp } from "../../navigation/types"
+import { NavProp } from "../../types/types"
 import ThirdPartyLogin from "./ThirdPartyLogin"
 
 /**
@@ -59,48 +59,61 @@ export default function Login({ setForm }: LoginProps) {
 		<>
 			{/* Input Container: Contains user input boxes */}
 			<View style={styles.inputContainer}>
-				<LoginInput
-					control={control}
-					name='email'
-					rules={{
-						required: "Please enter your email.",
-						validate: {
-							minLength: (v: string) => v.length >= 4 || "Please enter a valid email address.",
-						},
-					}}
-					label='Email'
-					placeholder='email@example.com'
-					error={errors.email}
-				/>
-				<LoginInput
-					control={control}
-					name='password'
-					rules={{
-						required: "Please enter your password.",
-						validate: {
-							minLength: (v: string) =>
-								v.length >= 8 || "Password must be at least 8 characters long.",
-						},
-					}}
-					label='Password'
-					placeholder='••••••••'
-					secure={true}
-					error={errors.password}
-				/>
+				{/* Email input */}
+				<View style={{ gap: 4 }}>
+					<LoginInput
+						control={control}
+						name='email'
+						rules={{
+							required: "Please enter your email.",
+							validate: {
+								minLength: (v: string) => v.length >= 4 || "Please enter a valid email address.",
+							},
+						}}
+						label='Email'
+						placeholder='email@example.com'
+						error={errors.email}
+					/>
+
+					{/* Email error */}
+					{errors.email && (
+						<Text style={[GlobalStyles.error, { paddingLeft: 16 }]}>
+							{errors.email.message?.toString()}
+						</Text>
+					)}
+				</View>
+
+				{/* Password input */}
+				<View style={{ gap: 4 }}>
+					<LoginInput
+						control={control}
+						name='password'
+						rules={{
+							required: "Please enter your password.",
+							validate: {
+								minLength: (v: string) =>
+									v.length >= 8 || "Password must be at least 8 characters long.",
+							},
+						}}
+						label='Password'
+						placeholder='••••••••'
+						secure={true}
+						error={errors.password}
+					/>
+
+					{/* Password Error */}
+					{errors.password && (
+						<Text style={[GlobalStyles.error, { paddingLeft: 16 }]}>
+							{errors.password.message?.toString()}
+						</Text>
+					)}
+				</View>
 			</View>
 
+			{/* Forgot Password link */}
 			<TouchableOpacity style={{ alignItems: "center" }} onPress={handleForgotPassword}>
 				<Text style={[GlobalStyles.link, { fontSize: 16 }]}>Forgot Password?</Text>
 			</TouchableOpacity>
-
-			{Object.values(errors).length > 0 && (
-				<View style={styles.errors}>
-					{errors.email && <Text style={styles.errorMsg}>{errors.email.message?.toString()}</Text>}
-					{errors.password && (
-						<Text style={styles.errorMsg}>{errors.password.message?.toString()}</Text>
-					)}
-				</View>
-			)}
 
 			{/* Login Button: Form submission button */}
 			<CustomTouchableOpacity text='Login' onPress={handleSubmit(handleLogin)} />

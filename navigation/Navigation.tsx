@@ -2,8 +2,12 @@ import { NavigationContainer } from "@react-navigation/native"
 import LoginScreen from "../screens/LoginScreen"
 import CanvasScreen from "../screens/CanvasScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { RootStackParamList } from "./types"
-import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { CanvasProvider } from "../providers/CanvasProvider"
+
+export type RootStackParamList = {
+	login: undefined
+	canvas: undefined
+}
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -12,7 +16,14 @@ export default function Navigation() {
 		<NavigationContainer>
 			<Stack.Navigator initialRouteName='login' screenOptions={{ headerShown: false }}>
 				<Stack.Screen name='login' component={LoginScreen} />
-				<Stack.Screen name='canvas' component={CanvasScreen} />
+				<Stack.Screen
+					name='canvas'
+					children={() => (
+						<CanvasProvider>
+							<CanvasScreen />
+						</CanvasProvider>
+					)}
+				/>
 			</Stack.Navigator>
 		</NavigationContainer>
 	)

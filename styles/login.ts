@@ -33,13 +33,4 @@ export const styles = StyleSheet.create({
 		paddingVertical: 4,
 		outlineWidth: 0,
 	},
-	errors: {
-		backgroundColor: "#f9c5d1",
-		padding: 16,
-		borderRadius: 25,
-		width: "100%",
-	},
-	errorMsg: {
-		color: "#8b1e3f",
-	},
 })

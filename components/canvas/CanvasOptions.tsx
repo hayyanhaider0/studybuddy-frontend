@@ -1,69 +1,70 @@
-import { useState } from "react"
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { GlobalStyles } from "../../styles/global"
+import { ScrollView, TouchableOpacity, View } from "react-native"
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"
+import { Colors } from "../../styles/global"
+import { useToolContext } from "../../contexts/ToolContext"
+import { useToolDefinitions } from "../../utils/tools"
+import { useOptionDefinitions } from "../../utils/options"
+import { styles } from "../../styles/canvas"
+import ColorOptions from "./ColorOptions"
+import Slider from "@react-native-community/slider"
+import StrokeOptions from "./StrokeOptions"
+import { AnimatePresence, MotiView } from "moti"
 
-type canvasOptionsProps = {
-	setStroke: (stroke: string) => void
-	setStrokeWidth: (strokeWidth: number) => void
-}
-
-export default function CanvasOptions({ setStroke, setStrokeWidth }: canvasOptionsProps) {
-	const colors = ["red", "blue", "green", "yellow", "purple"]
-	const strokes = [2, 4, 6, 8, 16]
+export default function CanvasOptions() {
+	const { tool, activeMenu } = useToolContext()
+	const tools = useToolDefinitions()
+	const options = useOptionDefinitions()
 
 	return (
-		<View style={styles.container}>
-			<View style={{ flexDirection: "row", gap: 8 }}>
-				{colors.map((c: string, i: number) => (
-					<TouchableOpacity
-						key={i}
-						onPress={() => {
-							setStroke(c)
+		<View style={{ position: "absolute", bottom: 0, zIndex: 10, width: "100%" }}>
+			{/* Expanding panel ABOVE the tool row */}
+			<AnimatePresence>
+				{activeMenu === "pen" && (
+					<MotiView
+						from={{ translateY: 120 }}
+						animate={{ translateY: 0 }}
+						exit={{ translateY: 120 }}
+						transition={{ type: "timing", duration: 200 }}
+						style={{
+							padding: 16,
+							margin: 8,
+							borderRadius: 25,
+							backgroundColor: Colors.primary,
 						}}
 					>
-						<View style={[styles.options, { backgroundColor: c }]} />
-					</TouchableOpacity>
-				))}
-			</View>
-			<View style={{ flexDirection: "row", gap: 8 }}>
-				{strokes.map((s: number, i: number) => (
-					<TouchableOpacity
-						key={i}
-						onPress={() => {
-							setStrokeWidth(s)
-						}}
-					>
-						<View style={[styles.options]}>
-							<View style={[styles.strokes, { width: s }]} />
-						</View>
+						<ColorOptions />
+						<StrokeOptions />
+					</MotiView>
+				)}
+			</AnimatePresence>
+
+			{/* Fixed toolbar row at bottom */}
+			<View
+				style={{
+					flexDirection: "row",
+					backgroundColor: Colors.primary,
+					justifyContent: "space-evenly",
+					padding: 16,
+				}}
+			>
+				{tools.map((t, i) => {
+					const isSelected = tool === t.name
+					return (
+						<TouchableOpacity key={i} onPress={t.action}>
+							<Icon
+								name={t.icon}
+								size={30}
+								color={isSelected ? Colors.accent : Colors.buttonText}
+							/>
+						</TouchableOpacity>
+					)
+				})}
+				{options.map((o, i) => (
+					<TouchableOpacity key={i} onPress={o.action}>
+						<Icon name={o.icon} size={30} color={Colors.buttonText} />
 					</TouchableOpacity>
 				))}
 			</View>
 		</View>
 	)
 }
-
-const styles = StyleSheet.create({
-	container: {
-		marginHorizontal: "auto",
-		alignSelf: "flex-start",
-		gap: 16,
-		backgroundColor: "lightgray",
-		padding: 8,
-		borderRadius: 25,
-	},
-	options: {
-		borderRadius: 999,
-		height: 32,
-		width: 32,
-		borderWidth: 1,
-		borderColor: "gray",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	strokes: {
-		borderRadius: 999,
-		backgroundColor: "#fff",
-		aspectRatio: 1 / 1,
-	},
-})

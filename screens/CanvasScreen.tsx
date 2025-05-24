@@ -1,46 +1,67 @@
-import React, { useState } from "react"
 import Svg, { Path } from "react-native-svg"
-import { View, PanResponder } from "react-native"
+import { View } from "react-native"
 import CanvasOptions from "../components/canvas/CanvasOptions"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { GlobalStyles } from "../styles/global"
+import { GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler"
+import Animated, { useAnimatedStyle } from "react-native-reanimated"
+import { useCanvasGestures } from "../hooks/useCanvasGestures"
+import { useCanvasContext } from "../contexts/CanvasStateContext"
+import { useToolContext } from "../contexts/ToolContext"
+import { useZoomContext } from "../contexts/ZoomContext"
+import Background1 from "../components/canvas/Background1"
+import { usePanContext } from "../contexts/PanContext"
 
-type PathData = {
-	d: string
-	color: string
-	sw: number
-}
+export default function CanvasScreen() {
+	const { paths, current } = useCanvasContext()
+	const { stroke, strokeWidth } = useToolContext()
+	const { scale } = useZoomContext()
+	const { translateX, translateY } = usePanContext()
 
-export default function DrawingCanvas() {
-	const [paths, setPaths] = useState<PathData[]>([])
-	const [current, setCurrent] = useState<string>("")
-	const [stroke, setStroke] = useState<string>("black")
-	const [strokeWidth, setStrokeWidth] = useState<number>(3)
+	const gesture = useCanvasGestures()
 
-	const panResponder = PanResponder.create({
-		onStartShouldSetPanResponder: () => true,
-		onPanResponderGrant: ({ nativeEvent }) => {
-			const { locationX, locationY } = nativeEvent
-			setCurrent(`M ${locationX} ${locationY}`)
-		},
-		onPanResponderMove: ({ nativeEvent }) => {
-			const { locationX, locationY } = nativeEvent
-			setCurrent((prev) => `${prev} L ${locationX} ${locationY}`)
-		},
-		onPanResponderRelease: () => {
-			setPaths((prev) => [...prev, { d: current, color: stroke, sw: strokeWidth }])
-			setCurrent("")
-		},
-	})
+	const animatedStyle = useAnimatedStyle(() => ({
+		transform: [
+			{ scale: scale.value },
+			{ translateX: translateX.value },
+			{ translateY: translateY.value },
+		],
+	}))
 
 	return (
-		<SafeAreaView style={{ flex: 1 }} {...panResponder.panHandlers}>
-			<CanvasOptions setStroke={setStroke} setStrokeWidth={setStrokeWidth} />
-			<Svg style={{ flex: 1 }}>
-				{paths.map((p, i) => (
-					<Path key={i} d={p.d} stroke={p.color} strokeWidth={p.sw} fill='none' />
-				))}
-				{current && <Path d={current} stroke={stroke} strokeWidth={strokeWidth} fill='none' />}
-			</Svg>
-		</SafeAreaView>
+		<>
+			<CanvasOptions />
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<GestureDetector gesture={gesture}>
+					<Animated.View style={[GlobalStyles.container, animatedStyle]}>
+						<View style={{ flex: 1 }}>
+							<Background1 />
+						</View>
+						<Svg style={{ flex: 1, zIndex: 10 }}>
+							{paths.map((p, i) => (
+								<Path
+									key={i}
+									d={p.d}
+									stroke={p.color}
+									strokeWidth={p.sw}
+									fill='none'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+								/>
+							))}
+							{current && (
+								<Path
+									d={current}
+									stroke={stroke}
+									strokeWidth={strokeWidth}
+									fill='none'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+								/>
+							)}
+						</Svg>
+					</Animated.View>
+				</GestureDetector>
+			</GestureHandlerRootView>
+		</>
 	)
 }
