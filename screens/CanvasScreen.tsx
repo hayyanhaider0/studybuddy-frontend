@@ -12,7 +12,7 @@ import Background1 from "../components/canvas/Background1"
 import { usePanContext } from "../contexts/PanContext"
 
 export default function CanvasScreen() {
-	const { paths, current } = useCanvasContext()
+	const { paths, current, setLayout } = useCanvasContext()
 	const { stroke, strokeWidth } = useToolContext()
 	const { scale } = useZoomContext()
 	const { translateX, translateY } = usePanContext()
@@ -36,7 +36,7 @@ export default function CanvasScreen() {
 						<View style={{ flex: 1 }}>
 							<Background1 />
 						</View>
-						<Svg style={{ flex: 1, zIndex: 10 }}>
+						<Svg style={{ flex: 1, zIndex: 10 }} onLayout={(e) => setLayout(e.nativeEvent.layout)}>
 							{paths.map((p, i) => (
 								<Path
 									key={i}

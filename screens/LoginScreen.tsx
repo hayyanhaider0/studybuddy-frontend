@@ -10,6 +10,7 @@ export default function LoginScreen() {
 
 	return (
 		<ScrollView
+			showsHorizontalScrollIndicator={false}
 			style={[GlobalStyles.container, styles.screen, { maxWidth: 1024, alignSelf: "center" }]}
 		>
 			{/* Introduction to Study Buddy: Contains the logo and small description */}

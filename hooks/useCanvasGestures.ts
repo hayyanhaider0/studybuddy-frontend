@@ -7,7 +7,7 @@ import { useCanvasActions } from "./useCanvasActions"
 import { usePanContext } from "../contexts/PanContext"
 
 export function useCanvasGestures() {
-	const { current, setCurrent, setPaths } = useCanvasContext()
+	const { current, setCurrent, setPaths, layout } = useCanvasContext()
 	const { tool, stroke, strokeWidth } = useToolContext()
 	const { scale, savedScale } = useZoomContext()
 	const { offsetX, offsetY, translateX, translateY } = usePanContext()
@@ -26,9 +26,9 @@ export function useCanvasGestures() {
 	const drawGesture = Gesture.Pan()
 		.onBegin((e) => {
 			if (e.numberOfPointers !== 1) return
-			const x = e.x - scale.value * 6
-			const y = e.y - scale.value * 6
-			setCurrent(`M ${x} ${y}`)
+			const localX = e.x - layout.x
+			const localY = e.y - layout.y
+			setCurrent(`M ${localX} ${localY}`)
 		})
 		.onUpdate((e) => {
 			if (e.numberOfPointers !== 1) return
@@ -38,9 +38,9 @@ export function useCanvasGestures() {
 				return
 			}
 
-			const x = e.x - scale.value * 6
-			const y = e.y - scale.value * 6
-			setCurrent((prev) => `${prev} L ${x} ${y}`)
+			const localX = e.x - layout.x
+			const localY = e.y - layout.y
+			setCurrent((prev) => `${prev} L ${localX} ${localY}`)
 		})
 		.onEnd(() => {
 			if (current) {
