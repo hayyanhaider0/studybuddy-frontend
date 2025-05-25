@@ -1,6 +1,5 @@
 import Svg, { Path } from "react-native-svg"
 import { View } from "react-native"
-import CanvasOptions from "../components/canvas/CanvasOptions"
 import { GlobalStyles } from "../styles/global"
 import { GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler"
 import Animated, { useAnimatedStyle } from "react-native-reanimated"
@@ -10,6 +9,7 @@ import { useToolContext } from "../contexts/ToolContext"
 import { useZoomContext } from "../contexts/ZoomContext"
 import Background1 from "../components/canvas/Background1"
 import { usePanContext } from "../contexts/PanContext"
+import Toolbar from "../components/canvas/Toolbar"
 
 export default function CanvasScreen() {
 	const { paths, current, setLayout } = useCanvasContext()
@@ -29,7 +29,7 @@ export default function CanvasScreen() {
 
 	return (
 		<>
-			<CanvasOptions />
+			<Toolbar />
 			<GestureHandlerRootView style={{ flex: 1 }}>
 				<GestureDetector gesture={gesture}>
 					<Animated.View style={[GlobalStyles.container, animatedStyle]}>

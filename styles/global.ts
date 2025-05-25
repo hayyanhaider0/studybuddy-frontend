@@ -22,7 +22,6 @@ export const GlobalStyles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
-		padding: 16,
 	},
 	heading: {
 		fontSize: 32,

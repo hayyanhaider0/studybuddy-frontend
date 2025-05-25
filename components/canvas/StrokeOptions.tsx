@@ -34,6 +34,7 @@ export default function StrokeOptions() {
 				justifyContent: "center",
 				paddingTop: 16,
 				paddingHorizontal: 16,
+				width: 235,
 			}}
 		>
 			<View

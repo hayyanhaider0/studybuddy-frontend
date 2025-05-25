@@ -16,7 +16,7 @@ export function useCanvasGestures() {
 	const pinchGesture = Gesture.Pinch()
 		.onUpdate((e) => {
 			const nextScale = savedScale.value * e.scale
-			scale.value = Math.min(Math.max(nextScale, 0.9), 4)
+			scale.value = Math.min(Math.max(nextScale, 0.7), 4)
 		})
 		.onEnd(() => {
 			savedScale.value = scale.value

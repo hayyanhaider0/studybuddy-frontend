@@ -7,7 +7,15 @@ export default function Background1() {
 
 	return (
 		<View
-			style={{ maxHeight: height, position: "absolute", top: 0, left: 0, right: 0, zIndex: -1 }}
+			style={{
+				maxHeight: height,
+				position: "absolute",
+				top: 0,
+				left: 0,
+				right: 0,
+				zIndex: -1,
+				padding: 16,
+			}}
 		>
 			{Array.from({ length: numLines }).map((_, i) => (
 				<View
