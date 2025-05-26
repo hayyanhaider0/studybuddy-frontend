@@ -1,7 +1,9 @@
 import { View, Text } from "react-native"
-import { Colors } from "../../styles/global"
+import { useThemeContext } from "../../contexts/ThemeContext"
 
 export default function HorizontalRule({ children }: any) {
+	const { theme } = useThemeContext()
+
 	return (
 		<View style={{ alignItems: "center", marginVertical: 16 }}>
 			<View style={{ backgroundColor: "#ccc", height: 1, width: "100%" }} />
@@ -10,7 +12,7 @@ export default function HorizontalRule({ children }: any) {
 					style={{
 						position: "absolute",
 						top: -10,
-						backgroundColor: Colors.background,
+						backgroundColor: theme.colors.background,
 						paddingHorizontal: 8,
 					}}
 				>

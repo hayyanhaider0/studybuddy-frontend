@@ -1,9 +1,12 @@
 import { TouchableOpacity, View, Image } from "react-native"
 import { Text } from "react-native-gesture-handler"
-import { GlobalStyles } from "../../styles/global"
+import { getGlobalStyles } from "../../styles/global"
 import HorizontalRule from "../common/HorizontalRule"
+import { useThemeContext } from "../../contexts/ThemeContext"
 
 export default function ThirdPartyLogin() {
+	const { GlobalStyles } = useThemeContext()
+
 	return (
 		<View style={{ gap: 16 }}>
 			<HorizontalRule>OR</HorizontalRule>

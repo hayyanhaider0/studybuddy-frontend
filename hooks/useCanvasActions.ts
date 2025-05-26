@@ -1,9 +1,11 @@
 import { useCanvasContext } from "../contexts/CanvasStateContext"
+import { useThemeContext } from "../contexts/ThemeContext"
 import { useToolContext } from "../contexts/ToolContext"
 
 export function useCanvasActions() {
 	const { setPaths } = useCanvasContext()
 	const { tool, setTool } = useToolContext()
+	const { toggleTheme } = useThemeContext()
 
 	const clearCanvas = () => setPaths([])
 
@@ -21,7 +23,10 @@ export function useCanvasActions() {
 
 	const redo = () => console.log("redo")
 
-	const toggleMenu = () => console.log("menu")
+	const toggleMenu = () => {
+		console.log("menu")
+		toggleTheme()
+	}
 
 	const handleErase = (x: number, y: number) => {
 		const radius = 20

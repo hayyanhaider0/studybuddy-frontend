@@ -7,6 +7,26 @@ export type NavProp<Screen extends keyof RootStackParamList> = NativeStackNaviga
 	Screen
 >
 
+// Theming
+export type ThemeColors = {
+	underlay: string
+	primary: string
+	secondary: string
+	tertiary: string
+	background: string
+	accent: string
+	text: string
+	buttonText: string
+	link: string
+	highlight: string
+	error: string
+	success: string
+	warning: string
+	muted: string
+	divider: string
+	shadow: string
+}
+
 /**
  * Canvas Types
  */

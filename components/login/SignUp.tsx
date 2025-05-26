@@ -7,11 +7,12 @@
 
 import { View, Text, TouchableOpacity } from "react-native"
 import LoginInput from "./LoginInput"
-import { GlobalStyles } from "../../styles/global"
-import { styles } from "../../styles/login"
 import { useForm } from "react-hook-form"
 import CustomTouchableOpacity from "../common/CustomTouchableOpacity"
 import ThirdPartyLogin from "./ThirdPartyLogin"
+import { useThemeContext } from "../../contexts/ThemeContext"
+import { getGlobalStyles } from "../../styles/global"
+import { getLoginStyles } from "../../styles/login"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -21,6 +22,10 @@ type SignUpProps = {
 }
 
 export default function SignUp({ setForm }: SignUpProps) {
+	const { theme } = useThemeContext()
+	const GlobalStyles = getGlobalStyles(theme.colors)
+	const styles = getLoginStyles(theme.colors)
+
 	/**
 	 * Get form variables
 	 */

@@ -7,13 +7,14 @@
 
 import { View, Text, TouchableOpacity } from "react-native"
 import LoginInput from "./LoginInput"
-import { styles } from "../../styles/login"
-import { GlobalStyles } from "../../styles/global"
 import { useForm } from "react-hook-form"
 import CustomTouchableOpacity from "../common/CustomTouchableOpacity"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../types/types"
 import ThirdPartyLogin from "./ThirdPartyLogin"
+import { useThemeContext } from "../../contexts/ThemeContext"
+import { getGlobalStyles } from "../../styles/global"
+import { getLoginStyles } from "../../styles/login"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -24,6 +25,9 @@ type LoginProps = {
 
 export default function Login({ setForm }: LoginProps) {
 	const nav = useNavigation<NavProp<"canvas">>()
+	const { theme } = useThemeContext()
+	const GlobalStyles = getGlobalStyles(theme.colors)
+	const styles = getLoginStyles(theme.colors)
 
 	const {
 		control,

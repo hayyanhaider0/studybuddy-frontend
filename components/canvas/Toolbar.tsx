@@ -1,35 +1,70 @@
 import { View } from "react-native"
-import { Colors } from "../../styles/global"
 import { useToolContext } from "../../contexts/ToolContext"
 import ColorOptions from "./ColorOptions"
 import StrokeOptions from "./StrokeOptions"
 import { AnimatePresence, MotiView } from "moti"
 import ToolOptions from "./ToolOptions"
 import CanvasOptions from "./CanvasOptions"
+import ColorPicker, { HueSlider, OpacitySlider, Panel3, Preview } from "reanimated-color-picker"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
-import { ColorPicker } from "react-native-color-picker"
-import Slider from "@react-native-community/slider"
+import { useThemeContext } from "../../contexts/ThemeContext"
 
 export default function Toolbar() {
 	const { setStroke, pickedColor, setPickedColor, activeMenu, colorPicker } = useToolContext()
+	const { theme } = useThemeContext()
 
 	return (
 		<View
 			style={{ position: "absolute", bottom: 8, zIndex: 10, width: "100%", alignItems: "center" }}
 		>
+			<AnimatePresence>
+				{colorPicker && activeMenu === "pen" && (
+					<GestureHandlerRootView>
+						<MotiView
+							from={{ opacity: 0, translateY: 120 }}
+							animate={{ opacity: 1, translateY: 0 }}
+							exit={{ opacity: 0, translateY: 120 }}
+							transition={{ type: "timing", duration: 300 }}
+							style={{
+								backgroundColor: theme.colors.primary,
+								padding: 32,
+								borderRadius: 28,
+							}}
+						>
+							<ColorPicker
+								value={pickedColor}
+								style={{
+									gap: 16,
+									width: 235,
+								}}
+								onCompleteJS={(e) => {
+									setPickedColor(e.hex)
+									setStroke(e.hex)
+								}}
+							>
+								<Preview />
+								<Panel3 />
+								<HueSlider />
+								<OpacitySlider />
+							</ColorPicker>
+						</MotiView>
+					</GestureHandlerRootView>
+				)}
+			</AnimatePresence>
+
 			{/* Expanding panel ABOVE the tool row */}
 			<AnimatePresence>
 				{activeMenu === "pen" && (
 					<MotiView
-						from={{ translateY: 80 }}
-						animate={{ translateY: 0 }}
-						exit={{ translateY: 80 }}
+						from={{ opacity: 0, translateY: 120 }}
+						animate={{ opacity: 1, translateY: 0 }}
+						exit={{ opacity: 0, translateY: 120 }}
 						transition={{ type: "timing", duration: 300 }}
 						style={{
 							padding: 16,
 							margin: 8,
-							borderRadius: 25,
-							backgroundColor: Colors.primary,
+							borderRadius: 28,
+							backgroundColor: theme.colors.primary,
 						}}
 					>
 						<ColorOptions />
@@ -42,10 +77,10 @@ export default function Toolbar() {
 			<View
 				style={{
 					flexDirection: "row",
-					backgroundColor: Colors.primary,
+					backgroundColor: theme.colors.primary,
 					padding: 16,
 					gap: 16,
-					borderRadius: 25,
+					borderRadius: 28,
 					alignItems: "center",
 				}}
 			>

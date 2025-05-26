@@ -1,12 +1,15 @@
 import { Text, View, Image, ScrollView } from "react-native"
 import { useState } from "react"
-import { GlobalStyles } from "../styles/global"
-import { styles } from "../styles/login"
+import { getGlobalStyles } from "../styles/global"
 import Login from "../components/login/Login"
 import SignUp from "../components/login/SignUp"
+import { useThemeContext } from "../contexts/ThemeContext"
+import { getLoginStyles } from "../styles/login"
 
 export default function LoginScreen() {
 	const [form, setForm] = useState(false) // Toggle between Login and SignUp components
+	const { theme, GlobalStyles } = useThemeContext()
+	const styles = getLoginStyles(theme.colors)
 
 	return (
 		<ScrollView
