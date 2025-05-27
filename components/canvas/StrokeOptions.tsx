@@ -21,7 +21,7 @@ function ToolTip({ currentValue }: { currentValue: number }) {
 			}}
 		>
 			<Text
-				style={{ color: theme.colors.buttonText, padding: 4, transform: [{ rotate: "-45deg" }] }}
+				style={{ color: theme.colors.onPrimary, padding: 4, transform: [{ rotate: "-45deg" }] }}
 			>
 				{currentValue === 0 ? 1 : currentValue}
 			</Text>
@@ -52,7 +52,7 @@ export default function StrokeOptions() {
 					width: 24,
 					height: 24,
 					borderRadius: 999,
-					borderColor: theme.colors.buttonText,
+					borderColor: theme.colors.onPrimary,
 					borderWidth: 2,
 					alignItems: "center",
 					justifyContent: "center",
@@ -64,8 +64,8 @@ export default function StrokeOptions() {
 				step={1}
 				value={strokeWidth}
 				onValueChange={(v) => setStrokeWidth(v)}
-				thumbTintColor='#fff'
-				minimumTrackTintColor='#fff'
+				thumbTintColor={isActive ? theme.colors.secondary : "#fff"}
+				minimumTrackTintColor={isActive ? theme.colors.secondary : "#fff"}
 				tapToSeek={true}
 				onSlidingStart={() => setActive(true)}
 				onSlidingComplete={() => setActive(false)}
@@ -79,7 +79,7 @@ export default function StrokeOptions() {
 					borderWidth: 2,
 					backgroundColor: "#000",
 					borderRadius: 999,
-					borderColor: "#fff",
+					borderColor: theme.colors.onPrimary,
 					padding: 2,
 				}}
 			/>

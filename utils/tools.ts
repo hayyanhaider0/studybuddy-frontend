@@ -24,20 +24,33 @@ export function useToolDefinitions() {
 		{
 			name: "pen",
 			icon: "pen",
+			image: require("../assets/canvasImages/pen.png"),
 			action: () => handleToolSelection("pen"),
 		},
 		{
 			name: "eraser",
 			icon: "eraser",
+			image: require("../assets/canvasImages/eraser.png"),
 			action: () => handleToolSelection("eraser"),
 		},
-		{ name: "pencil", icon: "pencil", action: () => handleToolSelection("pencil") },
+		{
+			name: "pencil",
+			icon: "pencil",
+			image: require("../assets/canvasImages/pencil.png"),
+			action: () => handleToolSelection("pencil"),
+		},
 		{
 			name: "highlighter",
 			icon: "format-color-highlight",
+			image: require("../assets/canvasImages/highlighter.png"),
 			action: () => handleToolSelection("highlighter"),
 		},
-		{ name: "text", icon: "format-text", action: () => handleToolSelection("text") },
+		{
+			name: "text",
+			icon: "format-text",
+			image: require("../assets/canvasImages/text.png"),
+			action: () => handleToolSelection("text"),
+		},
 	]
 
 	return tools

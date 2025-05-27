@@ -40,7 +40,11 @@ export default function ThirdPartyLogin() {
 			<TouchableOpacity
 				style={[
 					GlobalStyles.button,
-					{ backgroundColor: "#fff", flexDirection: "row", justifyContent: "center" },
+					{
+						backgroundColor: "#fff",
+						flexDirection: "row",
+						justifyContent: "center",
+					},
 				]}
 			>
 				<Image

@@ -1,5 +1,6 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "../navigation/Navigation"
+import { ImageSourcePropType } from "react-native"
 
 // Navigation
 export type NavProp<Screen extends keyof RootStackParamList> = NativeStackNavigationProp<
@@ -9,22 +10,18 @@ export type NavProp<Screen extends keyof RootStackParamList> = NativeStackNaviga
 
 // Theming
 export type ThemeColors = {
-	underlay: string
 	primary: string
 	secondary: string
 	tertiary: string
+	surface: string
 	background: string
-	accent: string
-	text: string
-	buttonText: string
-	link: string
-	highlight: string
+	textPrimary: string
+	textSecondary: string
 	error: string
-	success: string
-	warning: string
-	muted: string
-	divider: string
-	shadow: string
+	placeholder: string
+	link: string
+	onPrimary: string
+	onSecondary: string
 }
 
 /**
@@ -44,6 +41,7 @@ export type ToolName = "pen" | "eraser" | "pencil" | "highlighter" | "text"
 export type ToolType = {
 	name: string
 	icon: string
+	image: ImageSourcePropType
 	action: () => void
 }
 

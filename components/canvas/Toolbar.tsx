@@ -5,17 +5,30 @@ import StrokeOptions from "./StrokeOptions"
 import { AnimatePresence, MotiView } from "moti"
 import ToolOptions from "./ToolOptions"
 import CanvasOptions from "./CanvasOptions"
-import ColorPicker, { HueSlider, OpacitySlider, Panel3, Preview } from "reanimated-color-picker"
+import ColorPicker, {
+	LuminanceSlider,
+	OpacitySlider,
+	Panel3,
+	Preview,
+} from "reanimated-color-picker"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { useThemeContext } from "../../contexts/ThemeContext"
+import { getCanvasStyles } from "../../styles/canvas"
 
 export default function Toolbar() {
 	const { setStroke, pickedColor, setPickedColor, activeMenu, colorPicker } = useToolContext()
 	const { theme } = useThemeContext()
+	const styles = getCanvasStyles(theme.colors)
 
 	return (
 		<View
-			style={{ position: "absolute", bottom: 8, zIndex: 10, width: "100%", alignItems: "center" }}
+			style={{
+				position: "absolute",
+				bottom: 8,
+				zIndex: 10,
+				width: "100%",
+				alignItems: "center",
+			}}
 		>
 			<AnimatePresence>
 				{colorPicker && activeMenu === "pen" && (
@@ -42,9 +55,9 @@ export default function Toolbar() {
 									setStroke(e.hex)
 								}}
 							>
-								<Preview />
+								<Preview textStyle={{ textTransform: "uppercase" }} />
 								<Panel3 />
-								<HueSlider />
+								<LuminanceSlider />
 								<OpacitySlider />
 							</ColorPicker>
 						</MotiView>
@@ -74,16 +87,7 @@ export default function Toolbar() {
 			</AnimatePresence>
 
 			{/* Fixed toolbar row at bottom */}
-			<View
-				style={{
-					flexDirection: "row",
-					backgroundColor: theme.colors.primary,
-					padding: 16,
-					gap: 16,
-					borderRadius: 28,
-					alignItems: "center",
-				}}
-			>
+			<View style={styles.toolbar}>
 				<ToolOptions />
 				<CanvasOptions />
 			</View>

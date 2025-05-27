@@ -9,16 +9,16 @@ export default function ColorOptions() {
 	const styles = getCanvasStyles(theme.colors)
 
 	const colors = [
-		// Black
-		"#000000",
 		// Red
 		"#dc2626",
 		// Orange
 		"#fb923c",
-		// Green
-		"#10b981",
+		// Yellow
+		"#facc15",
 		// Blue
 		"#3b82f6",
+		// Green
+		"#10b981",
 	]
 
 	return (

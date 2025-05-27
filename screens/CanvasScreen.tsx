@@ -31,7 +31,7 @@ export default function CanvasScreen() {
 	return (
 		<>
 			<Toolbar />
-			<GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.underlay }}>
+			<GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.surface }}>
 				<GestureDetector gesture={gesture}>
 					<Animated.View style={[GlobalStyles.container, animatedStyle]}>
 						<View style={{ flex: 1 }}>

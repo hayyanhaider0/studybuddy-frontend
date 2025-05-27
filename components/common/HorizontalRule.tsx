@@ -6,7 +6,7 @@ export default function HorizontalRule({ children }: any) {
 
 	return (
 		<View style={{ alignItems: "center", marginVertical: 16 }}>
-			<View style={{ backgroundColor: "#ccc", height: 1, width: "100%" }} />
+			<View style={{ backgroundColor: theme.colors.placeholder, height: 1, width: "100%" }} />
 			{children && (
 				<View
 					style={{
@@ -16,7 +16,7 @@ export default function HorizontalRule({ children }: any) {
 						paddingHorizontal: 8,
 					}}
 				>
-					<Text style={{ color: "#666" }}>{children}</Text>
+					<Text style={{ color: theme.colors.placeholder }}>{children}</Text>
 				</View>
 			)}
 		</View>

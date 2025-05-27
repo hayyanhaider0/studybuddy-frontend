@@ -50,6 +50,7 @@ export default function LoginInput({
 							if (/^\S*$/.test(text)) onChange(text)
 						}}
 						placeholder={placeholder}
+						placeholderTextColor={theme.colors.placeholder}
 						secureTextEntry={secure}
 						style={[GlobalStyles.paragraph, styles.input]}
 					/>

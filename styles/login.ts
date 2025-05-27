@@ -15,7 +15,7 @@ export const getLoginStyles = (colors: ThemeColors) =>
 		inputBox: {
 			position: "relative",
 			borderWidth: 1,
-			borderColor: colors.text,
+			borderColor: colors.textPrimary,
 			borderRadius: 999,
 			width: "100%",
 			paddingHorizontal: 16,

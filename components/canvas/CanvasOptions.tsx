@@ -8,10 +8,20 @@ export default function CanvasOptions() {
 	const { theme } = useThemeContext()
 
 	return (
-		<View style={{ width: 80, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+		<View
+			style={{
+				width: 84,
+				flexDirection: "row",
+				flexWrap: "wrap",
+				gap: 8,
+				backgroundColor: theme.colors.tertiary,
+				padding: 8,
+				borderRadius: 16,
+			}}
+		>
 			{options.map((o, i) => (
 				<TouchableOpacity key={i} onPress={o.action}>
-					<Icon name={o.icon} size={30} color={theme.colors.buttonText} />
+					<Icon name={o.icon} size={30} color={theme.colors.onPrimary} />
 				</TouchableOpacity>
 			))}
 		</View>
