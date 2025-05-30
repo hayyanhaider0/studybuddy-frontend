@@ -1,13 +1,20 @@
+/**
+ * CustomTouchableOpacity Component
+ *
+ * Simple button that has a title (text) and an action on press
+ */
+
 import { TouchableOpacity, Text } from "react-native"
-import { getGlobalStyles } from "../../styles/global"
 import { useThemeContext } from "../../contexts/ThemeContext"
 
+// Props for the component
 type ctoProps = {
-	text: string
-	onPress: () => void
+	text: string // Title of the button
+	onPress: () => void // Action of the button
 }
 
 export default function CustomTouchableOpacity({ text, onPress }: ctoProps) {
+	// Theming
 	const { GlobalStyles } = useThemeContext()
 
 	return (

@@ -1,16 +1,25 @@
+/**
+ * ThirdPartyLogin Component
+ *
+ * Contains UI for the third party login systems: Google, Facebook, and Apple
+ * NOTE: USE SAVED IMAGES INSTEAD OF LINKS -- REMOVE THIS COMMENT WHEN DONE
+ */
+
 import { TouchableOpacity, View, Image } from "react-native"
 import { Text } from "react-native-gesture-handler"
-import { getGlobalStyles } from "../../styles/global"
 import HorizontalRule from "../common/HorizontalRule"
 import { useThemeContext } from "../../contexts/ThemeContext"
 
 export default function ThirdPartyLogin() {
+	// Theming
 	const { GlobalStyles } = useThemeContext()
 
 	return (
 		<View style={{ gap: 16 }}>
+			{/* Horizontal rule to separate StudyBuddy and third party login UI */}
 			<HorizontalRule>OR</HorizontalRule>
 
+			{/* Google login */}
 			<TouchableOpacity
 				style={[
 					GlobalStyles.button,
@@ -23,6 +32,8 @@ export default function ThirdPartyLogin() {
 				/>
 				<Text>Sign in with Google</Text>
 			</TouchableOpacity>
+
+			{/* Facebook login */}
 			<TouchableOpacity
 				style={[
 					GlobalStyles.button,
@@ -37,14 +48,12 @@ export default function ThirdPartyLogin() {
 				/>
 				<Text style={{ color: "#fff" }}>Sign in with Facebook</Text>
 			</TouchableOpacity>
+
+			{/* Apple login */}
 			<TouchableOpacity
 				style={[
 					GlobalStyles.button,
-					{
-						backgroundColor: "#fff",
-						flexDirection: "row",
-						justifyContent: "center",
-					},
+					{ backgroundColor: "#fff", flexDirection: "row", justifyContent: "center" },
 				]}
 			>
 				<Image

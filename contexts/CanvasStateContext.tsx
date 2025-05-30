@@ -1,27 +1,56 @@
-import { createContext, ReactNode, useContext, useState } from "react"
-import { PathType } from "../types/types"
+/**
+ * CanvasStateContext Component
+ *
+ * Provides shared state for canvas drawing, including stored paths,
+ * the current drawing tool identifier, and layout dimensions.
+ */
 
+import { createContext, ReactNode, useContext, useState } from "react"
+import { PathType } from "../types/global"
+
+// Types
 type LayoutType = {
+	// X-coordinate of the canvas origin.
 	x: number
+	// Y-coordinate of the canvas origin.
 	y: number
+	// Width of the canvas area.
 	width: number
+	// Height of the canvas area.
 	height: number
 }
 
 export type CanvasContextType = {
+	// Array of drawing paths captured on the canvas.
 	paths: PathType[]
-	setPaths: React.Dispatch<React.SetStateAction<any[]>>
+	// Setter for updating the paths array.
+	setPaths: React.Dispatch<React.SetStateAction<PathType[]>>
+	// Current path being drawn.
 	current: string
+	// Setter for the current path being drawn.
 	setCurrent: React.Dispatch<React.SetStateAction<string>>
+	// Current layout rectangle of the canvas.
 	layout: LayoutType
+	// Setter for updating canvas dimensions.
 	setLayout: React.Dispatch<React.SetStateAction<LayoutType>>
 }
 
+// React context for CanvasState, initialized to null until provided.
 export const CanvasStateContext = createContext<CanvasContextType | null>(null)
 
+/**
+ * CanvasStateProvider Component
+ *
+ * Wraps children components, providing canvas state values via context.
+ *
+ * @param children - Components that require access to canvas state values.
+ */
 export function CanvasStateProvider({ children }: { children: ReactNode }) {
+	// Stored drawing paths on the canvas.
 	const [paths, setPaths] = useState<PathType[]>([])
+	// Path currently being drawn.
 	const [current, setCurrent] = useState<string>("")
+	// Canvas coordinates and layout dimensions.
 	const [layout, setLayout] = useState<LayoutType>({ x: 0, y: 0, width: 0, height: 0 })
 
 	return (
@@ -33,8 +62,17 @@ export function CanvasStateProvider({ children }: { children: ReactNode }) {
 	)
 }
 
+/**
+ * useCanvasContext hook
+ *
+ * Custom hook for accessing pan gesture shared values.
+ * Must be used within a CanvasStateProvider.
+ *
+ * @throws Error if used outside of CanvasStateProvider.
+ * @returns CanvasContext providing shared values.
+ */
 export const useCanvasContext = () => {
 	const ctx = useContext(CanvasStateContext)
-	if (!ctx) throw new Error("useCanvasState must be used within a CanvasStateProvider")
+	if (!ctx) throw new Error("useCanvasContext must be used within a CanvasStateProvider")
 	return ctx
 }

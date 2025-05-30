@@ -1,5 +1,11 @@
+/**
+ * login Styles
+ *
+ * Contains styles for login and signup related components.
+ */
+
 import { StyleSheet } from "react-native"
-import { ThemeColors } from "../types/types"
+import { ThemeColors } from "../types/global"
 
 export const getLoginStyles = (colors: ThemeColors) =>
 	StyleSheet.create({
@@ -8,6 +14,7 @@ export const getLoginStyles = (colors: ThemeColors) =>
 			padding: 32,
 			paddingVertical: 64,
 		},
+		// Input styles
 		inputContainer: {
 			width: "100%",
 			gap: 32,

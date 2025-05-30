@@ -1,3 +1,10 @@
+/**
+ * CanvasScreen Component
+ *
+ * Includes Canvas, Toolbar and other related components.
+ * Check out Toolbar.tsx for information on the toolbar.
+ */
+
 import Svg, { Path } from "react-native-svg"
 import { View } from "react-native"
 import { GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler"
@@ -12,14 +19,17 @@ import Toolbar from "../components/canvas/Toolbar"
 import { useThemeContext } from "../contexts/ThemeContext"
 
 export default function CanvasScreen() {
+	// Context Imports
 	const { paths, current, setLayout } = useCanvasContext()
 	const { stroke, strokeWidth } = useToolContext()
 	const { scale } = useZoomContext()
 	const { translateX, translateY } = usePanContext()
 	const { theme, GlobalStyles } = useThemeContext()
 
+	// Gesture
 	const gesture = useCanvasGestures()
 
+	// Canvas transformation
 	const animatedStyle = useAnimatedStyle(() => ({
 		transform: [
 			{ scale: scale.value },
@@ -30,13 +40,21 @@ export default function CanvasScreen() {
 
 	return (
 		<>
+			{/* Toolbar Component */}
 			<Toolbar />
+
+			{/* Canvas Component */}
+			{/* Backdrop behind the canvas */}
 			<GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.surface }}>
 				<GestureDetector gesture={gesture}>
+					{/* Actual canvas is contained within this animated view */}
 					<Animated.View style={[GlobalStyles.container, animatedStyle]}>
+						{/* Background of the canvas */}
 						<View style={{ flex: 1 }}>
 							<Background1 />
 						</View>
+
+						{/* Drawable component */}
 						<Svg style={{ flex: 1, zIndex: 10 }} onLayout={(e) => setLayout(e.nativeEvent.layout)}>
 							{paths.map((p, i) => (
 								<Path

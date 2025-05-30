@@ -1,87 +1,82 @@
+/**
+ * StrokeOptions Component
+ *
+ * Contains UI for the stroke options slider. Also contains
+ * a ToolTip component that shows up while sliding through the
+ * options.
+ */
+
 import Slider from "@react-native-community/slider"
 import { useToolContext } from "../../contexts/ToolContext"
 import { Text, View } from "react-native"
 import { useState } from "react"
 import { useThemeContext } from "../../contexts/ThemeContext"
+import { getCanvasStyles } from "../../styles/canvas"
 
+/**
+ * ToolTip Component
+ *
+ * Shows a tool tip with a number that contains the stroke width
+ *
+ * @param currentValue - The current stroke width
+ * @returns JSX Component
+ */
 function ToolTip({ currentValue }: { currentValue: number }) {
+	// Theming
 	const { theme } = useThemeContext()
+	const styles = getCanvasStyles(theme.colors)
 
 	return (
-		<View
-			style={{
-				backgroundColor: "#000",
-				borderWidth: 2,
-				borderColor: "#fff",
-				borderRadius: 999,
-				borderBottomEndRadius: 0,
-				aspectRatio: 1 / 1,
-				transform: [{ translateY: -42 }, { rotate: "45deg" }],
-				alignItems: "center",
-			}}
-		>
-			<Text
-				style={{ color: theme.colors.onPrimary, padding: 4, transform: [{ rotate: "-45deg" }] }}
-			>
-				{currentValue === 0 ? 1 : currentValue}
-			</Text>
+		<View style={styles.tooltipContainer}>
+			{/* Text inside the tool tip */}
+			<Text style={styles.tooltipText}>{currentValue === 0 ? 1 : currentValue}</Text>
 		</View>
 	)
 }
 
+/**
+ * StrokeOptions Component
+ *
+ * Contains the slider that allows the user to select a stroke width.
+ *
+ * @returns JSX Component
+ */
 export default function StrokeOptions() {
-	const [isActive, setActive] = useState(false)
-	const { stroke, strokeWidth, setStrokeWidth } = useToolContext()
+	const [isActive, setActive] = useState(false) // State to track whether the user is sliding
+	const { stroke, strokeWidth, setStrokeWidth } = useToolContext() // Get tool context
+
+	// Theming
 	const { theme } = useThemeContext()
+	const styles = getCanvasStyles(theme.colors, stroke)
 
 	return (
-		<View
-			style={{
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
-				paddingTop: 16,
-				paddingHorizontal: 16,
-				width: 232,
-				gap: 8,
-			}}
-		>
-			<View
-				style={{
-					backgroundColor: stroke,
-					width: 24,
-					height: 24,
-					borderRadius: 999,
-					borderColor: theme.colors.onPrimary,
-					borderWidth: 2,
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			/>
+		<View style={styles.sliderContainer}>
+			{/* A circle that shows the current stroke color */}
+			<View style={styles.strokeIndicator} />
+
+			{/* Slider Component: Allows the user to slide and select a stroke width */}
 			<Slider
 				minimumValue={1}
 				maximumValue={30}
 				step={1}
 				value={strokeWidth}
 				onValueChange={(v) => setStrokeWidth(v)}
+				// Set the thumb and track color according to user interaction
+				// Secondary when being used, white when not
 				thumbTintColor={isActive ? theme.colors.secondary : "#fff"}
 				minimumTrackTintColor={isActive ? theme.colors.secondary : "#fff"}
-				tapToSeek={true}
+				tapToSeek={true} // iOS only -- allow the user to tap and set a stroke width
+				// Track sliding state
 				onSlidingStart={() => setActive(true)}
 				onSlidingComplete={() => setActive(false)}
+				// Used for showing the tooltip
+				// Check out the ToolTip function for more information
 				StepMarker={({ stepMarked, currentValue }) => {
 					if (!stepMarked || !isActive) return
 
 					return <ToolTip currentValue={currentValue} />
 				}}
-				style={{
-					width: "100%",
-					borderWidth: 2,
-					backgroundColor: "#000",
-					borderRadius: 999,
-					borderColor: theme.colors.onPrimary,
-					padding: 2,
-				}}
+				style={styles.slider}
 			/>
 		</View>
 	)

@@ -1,13 +1,12 @@
 /**
  * LoginInput.tsx
  *
- * Contains the user input box and label for the login UI
+ * Contains the user input box, label, and logic for the login UI
  */
 
 import { View, Text, TextInput } from "react-native"
 import { Controller } from "react-hook-form"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { getGlobalStyles } from "../../styles/global"
 import { getLoginStyles } from "../../styles/login"
 
 /**
@@ -32,17 +31,21 @@ export default function LoginInput({
 	secure,
 	error,
 }: LoginInputProps) {
+	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
 	const styles = getLoginStyles(theme.colors)
 
 	return (
+		// The container around the input -- turns red upon error
 		<View style={[styles.inputBox, error && { borderColor: "red" }]}>
+			{/* Label -- tells the user what to input e.g. email, password, etc. */}
 			<Text style={[GlobalStyles.paragraph, styles.label]}>{label}</Text>
 
+			{/* Controller component, handles all logic */}
 			<Controller
 				control={control}
 				name={name}
-				rules={rules}
+				rules={rules} // Rules for validation
 				render={({ field: { value, onChange } }) => (
 					<TextInput
 						value={value}

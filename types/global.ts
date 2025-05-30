@@ -1,3 +1,9 @@
+/**
+ * global Types
+ *
+ * Contains global types used for Study Buddy.
+ */
+
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "../navigation/Navigation"
 import { ImageSourcePropType } from "react-native"

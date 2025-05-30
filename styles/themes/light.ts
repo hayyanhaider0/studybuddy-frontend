@@ -1,3 +1,9 @@
+/**
+ * light Theme
+ *
+ * Includes name, barStyle (top of the phone), and colors for the light theme.
+ */
+
 export const lightTheme = {
 	name: "light",
 	barStyle: "dark-content",

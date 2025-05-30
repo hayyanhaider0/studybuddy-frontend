@@ -1,5 +1,11 @@
+/**
+ * global Styles
+ *
+ * Contains global styles for Studdy Buddy UI.
+ */
+
 import { StyleSheet } from "react-native"
-import { ThemeColors } from "../types/types"
+import { ThemeColors } from "../types/global"
 
 export const getGlobalStyles = (colors: ThemeColors) =>
 	StyleSheet.create({
