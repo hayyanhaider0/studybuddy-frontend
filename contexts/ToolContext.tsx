@@ -8,19 +8,24 @@
 import { createContext, ReactNode, useContext, useState } from "react"
 import { ToolName } from "../types/global"
 
+type ToolSettings = {
+	color: string
+	size: number
+}
+
+type ToolSettingsMap = {
+	[toolName in ToolName]: ToolSettings
+}
+
 type ToolContextType = {
 	// Currently selected tool.
 	tool: ToolName
 	// Setter for tool.
 	setTool: React.Dispatch<React.SetStateAction<ToolName>>
-	// Current stroke color.
-	stroke: string
-	// Setter for the stroke color.
-	setStroke: React.Dispatch<React.SetStateAction<string>>
-	// Currently selected stroke width.
-	strokeWidth: number
-	// Setter for the stroke width.
-	setStrokeWidth: React.Dispatch<React.SetStateAction<number>>
+	// Tool settings: tool color and size.
+	toolSettings: ToolSettingsMap
+	// Setter for all tools settings.
+	setToolSettings: React.Dispatch<React.SetStateAction<ToolSettingsMap>>
 	// Currently picked color from the color picker component.
 	pickedColor: string
 	// Setter for the picked color from the color picker component.
@@ -46,10 +51,15 @@ export const ToolContext = createContext<ToolContextType | null>(null)
  * @param children -
  */
 export function ToolProvider({ children }: { children: ReactNode }) {
-	// Tool, stroke, and stroke width values.
+	// Tool and tool setting values.
 	const [tool, setTool] = useState<ToolName>("pen")
-	const [stroke, setStroke] = useState<string>("black")
-	const [strokeWidth, setStrokeWidth] = useState<number>(4)
+	const [toolSettings, setToolSettings] = useState<ToolSettingsMap>({
+		pen: { color: "black", size: 4 },
+		eraser: { color: "transparent", size: 4 },
+		pencil: { color: "black", size: 4 },
+		highlighter: { color: "#FFFF004D", size: 32 },
+		text: { color: "black", size: 8 },
+	})
 	// Color picker values.
 	const [pickedColor, setPickedColor] = useState<string>("red")
 	const [colorPicker, setColorPicker] = useState<boolean>(false)
@@ -61,12 +71,10 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 			value={{
 				tool,
 				setTool,
-				stroke,
-				setStroke,
+				toolSettings,
+				setToolSettings,
 				pickedColor,
 				setPickedColor,
-				strokeWidth,
-				setStrokeWidth,
 				activeMenu,
 				setActiveMenu,
 				colorPicker,

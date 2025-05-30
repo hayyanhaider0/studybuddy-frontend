@@ -43,11 +43,11 @@ function ToolTip({ currentValue }: { currentValue: number }) {
  */
 export default function StrokeOptions() {
 	const [isActive, setActive] = useState(false) // State to track whether the user is sliding
-	const { stroke, strokeWidth, setStrokeWidth } = useToolContext() // Get tool context
+	const { tool, toolSettings, setToolSettings } = useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
-	const styles = getCanvasStyles(theme.colors, stroke)
+	const styles = getCanvasStyles(theme.colors, toolSettings[tool].color)
 
 	return (
 		<View style={styles.sliderContainer}>
@@ -59,8 +59,16 @@ export default function StrokeOptions() {
 				minimumValue={1}
 				maximumValue={30}
 				step={1}
-				value={strokeWidth}
-				onValueChange={(v) => setStrokeWidth(v)}
+				value={toolSettings[tool].size}
+				onValueChange={(v) =>
+					setToolSettings((prev) => ({
+						...prev,
+						[tool]: {
+							...prev[tool],
+							size: v,
+						},
+					}))
+				}
 				// Set the thumb and track color according to user interaction
 				// Secondary when being used, white when not
 				thumbTintColor={isActive ? theme.colors.secondary : "#fff"}

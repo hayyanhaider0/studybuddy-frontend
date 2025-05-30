@@ -38,7 +38,7 @@ export type ThemeColors = {
 export type PathType = {
 	d: string
 	color: string
-	sw: number
+	size: number
 }
 
 // Tool Types

@@ -10,7 +10,7 @@ import { getCanvasStyles } from "../../styles/canvas"
 import { useThemeContext } from "../../contexts/ThemeContext"
 
 export default function ColorOptions() {
-	const { setStroke, colorPicker, setColorPicker } = useToolContext() // Get tool context
+	const { tool, setToolSettings, colorPicker, setColorPicker } = useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -33,7 +33,13 @@ export default function ColorOptions() {
 		<View style={styles.colorContainer}>
 			{/* Map all the colors */}
 			{colors.map((item, i) => (
-				<TouchableOpacity key={i} onPress={() => setStroke(item)} activeOpacity={0.5}>
+				<TouchableOpacity
+					key={i}
+					onPress={() =>
+						setToolSettings((prev) => ({ ...prev, [tool]: { ...prev[tool], color: item } }))
+					}
+					activeOpacity={0.5}
+				>
 					<View style={[styles.options, { backgroundColor: item }]} />
 				</TouchableOpacity>
 			))}

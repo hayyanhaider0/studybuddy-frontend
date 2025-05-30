@@ -15,7 +15,7 @@ import { usePanContext } from "../contexts/PanContext"
 export function useCanvasGestures() {
 	// Get context values.
 	const { current, setCurrent, setPaths, layout } = useCanvasContext()
-	const { tool, stroke, strokeWidth } = useToolContext()
+	const { tool, toolSettings } = useToolContext()
 	const { scale, savedScale } = useZoomContext()
 	const { offsetX, offsetY, translateX, translateY } = usePanContext()
 
@@ -63,7 +63,10 @@ export function useCanvasGestures() {
 		.onEnd(() => {
 			if (current) {
 				// Insert new path into the paths array and reset the current path string.
-				setPaths((prev) => [...prev, { d: current, color: stroke, sw: strokeWidth }])
+				setPaths((prev) => [
+					...prev,
+					{ d: current, color: toolSettings[tool].color, size: toolSettings[tool].size },
+				])
 				setCurrent("")
 			}
 		})

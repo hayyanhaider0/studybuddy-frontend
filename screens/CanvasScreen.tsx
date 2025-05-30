@@ -21,7 +21,7 @@ import { useThemeContext } from "../contexts/ThemeContext"
 export default function CanvasScreen() {
 	// Context Imports
 	const { paths, current, setLayout } = useCanvasContext()
-	const { stroke, strokeWidth } = useToolContext()
+	const { tool, toolSettings } = useToolContext()
 	const { scale } = useZoomContext()
 	const { translateX, translateY } = usePanContext()
 	const { theme, GlobalStyles } = useThemeContext()
@@ -61,7 +61,7 @@ export default function CanvasScreen() {
 									key={i}
 									d={p.d}
 									stroke={p.color}
-									strokeWidth={p.sw}
+									strokeWidth={p.size}
 									fill='none'
 									strokeLinecap='round'
 									strokeLinejoin='round'
@@ -70,8 +70,8 @@ export default function CanvasScreen() {
 							{current && (
 								<Path
 									d={current}
-									stroke={stroke}
-									strokeWidth={strokeWidth}
+									stroke={toolSettings[tool].color}
+									strokeWidth={toolSettings[tool].size}
 									fill='none'
 									strokeLinecap='round'
 									strokeLinejoin='round'

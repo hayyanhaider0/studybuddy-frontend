@@ -17,7 +17,8 @@ import { getCanvasStyles } from "../../styles/canvas"
 import { useThemeContext } from "../../contexts/ThemeContext"
 
 export default function ColorPickerComponent() {
-	const { setStroke, colorPicker, pickedColor, setPickedColor, activeMenu } = useToolContext() // Get tool context
+	const { tool, setToolSettings, colorPicker, pickedColor, setPickedColor, activeMenu } =
+		useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -42,7 +43,13 @@ export default function ColorPickerComponent() {
 							style={{ gap: 16, width: 235 }}
 							onCompleteJS={(e) => {
 								setPickedColor(e.hex)
-								setStroke(e.hex)
+								setToolSettings((prev) => ({
+									...prev,
+									[tool]: {
+										...prev[tool],
+										color: e.hex,
+									},
+								}))
 							}}
 						>
 							{/* Hex value of the color */}
