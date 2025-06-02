@@ -40,12 +40,10 @@ export default function CanvasScreen() {
 
 	return (
 		<>
-			{/* Toolbar Component */}
-			<Toolbar />
-
-			{/* Canvas Component */}
 			{/* Backdrop behind the canvas */}
 			<GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.surface }}>
+				{/* Toolbar Component */}
+				<Toolbar />
 				<GestureDetector gesture={gesture}>
 					{/* Actual canvas is contained within this animated view */}
 					<Animated.View style={[GlobalStyles.container, animatedStyle]}>
@@ -56,14 +54,14 @@ export default function CanvasScreen() {
 
 						{/* Drawable component */}
 						<Svg style={{ flex: 1, zIndex: 10 }} onLayout={(e) => setLayout(e.nativeEvent.layout)}>
-							{paths.map((p, i) => (
+							{paths.map((t, i) => (
 								<Path
 									key={i}
-									d={p.d}
-									stroke={p.color}
-									strokeWidth={p.size}
+									d={t.d}
+									stroke={t.color}
+									strokeWidth={t.size}
 									fill='none'
-									strokeLinecap='round'
+									strokeLinecap={t.strokeLinecap}
 									strokeLinejoin='round'
 								/>
 							))}
@@ -73,7 +71,7 @@ export default function CanvasScreen() {
 									stroke={toolSettings[tool].color}
 									strokeWidth={toolSettings[tool].size}
 									fill='none'
-									strokeLinecap='round'
+									strokeLinecap={toolSettings[tool].strokeLinecap}
 									strokeLinejoin='round'
 								/>
 							)}

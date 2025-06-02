@@ -11,6 +11,8 @@ import { ToolName } from "../types/global"
 type ToolSettings = {
 	color: string
 	size: number
+	strokeLinecap?: "butt" | "round"
+	strokeLinejoin?: "bevel" | "round"
 }
 
 type ToolSettingsMap = {
@@ -54,10 +56,10 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 	// Tool and tool setting values.
 	const [tool, setTool] = useState<ToolName>("pen")
 	const [toolSettings, setToolSettings] = useState<ToolSettingsMap>({
-		pen: { color: "black", size: 4 },
+		pen: { color: "black", size: 4, strokeLinecap: "round", strokeLinejoin: "round" },
 		eraser: { color: "transparent", size: 4 },
-		pencil: { color: "black", size: 4 },
-		highlighter: { color: "#FFFF004D", size: 32 },
+		pencil: { color: "black", size: 4, strokeLinecap: "round", strokeLinejoin: "round" },
+		highlighter: { color: "#FFFF004D", size: 32, strokeLinecap: "butt", strokeLinejoin: "bevel" },
 		text: { color: "black", size: 8 },
 	})
 	// Color picker values.

@@ -4,7 +4,7 @@ import CanvasOptions from "./CanvasOptions"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getCanvasStyles } from "../../styles/canvas"
 import ColorPickerComponent from "./ColorPickerComponent"
-import PenToolbar from "./PenToolbar"
+import ToolMenu from "./ToolMenu"
 
 export default function Toolbar() {
 	const { theme } = useThemeContext()
@@ -16,7 +16,7 @@ export default function Toolbar() {
 			<ColorPickerComponent />
 
 			{/* Pen toolbar panel including color and stroke selection */}
-			<PenToolbar />
+			<ToolMenu />
 
 			{/* Fixed toolbar row at bottom */}
 			<View style={styles.toolbar}>

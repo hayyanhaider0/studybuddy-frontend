@@ -34,8 +34,10 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 			paddingTop: 16,
 			overflow: "hidden",
 		},
-		penToolbar: {
+		toolMenu: {
+			position: "relative",
 			padding: 16,
+			gap: 16,
 			margin: 8,
 			borderRadius: 28,
 			backgroundColor: colors.primary,
@@ -71,7 +73,6 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "center",
-			paddingTop: 16,
 			paddingHorizontal: 16,
 			width: 232,
 			gap: 8,
@@ -112,6 +113,7 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 		// Color picker styles
 		colorPickerContainer: {
 			backgroundColor: colors.primary,
+			gap: 16,
 			padding: 32,
 			borderRadius: 28,
 		},

@@ -1,7 +1,14 @@
+/**
+ * HorizontalRule Component
+ * 
+ * Simple horizontal rule
+ */
+
 import { View, Text } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
 
 export default function HorizontalRule({ children }: any) {
+    // Theming
 	const { theme } = useThemeContext()
 
 	return (

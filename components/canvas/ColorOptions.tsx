@@ -8,50 +8,82 @@ import { Image, TouchableOpacity, View } from "react-native"
 import { useToolContext } from "../../contexts/ToolContext"
 import { getCanvasStyles } from "../../styles/canvas"
 import { useThemeContext } from "../../contexts/ThemeContext"
+import { ToolName } from "../../types/global"
 
-export default function ColorOptions() {
-	const { tool, setToolSettings, colorPicker, setColorPicker } = useToolContext() // Get tool context
+export default function ColorOptions({ tool }: { tool: ToolName }) {
+	const { setToolSettings, colorPicker, setColorPicker } = useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
 
-	const colors = [
-		// Red
-		"#dc2626",
-		// Orange
-		"#fb923c",
-		// Yellow
-		"#facc15",
-		// Blue
-		"#3b82f6",
-		// Green
-		"#10b981",
-	]
+	const toolSwatches: Record<ToolName, string[]> = {
+		pen: [
+			// Red
+			"#dc2626",
+			// Orange
+			"#fb923c",
+			// Yellow
+			"#facc15",
+			// Blue
+			"#3b82f6",
+			// Green
+			"#10b981",
+			// Black
+			"#000000",
+		],
+		pencil: [
+			// Red
+			"#dc2626",
+			// Blue
+			"#3b82f6",
+			// Orange
+			"#fb923c",
+			// Yellow
+			"#facc15",
+			// Green
+			"#10b981",
+			// Black
+			"#000000",
+		],
+		highlighter: [
+			// Blue
+			"#3b82f6",
+			// Red
+			"#dc2626",
+			// Orange
+			"#fb923c",
+			// Yellow
+			"#facc15",
+			// Green
+			"#10b981",
+			// Black
+			"#000000",
+		],
+		eraser: [],
+		text: [],
+	}
+
+	const swatches = toolSwatches[tool]
 
 	return (
-		<View style={styles.colorContainer}>
-			{/* Map all the colors */}
-			{colors.map((item, i) => (
-				<TouchableOpacity
-					key={i}
-					onPress={() =>
-						setToolSettings((prev) => ({ ...prev, [tool]: { ...prev[tool], color: item } }))
-					}
-					activeOpacity={0.5}
-				>
-					<View style={[styles.options, { backgroundColor: item }]} />
-				</TouchableOpacity>
-			))}
-
-			{/* RGB option using a color picker */}
-			<TouchableOpacity onPress={() => setColorPicker(!colorPicker)} activeOpacity={0.5}>
-				<Image
-					source={require("../../assets/canvasImages/rgb_circle.png")}
-					style={styles.options}
-					resizeMode='contain'
-				/>
-			</TouchableOpacity>
-		</View>
+		swatches.length > 0 && (
+			<View style={styles.colorContainer}>
+				{/* Map all the colors */}
+				{swatches.map((item, i) => (
+					<TouchableOpacity
+						key={i}
+						onPress={() => {
+							setToolSettings((prev) => ({ ...prev, [tool]: { ...prev[tool], color: item } }))
+							setColorPicker(false)
+						}}
+						onLongPress={() => setColorPicker(true)}
+						activeOpacity={0.5}
+					>
+						<View style={[styles.options, { backgroundColor: item }]} />
+					</TouchableOpacity>
+				))}
+			</View>
+		)
 	)
 }

@@ -1,6 +1,12 @@
+/**
+ * LoginScreen Component
+ * 
+ * Includes toggleable login and signup components.
+ * For more information check out Login.tsx and SignUp.tsx
+ */
+
 import { Text, View, Image, ScrollView } from "react-native"
 import { useState } from "react"
-import { getGlobalStyles } from "../styles/global"
 import Login from "../components/login/Login"
 import SignUp from "../components/login/SignUp"
 import { useThemeContext } from "../contexts/ThemeContext"

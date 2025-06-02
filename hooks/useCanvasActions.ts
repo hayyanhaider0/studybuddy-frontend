@@ -6,12 +6,10 @@
 
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { useToolContext } from "../contexts/ToolContext"
 
 export function useCanvasActions() {
 	// Get values from contexts
 	const { setPaths } = useCanvasContext()
-	const { tool, setTool } = useToolContext()
 
 	// Theming
 	const { toggleTheme } = useThemeContext()

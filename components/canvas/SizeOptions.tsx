@@ -35,13 +35,13 @@ function ToolTip({ currentValue }: { currentValue: number }) {
 }
 
 /**
- * StrokeOptions Component
+ * SizeOptions Component
  *
  * Contains the slider that allows the user to select a stroke width.
  *
  * @returns JSX Component
  */
-export default function StrokeOptions() {
+export default function SizeOptions() {
 	const [isActive, setActive] = useState(false) // State to track whether the user is sliding
 	const { tool, toolSettings, setToolSettings } = useToolContext() // Get tool context
 

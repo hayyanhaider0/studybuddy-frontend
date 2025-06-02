@@ -12,7 +12,7 @@ import { useZoomContext } from "../contexts/ZoomContext"
 import { useCanvasActions } from "./useCanvasActions"
 import { usePanContext } from "../contexts/PanContext"
 
-export function useCanvasGestures() {
+export function useCanvasGestures(close?: () => void) {
 	// Get context values.
 	const { current, setCurrent, setPaths, layout } = useCanvasContext()
 	const { tool, toolSettings } = useToolContext()
@@ -65,7 +65,13 @@ export function useCanvasGestures() {
 				// Insert new path into the paths array and reset the current path string.
 				setPaths((prev) => [
 					...prev,
-					{ d: current, color: toolSettings[tool].color, size: toolSettings[tool].size },
+					{
+						d: current,
+						color: toolSettings[tool].color,
+						size: toolSettings[tool].size,
+						strokeLinecap: toolSettings[tool].strokeLinecap || "round",
+						strokeLineJoin: toolSettings[tool].strokeLinejoin || "round",
+					},
 				])
 				setCurrent("")
 			}

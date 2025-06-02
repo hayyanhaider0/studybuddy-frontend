@@ -15,10 +15,19 @@ import ColorPicker, {
 import { useToolContext } from "../../contexts/ToolContext"
 import { getCanvasStyles } from "../../styles/canvas"
 import { useThemeContext } from "../../contexts/ThemeContext"
+import Handle from "../common/Handle"
+import { useCanvasGestures } from "../../hooks/useCanvasGestures"
 
 export default function ColorPickerComponent() {
-	const { tool, setToolSettings, colorPicker, pickedColor, setPickedColor, activeMenu } =
-		useToolContext() // Get tool context
+	const {
+		tool,
+		setToolSettings,
+		colorPicker,
+		setColorPicker,
+		pickedColor,
+		setPickedColor,
+		activeMenu,
+	} = useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -37,6 +46,7 @@ export default function ColorPickerComponent() {
 						transition={{ type: "timing", duration: 300 }}
 						style={styles.colorPickerContainer}
 					>
+						<Handle close={() => setColorPicker(false)} />
 						{/* Actual ColorPicker Component */}
 						<ColorPicker
 							value={pickedColor} // Set the picked color

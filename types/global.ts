@@ -39,6 +39,7 @@ export type PathType = {
 	d: string
 	color: string
 	size: number
+	strokeLinecap: "butt" | "round"
 }
 
 // Tool Types
