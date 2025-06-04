@@ -1,33 +1,30 @@
-import { Dimensions, View } from "react-native"
+import { Line, Rect } from "@shopify/react-native-skia"
+import { useThemeContext } from "../../contexts/ThemeContext"
 
-export default function Background1() {
-	const { height } = Dimensions.get("window")
-
-	const numLines = Math.floor(height / 52)
+export default function Background1({
+	width,
+	height,
+	backgroundColor,
+}: {
+	width: number
+	height: number
+	backgroundColor: string
+}) {
+	const DIVISOR = 36
+	const numLines = Math.floor(height / DIVISOR)
 
 	return (
-		<View
-			style={{
-				maxHeight: height,
-				position: "absolute",
-				top: 0,
-				left: 0,
-				right: 0,
-				zIndex: -1,
-				padding: 16,
-			}}
-		>
+		<>
+			<Rect x={0} y={0} width={width} height={height} color={backgroundColor} />
 			{Array.from({ length: numLines }).map((_, i) => (
-				<View
+				<Line
 					key={i}
-					style={{
-						height: 1,
-						width: "100%",
-						backgroundColor: "gray",
-						marginTop: 48,
-					}}
+					p1={{ x: 16, y: (i + 2) * DIVISOR }}
+					p2={{ x: width - 16, y: (i + 2) * DIVISOR }}
+					color='gray'
+					strokeWidth={1}
 				/>
 			))}
-		</View>
+		</>
 	)
 }

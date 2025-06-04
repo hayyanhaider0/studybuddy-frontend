@@ -7,6 +7,7 @@
 
 import { createContext, ReactNode, useContext, useState } from "react"
 import { PathType } from "../types/global"
+import { Skia, SkPath } from "@shopify/react-native-skia"
 
 // Types
 type LayoutType = {
@@ -26,9 +27,9 @@ export type CanvasContextType = {
 	// Setter for updating the paths array.
 	setPaths: React.Dispatch<React.SetStateAction<PathType[]>>
 	// Current path being drawn.
-	current: string
+	current: SkPath
 	// Setter for the current path being drawn.
-	setCurrent: React.Dispatch<React.SetStateAction<string>>
+	setCurrent: React.Dispatch<React.SetStateAction<SkPath>>
 	// Current layout rectangle of the canvas.
 	layout: LayoutType
 	// Setter for updating canvas dimensions.
@@ -49,7 +50,13 @@ export function CanvasStateProvider({ children }: { children: ReactNode }) {
 	// Stored drawing paths on the canvas.
 	const [paths, setPaths] = useState<PathType[]>([])
 	// Path currently being drawn.
-	const [current, setCurrent] = useState<string>("")
+	const [current, setCurrent] = useState<SkPath>(() => {
+		if (Skia && Skia.Path) {
+			return Skia.Path.Make()
+		}
+		console.warn("Skia not available - using placeholder path")
+		return {} as SkPath
+	})
 	// Canvas coordinates and layout dimensions.
 	const [layout, setLayout] = useState<LayoutType>({ x: 0, y: 0, width: 0, height: 0 })
 

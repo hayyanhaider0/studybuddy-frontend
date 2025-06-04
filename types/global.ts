@@ -7,6 +7,7 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "../navigation/Navigation"
 import { ImageSourcePropType } from "react-native"
+import { SkPath } from "@shopify/react-native-skia"
 
 // Navigation
 export type NavProp<Screen extends keyof RootStackParamList> = NativeStackNavigationProp<
@@ -36,7 +37,7 @@ export type ThemeColors = {
 
 // Path
 export type PathType = {
-	d: string
+	path: SkPath
 	color: string
 	size: number
 	strokeLinecap: "butt" | "round"

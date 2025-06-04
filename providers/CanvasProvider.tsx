@@ -5,19 +5,16 @@
  */
 
 import { ReactNode } from "react"
-import { ZoomProvider } from "../contexts/ZoomContext"
 import { ToolProvider } from "../contexts/ToolContext"
 import { CanvasStateProvider } from "../contexts/CanvasStateContext"
-import { PanProvider } from "../contexts/PanContext"
+import { TransformProvider } from "../contexts/TransformContext"
 
 export function CanvasProvider({ children }: { children: ReactNode }) {
 	return (
-		<ZoomProvider>
-			<PanProvider>
-				<ToolProvider>
-					<CanvasStateProvider>{children}</CanvasStateProvider>
-				</ToolProvider>
-			</PanProvider>
-		</ZoomProvider>
+		<ToolProvider>
+			<TransformProvider>
+				<CanvasStateProvider>{children}</CanvasStateProvider>
+			</TransformProvider>
+		</ToolProvider>
 	)
 }

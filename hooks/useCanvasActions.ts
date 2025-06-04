@@ -61,20 +61,43 @@ export function useCanvasActions() {
 	 */
 	const handleErase = (x: number, y: number) => {
 		const radius = 20 // Radius of the eraser
-		// Filter the paths array and remove all paths that are erased, and place
-		// them into the undo stack.
+
 		setPaths((prev) =>
-			prev.filter((p) => {
-				const regex = /(-?\d+(\.\d+)?)[ ,](-?\d+(\.\d+)?)/g
-				let match
-				while ((match = regex.exec(p.d)) !== null) {
-					const px = parseFloat(match[1])
-					const py = parseFloat(match[3])
-					const dx = px - x
-					const dy = py - y
-					if (Math.sqrt(dx * dx + dy * dy) < radius) return false
+			prev.filter((pathData) => {
+				// Get the path bounds to do a quick check first
+				const bounds = pathData.path.getBounds()
+
+				// Quick bounds check - if eraser is nowhere near the path, skip detailed check
+				if (
+					x + radius < bounds.x ||
+					x - radius > bounds.x + bounds.width ||
+					y + radius < bounds.y ||
+					y - radius > bounds.y + bounds.height
+				) {
+					return true // Keep the path
 				}
-				return true
+
+				// For more accurate checking, you could:
+				// 1. Check if the eraser point is near the path stroke
+				// 2. Use path.contains() if the path is filled
+				// 3. Sample points along the path and check distance
+
+				// Simple approach: check if eraser center is within stroke width of path bounds
+				const strokeRadius = pathData.size / 2
+				const expandedBounds = {
+					x: bounds.x - strokeRadius,
+					y: bounds.y - strokeRadius,
+					width: bounds.width + strokeRadius * 2,
+					height: bounds.height + strokeRadius * 2,
+				}
+
+				const eraserOverlaps =
+					x >= expandedBounds.x &&
+					x <= expandedBounds.x + expandedBounds.width &&
+					y >= expandedBounds.y &&
+					y <= expandedBounds.y + expandedBounds.height
+
+				return !eraserOverlaps // Return false to remove (erase) the path
 			})
 		)
 	}

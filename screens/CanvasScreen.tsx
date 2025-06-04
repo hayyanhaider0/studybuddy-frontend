@@ -5,77 +5,93 @@
  * Check out Toolbar.tsx for information on the toolbar.
  */
 
-import Svg, { Path } from "react-native-svg"
-import { View } from "react-native"
 import { GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler"
-import Animated, { useAnimatedStyle } from "react-native-reanimated"
 import { useCanvasGestures } from "../hooks/useCanvasGestures"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useToolContext } from "../contexts/ToolContext"
-import { useZoomContext } from "../contexts/ZoomContext"
 import Background1 from "../components/canvas/Background1"
-import { usePanContext } from "../contexts/PanContext"
 import Toolbar from "../components/canvas/Toolbar"
 import { useThemeContext } from "../contexts/ThemeContext"
+import { Canvas, Path } from "@shopify/react-native-skia"
+import { PathType } from "../types/global"
+import Animated, { useAnimatedStyle } from "react-native-reanimated"
+import { useTransformContext } from "../contexts/TransformContext"
+import { LayoutChangeEvent } from "react-native"
 
 export default function CanvasScreen() {
 	// Context Imports
-	const { paths, current, setLayout } = useCanvasContext()
+	const { paths, current, layout, setLayout } = useCanvasContext()
 	const { tool, toolSettings } = useToolContext()
-	const { scale } = useZoomContext()
-	const { translateX, translateY } = usePanContext()
-	const { theme, GlobalStyles } = useThemeContext()
+	const { translateX, translateY, scale } = useTransformContext()
+	const { theme } = useThemeContext()
 
 	// Gesture
 	const gesture = useCanvasGestures()
 
-	// Canvas transformation
+	// Animated style for transform
 	const animatedStyle = useAnimatedStyle(() => ({
 		transform: [
-			{ scale: scale.value },
 			{ translateX: translateX.value },
 			{ translateY: translateY.value },
+			{ scale: scale.value },
 		],
 	}))
+
+	/**
+	 * handleCanvasLayout Function
+	 *
+	 * Sets the layout values to the canvas's actual values.
+	 *
+	 * @param e - Layout change event.
+	 */
+	const handleCanvasLayout = (e: LayoutChangeEvent) => {
+		const { x, y, width, height } = e.nativeEvent.layout
+		// Update layout
+		setLayout({ x, y, width, height })
+	}
 
 	return (
 		<>
 			{/* Backdrop behind the canvas */}
-			<GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.surface }}>
+			<GestureHandlerRootView
+				style={{
+					flex: 1,
+					backgroundColor: theme.colors.surface,
+				}}
+			>
 				{/* Toolbar Component */}
 				<Toolbar />
 				<GestureDetector gesture={gesture}>
 					{/* Actual canvas is contained within this animated view */}
-					<Animated.View style={[GlobalStyles.container, animatedStyle]}>
-						{/* Background of the canvas */}
-						<View style={{ flex: 1 }}>
-							<Background1 />
-						</View>
-
-						{/* Drawable component */}
-						<Svg style={{ flex: 1, zIndex: 10 }} onLayout={(e) => setLayout(e.nativeEvent.layout)}>
-							{paths.map((t, i) => (
+					<Animated.View
+						style={[{ flex: 1, alignItems: "center", justifyContent: "center" }, animatedStyle]}
+					>
+						<Canvas style={{ height: 640, width: 360 }} onLayout={handleCanvasLayout}>
+							<Background1
+								width={layout.width}
+								height={layout.height}
+								backgroundColor={theme.colors.background}
+							/>
+							{paths.map((p: PathType, i: number) => (
 								<Path
 									key={i}
-									d={t.d}
-									stroke={t.color}
-									strokeWidth={t.size}
-									fill='none'
-									strokeLinecap={t.strokeLinecap}
-									strokeLinejoin='round'
+									path={p.path}
+									color={p.color}
+									style='stroke'
+									strokeWidth={p.size}
+									strokeCap={p.strokeLinecap}
+									strokeJoin='round'
 								/>
 							))}
-							{current && (
-								<Path
-									d={current}
-									stroke={toolSettings[tool].color}
-									strokeWidth={toolSettings[tool].size}
-									fill='none'
-									strokeLinecap={toolSettings[tool].strokeLinecap}
-									strokeLinejoin='round'
-								/>
-							)}
-						</Svg>
+							<Path
+								path={current}
+								color={toolSettings[tool].color}
+								style='stroke'
+								strokeWidth={toolSettings[tool].size}
+								strokeCap={toolSettings[tool].strokeLinecap}
+								strokeJoin='round'
+							/>
+						</Canvas>
 					</Animated.View>
 				</GestureDetector>
 			</GestureHandlerRootView>
