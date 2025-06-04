@@ -58,7 +58,7 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 	const [toolSettings, setToolSettings] = useState<ToolSettingsMap>({
 		pen: { color: "black", size: 4, strokeLinecap: "round", strokeLinejoin: "round" },
 		eraser: { color: "transparent", size: 4 },
-		pencil: { color: "black", size: 4, strokeLinecap: "round", strokeLinejoin: "round" },
+		pencil: { color: "black", size: 1, strokeLinecap: "round", strokeLinejoin: "round" },
 		highlighter: { color: "#FFFF004D", size: 32, strokeLinecap: "butt", strokeLinejoin: "bevel" },
 		text: { color: "black", size: 8 },
 	})

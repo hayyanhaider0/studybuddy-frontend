@@ -102,11 +102,37 @@ export function useCanvasGestures() {
 		})
 		.runOnJS(true)
 
+	// Tap Gesture: Allows the user to tap and draw a dot.
+	const tapGesture = Gesture.Tap()
+		.onEnd((e) => {
+			// Calculate local x and y values using canvas layout.
+			const { x, y } = screenToCanvasCoords(e.x, e.y)
+
+			// Start creating a path object.
+			skPath = Skia.Path.Make()
+			skPath.moveTo(x, y)
+
+			// Create a very small line -- resembling a dot.
+			skPath.lineTo(x + 0.1, y + 0.1)
+
+			// Update the paths array.
+			setPaths((prev) => [
+				...prev,
+				{
+					path: skPath.copy(),
+					color: toolSettings[tool].color,
+					size: toolSettings[tool].size,
+					strokeLinecap: toolSettings[tool].strokeLinecap || "round",
+				},
+			])
+		})
+		.runOnJS(true)
+
 	// panGesture limits
-	const minX = -300
-	const maxX = 300
-	const minY = -600
-	const maxY = 600
+	const minX = -600
+	const maxX = 600
+	const minY = -900
+	const maxY = 900
 
 	// PanGesture: Allows the user to pan using two fingers.
 	const panGesture = Gesture.Pan()
@@ -124,5 +150,8 @@ export function useCanvasGestures() {
 		})
 		.runOnJS(true)
 
-	return Gesture.Simultaneous(pinchGesture, panGesture, drawGesture)
+	return {
+		drawingGestures: Gesture.Exclusive(drawGesture, tapGesture),
+		translateGestures: Gesture.Simultaneous(panGesture, pinchGesture),
+	}
 }
