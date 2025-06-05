@@ -23,7 +23,7 @@ type LoginProps = {
 }
 
 export default function Login({ setForm }: LoginProps) {
-	const nav = useNavigation<NavProp<"canvas">>() // Navigation controller
+	const nav = useNavigation<NavProp<"main">>() // Navigation controller
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
@@ -45,7 +45,7 @@ export default function Login({ setForm }: LoginProps) {
 	const handleLogin = (data: any) => {
 		console.log(data)
 
-		nav.navigate("canvas")
+		nav.navigate("main")
 	}
 
 	/**
@@ -56,7 +56,7 @@ export default function Login({ setForm }: LoginProps) {
 	const handleForgotPassword = () => {
 		console.log("forgot password")
 
-		nav.navigate("canvas") // REMOVE THIS LINE
+		nav.navigate("main") // REMOVE THIS LINE
 	}
 
 	return (

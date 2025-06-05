@@ -23,7 +23,7 @@ export default function CanvasOptions() {
 			{/* Map out all options */}
 			{options.map((o, i) => (
 				<TouchableOpacity key={i} onPress={o.action}>
-					<Icon name={o.icon} size={30} color={theme.colors.onPrimary} />
+					<Icon name={o.icon} size={30} color={theme.colors.textPrimary} />
 				</TouchableOpacity>
 			))}
 		</View>

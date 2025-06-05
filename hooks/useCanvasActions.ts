@@ -4,8 +4,12 @@
  * Contains logic for all toolbar actions.
  */
 
+import { useNavigation } from "@react-navigation/native"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
+import { SidebarNavProp } from "../types/global"
+import { DrawerNavigationProp } from "@react-navigation/drawer"
+import { DrawerParamList } from "../navigation/Navigation"
 
 export function useCanvasActions() {
 	// Get values from contexts
@@ -13,6 +17,9 @@ export function useCanvasActions() {
 
 	// Theming
 	const { toggleTheme } = useThemeContext()
+
+	// Navigation for the sidebar menu.
+	const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 
 	/**
 	 * clearCanvas function
@@ -47,8 +54,7 @@ export function useCanvasActions() {
 	 * Allows the user to open the sidebar menu.
 	 */
 	const toggleMenu = () => {
-		console.log("menu")
-		toggleTheme()
+		navigation.openDrawer()
 	}
 
 	/**

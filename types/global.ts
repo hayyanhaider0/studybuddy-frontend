@@ -5,13 +5,19 @@
  */
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { RootStackParamList } from "../navigation/Navigation"
+import { RootStackParamList, DrawerParamList } from "../navigation/Navigation"
 import { ImageSourcePropType } from "react-native"
 import { SkPath } from "@shopify/react-native-skia"
+import { DrawerNavigationProp } from "@react-navigation/drawer"
 
 // Navigation
 export type NavProp<Screen extends keyof RootStackParamList> = NativeStackNavigationProp<
 	RootStackParamList,
+	Screen
+>
+
+export type SidebarNavProp<Screen extends keyof DrawerParamList> = DrawerNavigationProp<
+	DrawerParamList,
 	Screen
 >
 
