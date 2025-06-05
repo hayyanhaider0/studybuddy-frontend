@@ -7,9 +7,11 @@
 import { createContext, ReactNode, useContext, useState } from "react"
 import { themes } from "../styles/themes"
 import { getGlobalStyles } from "../styles/global"
+import { Appearance } from "react-native"
 
 // Types
-type ThemeName = keyof typeof themes // All available themes.
+export type ThemeName = keyof typeof themes // All available themes.
+export const themeNames: ThemeName[] = Object.keys(themes) as ThemeName[]
 // Check out styles/themes for more information.
 
 type ThemeContextType = {
@@ -34,8 +36,10 @@ export const ThemeContext = createContext<ThemeContextType | null>(null)
  * @param children - React components that need to utilize theming.
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
+	// Get the system theme.
+	const systemTheme = Appearance.getColorScheme()
 	// Name of the current theme.
-	const [themeName, setThemeName] = useState<ThemeName>("light")
+	const [themeName, setThemeName] = useState<ThemeName>(systemTheme || "light")
 	// Find the current theme from an array of all themes.
 	const theme = themes[themeName]
 	// Global styles -- styles/global.ts

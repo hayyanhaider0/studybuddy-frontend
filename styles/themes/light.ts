@@ -8,9 +8,9 @@ export const lightTheme = {
 	name: "light",
 	barStyle: "dark-content",
 	colors: {
-		primary: "#2E2E2E",
+		primary: "#f5f5f5",
 		secondary: "#FF6D00",
-		tertiary: "#1E1E1E",
+		tertiary: "#DFDFDF",
 		surface: "#E0E0E0",
 		background: "#FFFFFF",
 		textPrimary: "#1C1C1C",
@@ -18,7 +18,7 @@ export const lightTheme = {
 		error: "#D93025",
 		placeholder: "#9A9A9A",
 		link: "#1A73E8",
-		onPrimary: "#FFFFFF",
+		onPrimary: "#1c1c1c",
 		onSecondary: "#2E2E2E",
 	},
 }
