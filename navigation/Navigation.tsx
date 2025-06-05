@@ -4,14 +4,18 @@
  * Handles all navigation related logic.
  */
 
-import { Button, StatusBar, StatusBarStyle } from "react-native"
+import { StatusBar, StatusBarStyle, useWindowDimensions } from "react-native"
 import { ThemeProvider, useThemeContext } from "../contexts/ThemeContext"
 import { NavigationContainer } from "@react-navigation/native"
 import LoginScreen from "../screens/LoginScreen"
 import { CanvasProvider } from "../providers/CanvasProvider"
 import CanvasScreen from "../screens/CanvasScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { createDrawerNavigator } from "@react-navigation/drawer"
+import {
+	createDrawerNavigator,
+	DrawerContentScrollView,
+	DrawerItemList,
+} from "@react-navigation/drawer"
 import Ionicon from "react-native-vector-icons/Ionicons"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import SettingsScreen from "../screens/SettingsScreen"
@@ -40,18 +44,30 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 const Drawer = createDrawerNavigator<DrawerParamList>()
 
 function DrawerNavigation() {
+	// Theming
 	const { theme } = useThemeContext()
+	const { width } = useWindowDimensions()
+	const isLargeScreen = width >= 1024
+
 	return (
 		<Drawer.Navigator
+			drawerContent={(props) => (
+				<DrawerContentScrollView
+					{...props}
+					contentContainerStyle={{
+						backgroundColor: theme.colors.background,
+						minHeight: "100%",
+						gap: 8,
+					}}
+				>
+					<DrawerItemList {...props} />
+				</DrawerContentScrollView>
+			)}
+			defaultStatus={isLargeScreen ? "open" : "closed"}
 			screenOptions={{
-				drawerType: "front",
-				drawerStyle: { width: 280 },
+				drawerType: isLargeScreen ? "permanent" : "front",
+				drawerStyle: { width: 264 },
 				headerShown: false,
-				drawerContentContainerStyle: {
-					backgroundColor: theme.colors.background,
-					height: "100%",
-					gap: 8,
-				},
 				drawerActiveBackgroundColor: theme.colors.secondary,
 				drawerInactiveBackgroundColor: theme.colors.primary,
 				drawerActiveTintColor: theme.colors.onSecondary,

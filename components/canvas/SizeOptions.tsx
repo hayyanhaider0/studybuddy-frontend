@@ -57,7 +57,7 @@ export default function SizeOptions() {
 			{/* Slider Component: Allows the user to slide and select a stroke width */}
 			<Slider
 				minimumValue={1}
-				maximumValue={30}
+				maximumValue={50}
 				step={1}
 				value={toolSettings[tool].size}
 				onValueChange={(v) =>
@@ -71,8 +71,8 @@ export default function SizeOptions() {
 				}
 				// Set the thumb and track color according to user interaction
 				// Secondary when being used, white when not
-				thumbTintColor={isActive ? theme.colors.secondary : "#fff"}
-				minimumTrackTintColor={isActive ? theme.colors.secondary : "#fff"}
+				thumbTintColor={toolSettings[tool].color}
+				minimumTrackTintColor={theme.colors.tertiary}
 				tapToSeek={true} // iOS only -- allow the user to tap and set a stroke width
 				// Track sliding state
 				onSlidingStart={() => setActive(true)}
@@ -80,9 +80,13 @@ export default function SizeOptions() {
 				// Used for showing the tooltip
 				// Check out the ToolTip function for more information
 				StepMarker={({ stepMarked, currentValue }) => {
-					if (!stepMarked || !isActive) return
-
-					return <ToolTip currentValue={currentValue} />
+					if (!stepMarked) return
+					// return <ToolTip currentValue={currentValue} />
+					return (
+						<View>
+							<Text>{currentValue}</Text>
+						</View>
+					)
 				}}
 				style={styles.slider}
 			/>

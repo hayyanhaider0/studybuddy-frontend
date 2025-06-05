@@ -69,6 +69,7 @@ export default function DrawingCanvas({ onLayout }: DrawingCanvasProps) {
 							{/* Render completed paths */}
 							{paths.map((p: PathType, i: number) => (
 								<Path
+									key={i}
 									path={p.path}
 									color={p.color}
 									style='stroke'

@@ -45,7 +45,7 @@ export function useCanvasGestures() {
 		.onUpdate((e) => {
 			const nextScale = savedScale.value * e.scale // Determine the next scale.
 			// Set the scale value if it is 0.7x or 4x the original scale.
-			scale.value = Math.min(Math.max(nextScale, 0.8), 3)
+			scale.value = Math.min(Math.max(nextScale, 0.8), 5)
 		})
 		.onEnd(() => {
 			savedScale.value = scale.value
@@ -129,10 +129,10 @@ export function useCanvasGestures() {
 		.runOnJS(true)
 
 	// panGesture limits
-	const minX = -600
-	const maxX = 600
-	const minY = -900
-	const maxY = 900
+	const minX = -1200
+	const maxX = 1200
+	const minY = -1800
+	const maxY = 1800
 
 	// PanGesture: Allows the user to pan using two fingers.
 	const panGesture = Gesture.Pan()

@@ -8,10 +8,10 @@ export const lightTheme = {
 	name: "light",
 	barStyle: "dark-content",
 	colors: {
-		primary: "#f5f5f5",
+		primary: "#E0E0E0",
 		secondary: "#FF6D00",
-		tertiary: "#DFDFDF",
-		surface: "#E0E0E0",
+		tertiary: "#D0D0D0",
+		surface: "#EFEFEF",
 		background: "#FFFFFF",
 		textPrimary: "#1C1C1C",
 		textSecondary: "#5F5F5F",

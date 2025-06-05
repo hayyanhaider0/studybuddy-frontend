@@ -13,7 +13,7 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 		// Toolbar styles
 		toolbarContainer: {
 			position: "absolute",
-			bottom: 8,
+			bottom: 16,
 			zIndex: 10,
 			width: "100%",
 			alignItems: "center",
@@ -63,7 +63,7 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 			borderRadius: 999,
 			height: 32,
 			width: 32,
-			borderWidth: 2,
+			borderWidth: 1,
 			borderColor: colors.onPrimary,
 			alignItems: "center",
 			justifyContent: "center",
@@ -83,16 +83,12 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 			height: 24,
 			borderRadius: 999,
 			borderColor: colors.onPrimary,
-			borderWidth: 2,
+			borderWidth: 1,
 			alignItems: "center",
 			justifyContent: "center",
 		},
 		slider: {
 			width: "100%",
-			borderWidth: 2,
-			backgroundColor: "#000",
-			borderRadius: 999,
-			borderColor: colors.onPrimary,
 			padding: 2,
 		},
 		tooltipContainer: {
@@ -116,5 +112,17 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 			gap: 16,
 			padding: 32,
 			borderRadius: 28,
+		},
+		// Zoom indicator styles
+		zoomIndicator: {
+			position: "absolute",
+			top: 32,
+			right: 16,
+			padding: 8,
+			backgroundColor: colors.primary,
+			borderRadius: 999,
+			alignItems: "center",
+			justifyContent: "center",
+			zIndex: 10,
 		},
 	})
