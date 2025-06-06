@@ -12,7 +12,7 @@ import { LayoutChangeEvent, Pressable, Text, TouchableOpacity, View } from "reac
 import Toolbar from "../components/canvas/Toolbar"
 import DrawingCanvas from "../components/canvas/DrawingCanvas"
 import { useTransformContext } from "../contexts/TransformContext"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { runOnJS, useAnimatedReaction } from "react-native-reanimated"
 import { AnimatePresence, MotiView } from "moti"
 import { getGlobalStyles } from "../styles/global"
@@ -33,17 +33,28 @@ function ZoomIndicator() {
 	const GlobalStyles = getGlobalStyles(theme.colors)
 	const styles = getCanvasStyles(theme.colors)
 
-	// Actual text
+	// State management
 	const [zoomText, setZoomText] = useState<string>("100%")
+	const [visible, setVisible] = useState<boolean>(false)
 
 	// Update the text live during scaling.
 	useAnimatedReaction(
 		() => scale.value,
 		(v) => {
-			runOnJS(setZoomText)((v * 100).toFixed(0) + "%")
+			const percent = (v * 100).toFixed(0) + "%"
+			runOnJS(setZoomText)(percent)
+			if (percent !== "100%") runOnJS(setVisible)(true)
 		},
 		[]
 	)
+
+	// Auto-hide after 3 seconds
+	useEffect(() => {
+		if (!visible) return
+
+		const timeout = setTimeout(() => setVisible(false), 2000)
+		return () => clearTimeout(timeout)
+	}, [zoomText, visible])
 
 	/**
 	 * resetTransformations Function
@@ -58,7 +69,7 @@ function ZoomIndicator() {
 
 	return (
 		<AnimatePresence>
-			{zoomText !== "100%" && (
+			{visible && (
 				<MotiView
 					from={{ opacity: 0 }}
 					animate={{ opacity: 1 }}

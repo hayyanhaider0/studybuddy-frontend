@@ -10,10 +10,12 @@ import { useThemeContext } from "../contexts/ThemeContext"
 import { SidebarNavProp } from "../types/global"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "../navigation/Navigation"
+import { useToolContext } from "../contexts/ToolContext"
 
 export function useCanvasActions() {
 	// Get values from contexts
 	const { setPaths } = useCanvasContext()
+	const { toolSettings } = useToolContext()
 
 	// Theming
 	const { toggleTheme } = useThemeContext()
@@ -66,7 +68,7 @@ export function useCanvasActions() {
 	 * @param y - y-coordinate of the eraser's center.
 	 */
 	const handleErase = (x: number, y: number) => {
-		const radius = 20 // Radius of the eraser
+		const radius = toolSettings["eraser"].size / 2 // Radius of the eraser
 
 		setPaths((prev) =>
 			prev.filter((pathData) => {
@@ -89,12 +91,12 @@ export function useCanvasActions() {
 				// 3. Sample points along the path and check distance
 
 				// Simple approach: check if eraser center is within stroke width of path bounds
-				const strokeRadius = pathData.size / 2
+				const strokeRadius = pathData.size
 				const expandedBounds = {
 					x: bounds.x - strokeRadius,
 					y: bounds.y - strokeRadius,
-					width: bounds.width + strokeRadius * 2,
-					height: bounds.height + strokeRadius * 2,
+					width: bounds.width + strokeRadius,
+					height: bounds.height + strokeRadius,
 				}
 
 				const eraserOverlaps =

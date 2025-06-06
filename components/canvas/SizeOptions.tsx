@@ -9,9 +9,10 @@
 import Slider from "@react-native-community/slider"
 import { useToolContext } from "../../contexts/ToolContext"
 import { Text, View } from "react-native"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getCanvasStyles } from "../../styles/canvas"
+import { MotiView } from "moti"
 
 /**
  * ToolTip Component
@@ -22,14 +23,14 @@ import { getCanvasStyles } from "../../styles/canvas"
  * @returns JSX Component
  */
 function ToolTip({ currentValue }: { currentValue: number }) {
+	const { tool, toolSettings } = useToolContext()
 	// Theming
 	const { theme } = useThemeContext()
-	const styles = getCanvasStyles(theme.colors)
+	const styles = getCanvasStyles(theme.colors, toolSettings[tool].color)
 
 	return (
 		<View style={styles.tooltipContainer}>
-			{/* Text inside the tool tip */}
-			<Text style={styles.tooltipText}>{currentValue === 0 ? 1 : currentValue}</Text>
+			<Text style={styles.tooltipText}>{currentValue}</Text>
 		</View>
 	)
 }
@@ -42,25 +43,24 @@ function ToolTip({ currentValue }: { currentValue: number }) {
  * @returns JSX Component
  */
 export default function SizeOptions() {
-	const [isActive, setActive] = useState(false) // State to track whether the user is sliding
 	const { tool, toolSettings, setToolSettings } = useToolContext() // Get tool context
-
+	const MINIMUM_VALUE = 1
+	const MAXIMUM_VALUE = 50
 	// Theming
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors, toolSettings[tool].color)
 
 	return (
 		<View style={styles.sliderContainer}>
-			{/* A circle that shows the current stroke color */}
-			<View style={styles.strokeIndicator} />
-
 			{/* Slider Component: Allows the user to slide and select a stroke width */}
+			<Text style={{ color: theme.colors.textPrimary, fontWeight: "bold" }}>{MINIMUM_VALUE}</Text>
 			<Slider
+				key={tool}
 				minimumValue={1}
 				maximumValue={50}
 				step={1}
 				value={toolSettings[tool].size}
-				onValueChange={(v) =>
+				onValueChange={(v) => {
 					setToolSettings((prev) => ({
 						...prev,
 						[tool]: {
@@ -68,28 +68,22 @@ export default function SizeOptions() {
 							size: v,
 						},
 					}))
-				}
+				}}
 				// Set the thumb and track color according to user interaction
 				// Secondary when being used, white when not
-				thumbTintColor={toolSettings[tool].color}
+				thumbTintColor='transparent'
 				minimumTrackTintColor={theme.colors.tertiary}
 				tapToSeek={true} // iOS only -- allow the user to tap and set a stroke width
-				// Track sliding state
-				onSlidingStart={() => setActive(true)}
-				onSlidingComplete={() => setActive(false)}
 				// Used for showing the tooltip
 				// Check out the ToolTip function for more information
-				StepMarker={({ stepMarked, currentValue }) => {
-					if (!stepMarked) return
-					// return <ToolTip currentValue={currentValue} />
-					return (
-						<View>
-							<Text>{currentValue}</Text>
-						</View>
-					)
+				StepMarker={({ stepMarked }) => {
+					if (stepMarked) {
+						return <ToolTip currentValue={toolSettings[tool].size} />
+					}
 				}}
 				style={styles.slider}
 			/>
+			<Text style={{ color: theme.colors.textPrimary, fontWeight: "bold" }}>{MAXIMUM_VALUE}</Text>
 		</View>
 	)
 }

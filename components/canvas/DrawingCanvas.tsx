@@ -5,20 +5,9 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import {
-	Blend,
-	BlendMode,
-	Canvas,
-	Group,
-	ImageShader,
-	Paint,
-	Path,
-	Shader,
-	useImage,
-	useImageAsTexture,
-} from "@shopify/react-native-skia"
+import { Canvas, Circle, Path } from "@shopify/react-native-skia"
 import { PathType } from "../../types/global"
-import Animated, { useAnimatedStyle } from "react-native-reanimated"
+import Animated, { useAnimatedStyle, useDerivedValue } from "react-native-reanimated"
 import { LayoutChangeEvent, View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import Background1 from "./Background1"
@@ -40,7 +29,7 @@ export default function DrawingCanvas({ onLayout }: DrawingCanvasProps) {
 	const { theme } = useThemeContext()
 
 	// Gesture.
-	const { translateGestures, drawingGestures } = useCanvasGestures()
+	const { translateGestures, drawingGestures, eraserPos } = useCanvasGestures()
 
 	// Animated style for transform.
 	const animatedStyle = useAnimatedStyle(() => ({
@@ -87,6 +76,16 @@ export default function DrawingCanvas({ onLayout }: DrawingCanvasProps) {
 								strokeCap={toolSettings[tool].strokeLinecap}
 								strokeJoin='round'
 							/>
+							{tool === "eraser" && (
+								<Circle
+									cx={eraserPos.x}
+									cy={eraserPos.y}
+									r={toolSettings["eraser"].size / 2}
+									color={theme.colors.onPrimary}
+									strokeWidth={1}
+									style='stroke'
+								/>
+							)}
 						</Canvas>
 					</Animated.View>
 				</GestureDetector>

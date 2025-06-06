@@ -16,16 +16,17 @@ import { useToolContext } from "../../contexts/ToolContext"
 import { getCanvasStyles } from "../../styles/canvas"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import Handle from "../common/Handle"
-import { useCanvasGestures } from "../../hooks/useCanvasGestures"
+import { ToolName, ToolSwatches } from "../../types/global"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function ColorPickerComponent() {
 	const {
 		tool,
-		setToolSettings,
+		toolSettings,
+		setSwatches,
+		swatchEditInfo,
 		colorPicker,
 		setColorPicker,
-		pickedColor,
-		setPickedColor,
 		activeMenu,
 	} = useToolContext() // Get tool context
 
@@ -33,10 +34,17 @@ export default function ColorPickerComponent() {
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
 
+	const saveSwatchesToStorage = async (t: ToolName, swatches: ToolSwatches) => {
+		try {
+			await AsyncStorage.setItem(`${t}_swatches`, JSON.stringify(swatches))
+		} catch (e) {
+			console.error("Failed to save swatches:", e)
+		}
+	}
 	return (
 		<AnimatePresence>
 			{/* Only shows when colorPicker is true, and pen menu is active */}
-			{colorPicker && activeMenu === "pen" && (
+			{colorPicker && activeMenu !== null && (
 				<GestureHandlerRootView>
 					<MotiView
 						// Animate up behind the toolbar
@@ -49,17 +57,19 @@ export default function ColorPickerComponent() {
 						<Handle close={() => setColorPicker(false)} />
 						{/* Actual ColorPicker Component */}
 						<ColorPicker
-							value={pickedColor} // Set the picked color
+							value={toolSettings[tool].color} // Set the picked color
 							style={{ gap: 16, width: 235 }}
 							onCompleteJS={(e) => {
-								setPickedColor(e.hex)
-								setToolSettings((prev) => ({
-									...prev,
-									[tool]: {
-										...prev[tool],
-										color: e.hex,
-									},
-								}))
+								if (swatchEditInfo) {
+									const { tool, index } = swatchEditInfo
+									setSwatches((prev) => {
+										const updated = [...prev[tool]]
+										updated[index] = e.hex
+										const newSwatches = { ...prev, [tool]: updated }
+										saveSwatchesToStorage(tool, newSwatches)
+										return newSwatches
+									})
+								}
 							}}
 						>
 							{/* Hex value of the color */}

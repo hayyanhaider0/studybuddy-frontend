@@ -11,12 +11,15 @@ import { useToolContext } from "../contexts/ToolContext"
 import { useCanvasActions } from "./useCanvasActions"
 import { useTransformContext } from "../contexts/TransformContext"
 import { Skia } from "@shopify/react-native-skia"
+import { useState } from "react"
 
 export function useCanvasGestures() {
 	// Get context values.
 	const { current, setCurrent, setPaths, layout } = useCanvasContext()
 	const { tool, toolSettings } = useToolContext()
 	const { offsetX, offsetY, translateX, translateY, scale, savedScale } = useTransformContext()
+
+	const [eraserPos, setEraserPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
 	// Current path.
 	let skPath = current
@@ -58,33 +61,39 @@ export function useCanvasGestures() {
 		.maxPointers(1)
 		.onBegin((e) => {
 			// Calculate local x and y values using canvas layout.
-			const { x: localX, y: localY } = screenToCanvasCoords(e.x, e.y)
+			const { x, y } = screenToCanvasCoords(e.x, e.y)
+
+			if (tool === "eraser") {
+				setEraserPos({ x: x, y: y })
+			}
 
 			// Check canvas bounds.
-			if (localX < 0 || localY < 0 || localX > layout.width || localY > layout.height) {
+			if (x < 0 || y < 0 || x > layout.width || y > layout.height) {
 				return
 			}
 
 			// Start creating a path object.
 			skPath = Skia.Path.Make()
-			skPath.moveTo(localX, localY)
+			skPath.moveTo(x, y)
 			setCurrent(skPath)
 		})
 		.onUpdate((e) => {
 			// Calculate local x and y values using canvas layout.
-			const { x: localX, y: localY } = screenToCanvasCoords(e.x, e.y)
+			const { x, y } = screenToCanvasCoords(e.x, e.y)
 			// Handle erase if the currently selected tool is the eraser.
 			if (tool === "eraser") {
-				runOnJS(handleErase)(localX, localY)
+				setEraserPos({ x: x, y: y })
+				runOnJS(handleErase)(x, y)
 				return
 			}
 
 			// Set the current path on the local x and y coordinates.
-			skPath.lineTo(localX, localY)
+			skPath.lineTo(x, y)
 			setCurrent(skPath.copy())
 		})
 		.onEnd(() => {
 			if (current) {
+				if (tool === "eraser") return
 				// Insert new path into the paths array and reset the current path string.
 				if (skPath) {
 					setPaths((prev) => [
@@ -105,6 +114,7 @@ export function useCanvasGestures() {
 	// Tap Gesture: Allows the user to tap and draw a dot.
 	const tapGesture = Gesture.Tap()
 		.onEnd((e) => {
+			if (tool === "eraser") return
 			// Calculate local x and y values using canvas layout.
 			const { x, y } = screenToCanvasCoords(e.x, e.y)
 
@@ -153,5 +163,6 @@ export function useCanvasGestures() {
 	return {
 		drawingGestures: Gesture.Exclusive(drawGesture, tapGesture),
 		translateGestures: Gesture.Simultaneous(panGesture, pinchGesture),
+		eraserPos,
 	}
 }

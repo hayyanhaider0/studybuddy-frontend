@@ -4,86 +4,52 @@
  * Contains colors used by the user and an RGB option.
  */
 
-import { Image, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 import { useToolContext } from "../../contexts/ToolContext"
 import { getCanvasStyles } from "../../styles/canvas"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { ToolName } from "../../types/global"
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"
+import tinycolor from "tinycolor2"
 
 export default function ColorOptions({ tool }: { tool: ToolName }) {
-	const { setToolSettings, colorPicker, setColorPicker } = useToolContext() // Get tool context
-
+	const { toolSettings, setToolSettings, swatches, setSwatchEditInfo, setColorPicker } =
+		useToolContext() // Get tool context
+	const activeColor = toolSettings[tool].color
+	const checkMarkColor = (color: string) => {
+		return tinycolor(color).isDark() ? "#fff" : "#000"
+	}
 	// Theming
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
 
-	const toolSwatches: Record<ToolName, string[]> = {
-		pen: [
-			// Red
-			"#dc2626",
-			// Orange
-			"#fb923c",
-			// Yellow
-			"#facc15",
-			// Blue
-			"#3b82f6",
-			// Green
-			"#10b981",
-			// Black
-			"#000000",
-		],
-		pencil: [
-			// Red
-			"#dc2626",
-			// Blue
-			"#3b82f6",
-			// Orange
-			"#fb923c",
-			// Yellow
-			"#facc15",
-			// Green
-			"#10b981",
-			// Black
-			"#000000",
-		],
-		highlighter: [
-			// Blue
-			"#3b82f6",
-			// Red
-			"#dc2626",
-			// Orange
-			"#fb923c",
-			// Yellow
-			"#facc15",
-			// Green
-			"#10b981",
-			// Black
-			"#000000",
-		],
-		eraser: [],
-		text: [],
-	}
-
-	const swatches = toolSwatches[tool]
-
 	return (
-		swatches.length > 0 && (
-			<View style={styles.colorContainer}>
-				{/* Map all the colors */}
-				{swatches.map((item, i) => (
-					<TouchableOpacity
-						key={i}
-						onPress={() => {
-							setToolSettings((prev) => ({ ...prev, [tool]: { ...prev[tool], color: item } }))
-							setColorPicker(false)
-						}}
-						onLongPress={() => setColorPicker(true)}
-						activeOpacity={0.5}
-					>
-						<View style={[styles.options, { backgroundColor: item }]} />
-					</TouchableOpacity>
-				))}
-			</View>
-		)
+		<View style={styles.colorContainer}>
+			{/* Map all the colors */}
+			{swatches[tool]?.map((c, i) => (
+				<TouchableOpacity
+					key={i}
+					// Change the color on press and close the color picker.
+					onPress={() => {
+						setToolSettings((prev) => ({ ...prev, [tool]: { ...prev[tool], color: c } }))
+						setColorPicker(false)
+					}}
+					// Open up a color wheel and let user edit the swatch.
+					onLongPress={() => {
+						setSwatchEditInfo({ tool: tool, index: i })
+						setColorPicker(true)
+					}}
+					activeOpacity={0.2}
+				>
+					{/* Color Swatch */}
+					<View style={[styles.options, { backgroundColor: c }]}>
+						{/* Render a check mark within the selected swatch. */}
+						{i === swatches[tool].findIndex((c: string) => c === activeColor) && (
+							<Icon name='check-bold' size={16} color={checkMarkColor(c)} />
+						)}
+					</View>
+				</TouchableOpacity>
+			))}
+		</View>
 	)
 }

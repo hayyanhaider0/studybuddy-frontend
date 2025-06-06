@@ -59,6 +59,10 @@ export type ToolType = {
 	action: () => void
 }
 
+export type ToolSwatches = {
+	[toolName in ToolName]: string[]
+}
+
 // Options
 export type OptionType = {
 	name: string
