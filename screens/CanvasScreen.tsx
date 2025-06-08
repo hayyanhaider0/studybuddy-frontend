@@ -19,6 +19,7 @@ import { getGlobalStyles } from "../styles/global"
 import { getCanvasStyles } from "../styles/canvas"
 import ChapterTab from "../components/chapterTab/ChapterTab"
 import Modal from "../components/common/Modal"
+import { useModalContext } from "../contexts/ModalContext"
 
 /**
  * ZoomIndicator Component
@@ -90,6 +91,7 @@ function ZoomIndicator() {
 export default function CanvasScreen() {
 	// Context Imports
 	const { setLayout } = useCanvasContext()
+	const { showModal } = useModalContext()
 	const { theme } = useThemeContext()
 
 	/**
@@ -112,12 +114,7 @@ export default function CanvasScreen() {
 				backgroundColor: theme.colors.surface,
 			}}
 		>
-			<Modal
-				title='Add a Chapter'
-				description='Add a new chapter'
-				placeholder='Insert Chapter Name...'
-				onPress={() => null}
-			/>
+			{showModal && <Modal />}
 			<ChapterTab />
 			<ZoomIndicator />
 			<Toolbar />

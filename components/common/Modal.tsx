@@ -4,20 +4,20 @@ import { getGlobalStyles } from "../../styles/global"
 import { TextInput } from "react-native-gesture-handler"
 import CustomTouchableOpacity from "./CustomTouchableOpacity"
 import { useModalContext } from "../../contexts/ModalContext"
-import { opacity } from "react-native-reanimated/lib/typescript/Colors"
 
-type ModalProps = {
-	title: string
-	description: string
-	placeholder: string
-	onPress: () => void
-}
-
-export default function Modal({ title, description, placeholder, onPress }: ModalProps) {
-	const { setShowModal } = useModalContext()
+export default function Modal() {
+	const { setShowModal, title, description, placeholder, input, setInput, buttonText, onPress } =
+		useModalContext()
 	// Theming
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
+
+	const handleConfirm = () => {
+		if (onPress) {
+			onPress(input)
+			setInput("")
+		}
+	}
 
 	return (
 		<View
@@ -39,15 +39,28 @@ export default function Modal({ title, description, placeholder, onPress }: Moda
 					justifyContent: "center",
 					padding: 16,
 					borderRadius: 24,
-					gap: 8,
+					gap: 16,
 				}}
 			>
 				<Text style={GlobalStyles.subheading}>{title}</Text>
 				<Text style={GlobalStyles.paragraph}>{description}</Text>
-				<TextInput placeholder={placeholder} style={{ backgroundColor: "red", width: "100%" }} />
-				<View style={{ flexDirection: "row", gap: 8 }}>
-					<CustomTouchableOpacity text='Cancel' onPress={() => setShowModal(false)} />
-					<CustomTouchableOpacity text='Add Chapter' onPress={() => onPress()} />
+				<TextInput
+					value={input}
+					onChangeText={setInput}
+					placeholder={placeholder}
+					placeholderTextColor={theme.colors.placeholder}
+					style={{
+						width: "100%",
+						borderRadius: 999,
+						paddingHorizontal: 16,
+						borderWidth: 1,
+						borderColor: theme.colors.placeholder,
+						color: theme.colors.textPrimary,
+					}}
+				/>
+				<View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
+					<CustomTouchableOpacity text='Close' onPress={() => setShowModal(false)} />
+					<CustomTouchableOpacity text={buttonText} onPress={handleConfirm} />
 				</View>
 			</View>
 		</View>

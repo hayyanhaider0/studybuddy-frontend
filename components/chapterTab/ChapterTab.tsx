@@ -1,4 +1,11 @@
-import { SafeAreaView, Text, TouchableOpacity, useWindowDimensions, View } from "react-native"
+import {
+	Button,
+	SafeAreaView,
+	Text,
+	TouchableOpacity,
+	useWindowDimensions,
+	View,
+} from "react-native"
 import { FlatList, Pressable } from "react-native-gesture-handler"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getGlobalStyles } from "../../styles/global"
@@ -7,9 +14,21 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useState } from "react"
 import { AnimatePresence, MotiView } from "moti"
 import { useCanvasActions } from "../../hooks/useCanvasActions"
+import { useModalContext } from "../../contexts/ModalContext"
 
 export default function ChapterTab() {
 	const [extended, setExtended] = useState(false)
+
+	const {
+		setShowModal,
+		setTitle,
+		setDescription,
+		setPlaceholder,
+		input,
+		setInput,
+		setButtonText,
+		setOnPress,
+	} = useModalContext()
 
 	const { toggleMenu } = useCanvasActions()
 
@@ -17,12 +36,13 @@ export default function ChapterTab() {
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
-	const chapters = [
+	const [chapters, setChapters] = useState([
 		{ id: 1, name: "Chapter 1" },
 		{ id: 2, name: "Chapter 2" },
 		{ id: 3, name: "Chapter 3" },
 		{ id: 4, name: "Chapter 4" },
-	]
+		{ id: 5, name: "Chapter 5" },
+	])
 
 	const selectChapter = (i: number) => {
 		console.log(`Selected Chapter: \n\tIndex: ${i}\n\tID: ${chapters[i].id}`)
@@ -33,7 +53,27 @@ export default function ChapterTab() {
 	}
 
 	const addNewChapter = () => {
-		console.log("Add new chapter")
+		console.log("addNewChapter called")
+		setTitle("Add a Chapter")
+		setDescription("Add a new chapter")
+		setPlaceholder("Insert chapter name...")
+		setButtonText("Add Chapter")
+
+		setOnPress(() => (inputValue: string) => {
+			setChapters((prev) => {
+				const newChapters = [
+					...prev,
+					{ id: prev.length + 1, name: inputValue.trim() || (prev.length + 1).toString() },
+				]
+				return newChapters
+			})
+			setShowModal(false)
+		})
+		setShowModal(true)
+	}
+
+	const deleteChapter = (id: number) => {
+		setChapters((prev) => prev.filter((chap) => id !== chap.id))
 	}
 
 	const prevPage = () => {
@@ -75,7 +115,7 @@ export default function ChapterTab() {
 				showsHorizontalScrollIndicator={false}
 				data={chapters}
 				renderItem={({ item, index }) => (
-					<Pressable
+					<TouchableOpacity
 						onPress={() => selectChapter(index)}
 						onLongPress={() => openChapterMenu(index)}
 						style={{
@@ -86,7 +126,7 @@ export default function ChapterTab() {
 						}}
 					>
 						<Text style={GlobalStyles.buttonText}>{item.name}</Text>
-					</Pressable>
+					</TouchableOpacity>
 				)}
 				ItemSeparatorComponent={() => <View style={{ width: 4 }} />}
 				ListFooterComponent={
