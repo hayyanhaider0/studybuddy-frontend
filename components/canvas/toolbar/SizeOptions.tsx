@@ -7,11 +7,11 @@
  */
 
 import Slider from "@react-native-community/slider"
-import { useToolContext } from "../../contexts/ToolContext"
+import { useToolContext } from "../../../contexts/ToolContext"
 import { Text, View } from "react-native"
 import { useRef, useState } from "react"
-import { useThemeContext } from "../../contexts/ThemeContext"
-import { getCanvasStyles } from "../../styles/canvas"
+import { useThemeContext } from "../../../contexts/ThemeContext"
+import { getCanvasStyles } from "../../../styles/canvas"
 import { MotiView } from "moti"
 
 /**

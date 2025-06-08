@@ -15,7 +15,7 @@ import { useToolContext } from "../contexts/ToolContext"
 export function useCanvasActions() {
 	// Get values from contexts
 	const { setPaths } = useCanvasContext()
-	const { toolSettings } = useToolContext()
+	const { toolSettings, collapsed, setCollapsed } = useToolContext()
 
 	// Theming
 	const { toggleTheme } = useThemeContext()
@@ -110,5 +110,9 @@ export function useCanvasActions() {
 		)
 	}
 
-	return { clearCanvas, undo, redo, toggleMenu, handleErase }
+	const collapseToolbar = () => {
+		setCollapsed(!collapsed)
+	}
+
+	return { clearCanvas, undo, redo, toggleMenu, handleErase, collapseToolbar }
 }

@@ -9,10 +9,10 @@
 import { AnimatePresence, MotiView } from "moti"
 import ColorOptions from "./ColorOptions"
 import SizeOptions from "./SizeOptions"
-import { useToolContext } from "../../contexts/ToolContext"
-import { getCanvasStyles } from "../../styles/canvas"
-import { useThemeContext } from "../../contexts/ThemeContext"
-import Handle from "../common/Handle"
+import { useToolContext } from "../../../contexts/ToolContext"
+import { getCanvasStyles } from "../../../styles/canvas"
+import { useThemeContext } from "../../../contexts/ThemeContext"
+import Handle from "../../common/Handle"
 
 export default function ToolMenu() {
 	const { tool, activeMenu, setActiveMenu, setColorPicker } = useToolContext() // Get tool context

@@ -8,8 +8,8 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { LayoutChangeEvent, Pressable, Text, TouchableOpacity, View } from "react-native"
-import Toolbar from "../components/canvas/Toolbar"
+import { LayoutChangeEvent, Pressable, Text } from "react-native"
+import Toolbar from "../components/canvas/toolbar/Toolbar"
 import DrawingCanvas from "../components/canvas/DrawingCanvas"
 import { useTransformContext } from "../contexts/TransformContext"
 import { useEffect, useState } from "react"
@@ -17,6 +17,8 @@ import { runOnJS, useAnimatedReaction } from "react-native-reanimated"
 import { AnimatePresence, MotiView } from "moti"
 import { getGlobalStyles } from "../styles/global"
 import { getCanvasStyles } from "../styles/canvas"
+import ChapterTab from "../components/chapterTab/ChapterTab"
+import Modal from "../components/common/Modal"
 
 /**
  * ZoomIndicator Component
@@ -110,11 +112,15 @@ export default function CanvasScreen() {
 				backgroundColor: theme.colors.surface,
 			}}
 		>
+			<Modal
+				title='Add a Chapter'
+				description='Add a new chapter'
+				placeholder='Insert Chapter Name...'
+				onPress={() => null}
+			/>
+			<ChapterTab />
 			<ZoomIndicator />
-			{/* Toolbar Component */}
 			<Toolbar />
-
-			{/* Drawing Canvas Component */}
 			<DrawingCanvas onLayout={handleCanvasLayout} />
 		</GestureHandlerRootView>
 	)

@@ -6,10 +6,10 @@
  */
 
 import { TouchableOpacity, View } from "react-native"
-import { useOptionDefinitions } from "../../utils/options"
+import { useOptionDefinitions } from "../../../utils/options"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
-import { useThemeContext } from "../../contexts/ThemeContext"
-import { getCanvasStyles } from "../../styles/canvas"
+import { useThemeContext } from "../../../contexts/ThemeContext"
+import { getCanvasStyles } from "../../../styles/canvas"
 
 export default function CanvasOptions() {
 	const options = useOptionDefinitions() // Options logic

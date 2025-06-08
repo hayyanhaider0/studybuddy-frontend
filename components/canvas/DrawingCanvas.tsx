@@ -8,7 +8,7 @@
 import { Canvas, Circle, Path } from "@shopify/react-native-skia"
 import { PathType } from "../../types/global"
 import Animated, { useAnimatedStyle, useDerivedValue } from "react-native-reanimated"
-import { LayoutChangeEvent, View } from "react-native"
+import { LayoutChangeEvent, useWindowDimensions, View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import Background1 from "./Background1"
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
@@ -27,6 +27,10 @@ export default function DrawingCanvas({ onLayout }: DrawingCanvasProps) {
 	const { tool, toolSettings } = useToolContext()
 	const { translateX, translateY, scale } = useTransformContext()
 	const { theme } = useThemeContext()
+
+	// const { width } = useWindowDimensions()
+	const CANVAS_WIDTH = 360
+	const CANVAS_HEIGHT = CANVAS_WIDTH * (16 / 9)
 
 	// Gesture.
 	const { translateGestures, drawingGestures, eraserPos } = useCanvasGestures()
@@ -49,7 +53,7 @@ export default function DrawingCanvas({ onLayout }: DrawingCanvasProps) {
 					<Animated.View
 						style={[{ flex: 1, alignItems: "center", justifyContent: "center" }, animatedStyle]}
 					>
-						<Canvas style={{ height: 640, width: 360 }} onLayout={onLayout}>
+						<Canvas style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH }} onLayout={onLayout}>
 							<Background1
 								width={layout.width}
 								height={layout.height}

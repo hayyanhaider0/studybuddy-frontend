@@ -12,11 +12,11 @@ import ColorPicker, {
 	Panel3,
 	Preview,
 } from "reanimated-color-picker"
-import { useToolContext } from "../../contexts/ToolContext"
-import { getCanvasStyles } from "../../styles/canvas"
-import { useThemeContext } from "../../contexts/ThemeContext"
-import Handle from "../common/Handle"
-import { ToolName, ToolSwatches } from "../../types/global"
+import { useToolContext } from "../../../contexts/ToolContext"
+import { getCanvasStyles } from "../../../styles/canvas"
+import { useThemeContext } from "../../../contexts/ThemeContext"
+import Handle from "../../common/Handle"
+import { ToolName, ToolSwatches } from "../../../types/global"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function ColorPickerComponent() {

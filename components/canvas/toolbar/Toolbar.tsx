@@ -1,8 +1,8 @@
 import { View } from "react-native"
 import ToolOptions from "./ToolOptions"
 import CanvasOptions from "./CanvasOptions"
-import { useThemeContext } from "../../contexts/ThemeContext"
-import { getCanvasStyles } from "../../styles/canvas"
+import { useThemeContext } from "../../../contexts/ThemeContext"
+import { getCanvasStyles } from "../../../styles/canvas"
 import ColorPickerComponent from "./ColorPickerComponent"
 import ToolMenu from "./ToolMenu"
 

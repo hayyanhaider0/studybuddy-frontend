@@ -5,17 +5,27 @@
  */
 
 import { TouchableOpacity, View } from "react-native"
-import { useToolContext } from "../../contexts/ToolContext"
-import { getCanvasStyles } from "../../styles/canvas"
-import { useThemeContext } from "../../contexts/ThemeContext"
-import { ToolName } from "../../types/global"
+import { useToolContext } from "../../../contexts/ToolContext"
+import { getCanvasStyles } from "../../../styles/canvas"
+import { useThemeContext } from "../../../contexts/ThemeContext"
+import { ToolName } from "../../../types/global"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import tinycolor from "tinycolor2"
 
 export default function ColorOptions({ tool }: { tool: ToolName }) {
 	const { toolSettings, setToolSettings, swatches, setSwatchEditInfo, setColorPicker } =
 		useToolContext() // Get tool context
-	const activeColor = toolSettings[tool].color
+
+	const activeColor = toolSettings[tool].color // Currently active color for the active tool.
+
+	/**
+	 * checkMarkColor Function
+	 *
+	 * Helper function to get the color of the check mark on the selected swatch.
+	 *
+	 * @param color - Color of the background
+	 * @returns White if background color is dark, black if light.
+	 */
 	const checkMarkColor = (color: string) => {
 		return tinycolor(color).isDark() ? "#fff" : "#000"
 	}

@@ -19,6 +19,12 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			color: colors.textPrimary,
 			textAlign: "center",
 		},
+		subheading: {
+			fontSize: 24,
+			fontWeight: "bold",
+			color: colors.textPrimary,
+			textAlign: "center",
+		},
 		paragraph: {
 			fontSize: 16,
 			color: colors.textPrimary,
@@ -32,7 +38,6 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			borderWidth: 1,
 			borderColor: colors.textSecondary,
 			alignItems: "center",
-			width: "100%",
 		},
 		buttonText: {
 			color: colors.onPrimary,

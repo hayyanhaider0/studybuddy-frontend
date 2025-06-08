@@ -4,7 +4,7 @@
  * Handles all navigation related logic.
  */
 
-import { StatusBar, StatusBarStyle, useWindowDimensions } from "react-native"
+import { StatusBar, StatusBarStyle, TouchableOpacity, useWindowDimensions } from "react-native"
 import { ThemeProvider, useThemeContext } from "../contexts/ThemeContext"
 import { NavigationContainer } from "@react-navigation/native"
 import LoginScreen from "../screens/LoginScreen"
@@ -14,11 +14,14 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import {
 	createDrawerNavigator,
 	DrawerContentScrollView,
+	DrawerItem,
 	DrawerItemList,
 } from "@react-navigation/drawer"
 import Ionicon from "react-native-vector-icons/Ionicons"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import SettingsScreen from "../screens/SettingsScreen"
+import { useState } from "react"
+import { ModalProvider } from "../contexts/ModalContext"
 
 export type RootStackParamList = {
 	// All available screens.
@@ -44,10 +47,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 const Drawer = createDrawerNavigator<DrawerParamList>()
 
 function DrawerNavigation() {
+	const [collapsed, setCollapsed] = useState(true)
+
 	// Theming
 	const { theme } = useThemeContext()
 	const { width } = useWindowDimensions()
+
 	const isLargeScreen = width >= 1024
+	const drawerWidth = isLargeScreen && collapsed ? 240 : 240
 
 	return (
 		<Drawer.Navigator
@@ -63,15 +70,16 @@ function DrawerNavigation() {
 					<DrawerItemList {...props} />
 				</DrawerContentScrollView>
 			)}
-			defaultStatus={isLargeScreen ? "open" : "closed"}
+			defaultStatus='closed'
 			screenOptions={{
-				drawerType: isLargeScreen ? "permanent" : "front",
-				drawerStyle: { width: 264 },
+				drawerType: "back",
+				drawerStyle: { width: drawerWidth },
 				headerShown: false,
 				drawerActiveBackgroundColor: theme.colors.secondary,
 				drawerInactiveBackgroundColor: theme.colors.primary,
 				drawerActiveTintColor: theme.colors.onSecondary,
 				drawerInactiveTintColor: theme.colors.onPrimary,
+				drawerItemStyle: { width: "100%" },
 			}}
 			initialRouteName='canvas'
 		>
@@ -161,7 +169,9 @@ function DrawerNavigation() {
 export default function Navigation() {
 	return (
 		<ThemeProvider>
-			<InnerNavigation />
+			<ModalProvider>
+				<InnerNavigation />
+			</ModalProvider>
 		</ThemeProvider>
 	)
 }

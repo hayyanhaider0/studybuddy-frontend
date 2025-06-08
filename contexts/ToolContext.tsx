@@ -6,16 +6,12 @@
  */
 
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { ToolName } from "../types/global"
+import { ToolName, ToolSwatches } from "../types/global"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 /////////////////////////////////////////
 // TYPES
 /////////////////////////////////////////
-export type ToolSwatches = {
-	[toolName in ToolName]: string[]
-}
-
 type ToolSettings = {
 	color: string
 	size: number
@@ -36,6 +32,11 @@ type ToolContextType = {
 	toolSettings: ToolSettingsMap
 	// Setter for all tools settings.
 	setToolSettings: React.Dispatch<React.SetStateAction<ToolSettingsMap>>
+
+	// Value for whether the toolbar is collapsed or not.
+	collapsed: boolean
+	// Setter for the toolbar's collapse state.
+	setCollapsed: React.Dispatch<React.SetStateAction<boolean>>
 
 	// Swatches for all tools.
 	swatches: ToolSwatches
@@ -93,6 +94,8 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 	// Tool and tool setting values.
 	const [tool, setTool] = useState<ToolName>("pen")
 	const [toolSettings, setToolSettings] = useState<ToolSettingsMap>(DEFAULT_TOOL_SETTINGS)
+	// Toolbar collapsed values.
+	const [collapsed, setCollapsed] = useState(false)
 	// Swatch related state.
 	const [swatches, setSwatches] = useState<ToolSwatches>(DEFAULT_SWATCH_MAP)
 	const [swatchEditInfo, setSwatchEditInfo] = useState<{ tool: ToolName; index: number } | null>(
@@ -129,6 +132,8 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 				setTool,
 				toolSettings,
 				setToolSettings,
+				collapsed,
+				setCollapsed,
 				swatches,
 				setSwatches,
 				swatchEditInfo,

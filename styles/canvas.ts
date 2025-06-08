@@ -30,6 +30,7 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 		},
 		toolOptions: {
 			flexDirection: "row",
+			justifyContent: "space-around",
 			gap: 16,
 			paddingTop: 16,
 			overflow: "hidden",
@@ -101,7 +102,7 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 		// Zoom indicator styles
 		zoomIndicator: {
 			position: "absolute",
-			top: 32,
+			top: 104,
 			right: 16,
 			padding: 8,
 			backgroundColor: colors.primary,
