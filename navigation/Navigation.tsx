@@ -10,6 +10,7 @@ import { NavigationContainer } from "@react-navigation/native"
 import LoginScreen from "../screens/LoginScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import DrawerNavigation from "./DrawerNavigation"
+import Modal from "../components/common/Modal"
 
 export type RootStackParamList = {
 	// All available screens.
@@ -21,14 +22,6 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export default function Navigation() {
-	return (
-		<ThemeProvider>
-			<InnerNavigation />
-		</ThemeProvider>
-	)
-}
-
-function InnerNavigation() {
 	// Theming
 	const { theme } = useThemeContext()
 
@@ -44,6 +37,7 @@ function InnerNavigation() {
 					<Stack.Screen name='login' component={LoginScreen} />
 					<Stack.Screen name='main' component={DrawerNavigation} />
 				</Stack.Navigator>
+				<Modal />
 			</NavigationContainer>
 		</>
 	)

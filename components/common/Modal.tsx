@@ -11,6 +11,8 @@ import { TextInput } from "react-native-gesture-handler"
 import { useModal } from "../../contexts/ModalContext"
 import CustomPressable from "./CustomPressable"
 import { AnimatePresence, MotiView } from "moti"
+import { useFocusEffect, useNavigationState } from "@react-navigation/native"
+import { useEffect, useRef } from "react"
 
 export default function Modal() {
 	const {
@@ -35,6 +37,18 @@ export default function Modal() {
 		}
 	}
 
+	const routeCount = useNavigationState((state) => state.routes.length)
+	const prevRouteCount = useRef(routeCount)
+
+	useEffect(() => {
+		if (!showModal) return
+
+		if (routeCount !== prevRouteCount.current) {
+			setShowModal(false)
+			prevRouteCount.current = routeCount
+		}
+	}, [routeCount])
+
 	return (
 		<AnimatePresence>
 			{showModal && (
@@ -43,30 +57,14 @@ export default function Modal() {
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
 					transition={{ type: "spring", damping: 18 }}
-					style={{
-						position: "absolute",
-						zIndex: 100,
-						width: "100%",
-						height: "100%",
-						alignItems: "center",
-						justifyContent: "center",
-						backgroundColor: "#000000" + "90",
-					}}
+					style={GlobalStyles.dimBackground}
 				>
 					<MotiView
 						from={{ translateY: 256, opacity: 0 }}
 						animate={{ translateY: 0, opacity: 1 }}
 						exit={{ translateY: 128, opacity: 0 }}
 						transition={{ type: "spring", damping: 18 }}
-						style={{
-							width: 292,
-							backgroundColor: theme.colors.primary,
-							alignItems: "center",
-							justifyContent: "center",
-							padding: 16,
-							borderRadius: 28,
-							gap: 16,
-						}}
+						style={GlobalStyles.modalContainer}
 					>
 						<Text style={GlobalStyles.subheading}>{title}</Text>
 						<Text style={GlobalStyles.paragraph}>{description}</Text>
@@ -75,13 +73,7 @@ export default function Modal() {
 							onChangeText={setInput}
 							placeholder={placeholder}
 							placeholderTextColor={theme.colors.placeholder}
-							style={{
-								width: "100%",
-								borderRadius: 999,
-								paddingHorizontal: 16,
-								backgroundColor: theme.colors.secondary,
-								color: theme.colors.textPrimary,
-							}}
+							style={GlobalStyles.input}
 						/>
 						<View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
 							<CustomPressable title='Close' onPress={() => setShowModal(false)} />

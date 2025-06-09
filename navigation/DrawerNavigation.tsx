@@ -127,8 +127,8 @@ export default function DrawerNavigation() {
 											}}
 										>
 											{/* Render drawer icon and title */}
-											{drawerIcon?.({ color: theme.accent.onAccent, size: 24, focused: true })}
-											<Text style={{ color: theme.accent.onAccent, paddingVertical: 20 }}>
+											{drawerIcon?.({ color: theme.colors.textPrimary, size: 24, focused: true })}
+											<Text style={{ color: theme.colors.textPrimary, paddingVertical: 20 }}>
 												{label}
 											</Text>
 										</View>

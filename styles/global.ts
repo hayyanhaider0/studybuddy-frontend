@@ -52,11 +52,36 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			fontSize: 16,
 			fontWeight: "bold",
 		},
+		input: {
+			width: "100%",
+			borderRadius: 999,
+			paddingHorizontal: 16,
+			backgroundColor: colors.secondary,
+			color: colors.textPrimary,
+		},
 		link: {
 			color: colors.link,
 			textDecorationLine: "underline",
 		},
 		error: {
 			color: colors.error,
+		},
+		modalContainer: {
+			width: 292,
+			backgroundColor: colors.primary,
+			alignItems: "center",
+			justifyContent: "center",
+			padding: 16,
+			borderRadius: 28,
+			gap: 16,
+		},
+		dimBackground: {
+			position: "absolute",
+			zIndex: 100,
+			width: "100%",
+			height: "100%",
+			alignItems: "center",
+			justifyContent: "center",
+			backgroundColor: "#000000" + "90",
 		},
 	})

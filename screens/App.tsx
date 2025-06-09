@@ -13,14 +13,12 @@ import Navigation from "../navigation/Navigation"
 
 export default function App() {
 	return (
-		<GestureHandlerRootView style={{ flex: 1 }}>
-			<ThemeProvider>
+		<ThemeProvider>
+			<GestureHandlerRootView style={{ flex: 1 }}>
 				<ModalProvider>
 					<Navigation />
-					{/* Allows modal to always be on top */}
-					<Modal />
 				</ModalProvider>
-			</ThemeProvider>
-		</GestureHandlerRootView>
+			</GestureHandlerRootView>
+		</ThemeProvider>
 	)
 }
