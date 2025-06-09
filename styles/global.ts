@@ -36,7 +36,15 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			paddingHorizontal: 24,
 			borderRadius: 999,
 			borderWidth: 1,
-			borderColor: colors.textSecondary,
+			borderColor: colors.secondary,
+			alignItems: "center",
+		},
+		secondaryButton: {
+			paddingVertical: 12,
+			paddingHorizontal: 24,
+			borderRadius: 999,
+			borderWidth: 1,
+			borderColor: colors.secondary,
 			alignItems: "center",
 		},
 		buttonText: {

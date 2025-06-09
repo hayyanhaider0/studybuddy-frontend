@@ -4,21 +4,31 @@
  * Includes name, barStyle (top of the phone), and colors for the dark theme.
  */
 
+import { ColorValue } from "react-native"
+
 export const darkTheme = {
 	name: "dark",
 	barStyle: "light-content",
 	colors: {
-		primary: "#2E2E2E",
-		secondary: "#FF8C00",
-		tertiary: "#1E1E1E",
-		surface: "#303134",
-		background: "#202124",
-		textPrimary: "#E8EAED",
-		textSecondary: "#9AA0A6",
-		error: "#F28B82",
-		placeholder: "#9AA0A6",
-		link: "#8AB4F8",
+		primary: "#1A1A1A", // darkest
+		secondary: "#2A2A2A",
+		tertiary: "#3A3A3A",
+		surface: "#333333", // brightest surface
+		background: "#121212",
+		textPrimary: "#E0E0E0",
+		textSecondary: "#A0A0A0",
+		error: "#F28B82", // still red for visibility
+		placeholder: "#7A7A7A",
+		link: "#8AB4F8", // only colored
 		onPrimary: "#FFFFFF",
-		onSecondary: "#202124",
+		onSecondary: "#121212",
+	},
+	accent: {
+		gradient: {
+			colors: ["#11998e", "#38ef7d"] as readonly [ColorValue, ColorValue, ...ColorValue[]],
+			start: { x: 0, y: 0 },
+			end: { x: 1, y: 1 },
+		},
+		onAccent: "#ffffff",
 	},
 }

@@ -8,7 +8,7 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { LayoutChangeEvent, Pressable, Text } from "react-native"
+import { LayoutChangeEvent, Pressable, Text, View } from "react-native"
 import Toolbar from "../components/canvas/toolbar/Toolbar"
 import DrawingCanvas from "../components/canvas/DrawingCanvas"
 import { useTransformContext } from "../contexts/TransformContext"
@@ -19,7 +19,6 @@ import { getGlobalStyles } from "../styles/global"
 import { getCanvasStyles } from "../styles/canvas"
 import ChapterTab from "../components/chapterTab/ChapterTab"
 import Modal from "../components/common/Modal"
-import { useModalContext } from "../contexts/ModalContext"
 
 /**
  * ZoomIndicator Component
@@ -91,7 +90,6 @@ function ZoomIndicator() {
 export default function CanvasScreen() {
 	// Context Imports
 	const { setLayout } = useCanvasContext()
-	const { showModal } = useModalContext()
 	const { theme } = useThemeContext()
 
 	/**
@@ -108,17 +106,16 @@ export default function CanvasScreen() {
 	}
 
 	return (
-		<GestureHandlerRootView
+		<View
 			style={{
 				flex: 1,
 				backgroundColor: theme.colors.surface,
 			}}
 		>
-			{showModal && <Modal />}
 			<ChapterTab />
 			<ZoomIndicator />
 			<Toolbar />
 			<DrawingCanvas onLayout={handleCanvasLayout} />
-		</GestureHandlerRootView>
+		</View>
 	)
 }

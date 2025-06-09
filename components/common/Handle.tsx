@@ -27,8 +27,8 @@ export default function Handle({ close }: { close: () => void }) {
 					style={{
 						width: "100%",
 						height: 8,
-						backgroundColor: theme.colors.primary,
-						opacity: 0.5,
+						backgroundColor: theme.colors.onPrimary,
+						opacity: 0.3,
 						borderRadius: 999,
 					}}
 				/>

@@ -14,21 +14,14 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useState } from "react"
 import { AnimatePresence, MotiView } from "moti"
 import { useCanvasActions } from "../../hooks/useCanvasActions"
-import { useModalContext } from "../../contexts/ModalContext"
+import { useModal } from "../../contexts/ModalContext"
+import { LinearGradient } from "expo-linear-gradient"
 
 export default function ChapterTab() {
 	const [extended, setExtended] = useState(false)
 
-	const {
-		setShowModal,
-		setTitle,
-		setDescription,
-		setPlaceholder,
-		input,
-		setInput,
-		setButtonText,
-		setOnPress,
-	} = useModalContext()
+	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
+		useModal() // Get modal context
 
 	const { toggleMenu } = useCanvasActions()
 
@@ -72,10 +65,6 @@ export default function ChapterTab() {
 		setShowModal(true)
 	}
 
-	const deleteChapter = (id: number) => {
-		setChapters((prev) => prev.filter((chap) => id !== chap.id))
-	}
-
 	const prevPage = () => {
 		console.log("Previous page")
 	}
@@ -97,7 +86,7 @@ export default function ChapterTab() {
 			style={{
 				position: "relative",
 				width: "100%",
-				backgroundColor: theme.colors.background,
+				backgroundColor: theme.colors.primary,
 				padding: 8,
 				paddingTop: 48,
 				flexDirection: "row",
@@ -115,33 +104,37 @@ export default function ChapterTab() {
 				showsHorizontalScrollIndicator={false}
 				data={chapters}
 				renderItem={({ item, index }) => (
-					<TouchableOpacity
+					<Pressable
 						onPress={() => selectChapter(index)}
 						onLongPress={() => openChapterMenu(index)}
-						style={{
-							backgroundColor: theme.colors.primary,
-							borderRadius: 999,
-							padding: 16,
-							paddingVertical: 8,
-						}}
+						style={({ pressed }) => [
+							{
+								backgroundColor: pressed ? theme.colors.tertiary : theme.colors.secondary,
+								borderRadius: 999,
+								padding: 16,
+								paddingVertical: 8,
+							},
+						]}
 					>
 						<Text style={GlobalStyles.buttonText}>{item.name}</Text>
-					</TouchableOpacity>
+					</Pressable>
 				)}
 				ItemSeparatorComponent={() => <View style={{ width: 4 }} />}
 				ListFooterComponent={
-					<TouchableOpacity
+					<Pressable
 						onPress={addNewChapter}
-						style={{
-							backgroundColor: theme.colors.primary,
-							borderRadius: 999,
-							padding: 6,
-							aspectRatio: 1 / 1,
-							marginLeft: 4,
-						}}
+						style={({ pressed }) => [
+							{
+								backgroundColor: pressed ? theme.colors.tertiary : theme.colors.secondary,
+								borderRadius: 999,
+								padding: 6,
+								aspectRatio: 1 / 1,
+								marginLeft: 4,
+							},
+						]}
 					>
 						<MaterialC name='plus' size={24} color={theme.colors.onPrimary} />
-					</TouchableOpacity>
+					</Pressable>
 				}
 			/>
 
@@ -165,7 +158,7 @@ export default function ChapterTab() {
 							top: 88,
 							right: 0,
 							flexDirection: "row",
-							backgroundColor: theme.colors.background,
+							backgroundColor: theme.colors.primary,
 							borderBottomStartRadius: 26,
 							paddingVertical: 8,
 							marginLeft: 8,
@@ -189,9 +182,16 @@ export default function ChapterTab() {
 								borderRadius: 999,
 								justifyContent: "center",
 								alignItems: "center",
+								overflow: "hidden",
 							}}
 						>
-							<MaterialC name='plus' size={32} color={theme.colors.onSecondary} />
+							<LinearGradient
+								colors={theme.accent.gradient.colors}
+								start={theme.accent.gradient.start}
+								end={theme.accent.gradient.end}
+							>
+								<MaterialC name='plus' size={32} color={theme.accent.onAccent} />
+							</LinearGradient>
 						</TouchableOpacity>
 						<TouchableOpacity
 							onPress={nextPage}

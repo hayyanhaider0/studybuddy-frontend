@@ -14,6 +14,7 @@ import { NavProp } from "../../types/global"
 import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
+import CustomPressable from "../common/CustomPressable"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -120,7 +121,7 @@ export default function Login({ setForm }: LoginProps) {
 			</TouchableOpacity>
 
 			{/* Login Button: Form submission button */}
-			<CustomTouchableOpacity text='Login' onPress={handleSubmit(handleLogin)} />
+			<CustomPressable type='primary' title='Login' onPress={handleSubmit(handleLogin)} />
 
 			{/* Switch Form Button: Allows user to switch to the sign up component */}
 			<View style={{ flexDirection: "row", justifyContent: "center" }}>

@@ -56,7 +56,7 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 			flexDirection: "row",
 			flexWrap: "wrap",
 			gap: 8,
-			backgroundColor: colors.tertiary,
+			backgroundColor: colors.secondary,
 			padding: 8,
 			borderRadius: 16,
 		},
@@ -66,6 +66,7 @@ export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
 			width: 32,
 			alignItems: "center",
 			justifyContent: "center",
+			color: colors.onSecondary,
 		},
 		// Slider styles
 		sliderContainer: {

@@ -21,24 +21,18 @@ export default function ThirdPartyLogin() {
 
 			{/* Google login */}
 			<TouchableOpacity
-				style={[
-					GlobalStyles.button,
-					{ backgroundColor: "#fff", flexDirection: "row", justifyContent: "center" },
-				]}
+				style={[GlobalStyles.secondaryButton, { flexDirection: "row", justifyContent: "center" }]}
 			>
 				<Image
 					source={{ uri: "https://developers.google.com/identity/images/g-logo.png" }}
 					style={{ width: 20, height: 20, marginRight: 8 }}
 				/>
-				<Text>Sign in with Google</Text>
+				<Text style={GlobalStyles.buttonText}>Sign in with Google</Text>
 			</TouchableOpacity>
 
 			{/* Facebook login */}
 			<TouchableOpacity
-				style={[
-					GlobalStyles.button,
-					{ backgroundColor: "#1877f2", flexDirection: "row", justifyContent: "center" },
-				]}
+				style={[GlobalStyles.secondaryButton, { flexDirection: "row", justifyContent: "center" }]}
 			>
 				<Image
 					source={{
@@ -46,15 +40,12 @@ export default function ThirdPartyLogin() {
 					}}
 					style={{ width: 20, height: 20, marginRight: 8 }}
 				/>
-				<Text style={{ color: "#fff" }}>Sign in with Facebook</Text>
+				<Text style={GlobalStyles.buttonText}>Sign in with Facebook</Text>
 			</TouchableOpacity>
 
 			{/* Apple login */}
 			<TouchableOpacity
-				style={[
-					GlobalStyles.button,
-					{ backgroundColor: "#fff", flexDirection: "row", justifyContent: "center" },
-				]}
+				style={[GlobalStyles.secondaryButton, { flexDirection: "row", justifyContent: "center" }]}
 			>
 				<Image
 					source={{
@@ -62,7 +53,7 @@ export default function ThirdPartyLogin() {
 					}}
 					style={{ width: 20, height: 20, marginRight: 8, resizeMode: "contain" }}
 				/>
-				<Text>Sign in with Apple</Text>
+				<Text style={GlobalStyles.buttonText}>Sign in with Apple</Text>
 			</TouchableOpacity>
 		</View>
 	)
