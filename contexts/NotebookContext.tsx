@@ -1,0 +1,94 @@
+/**
+ * NotebookContext
+ *
+ * Provides shared values for notebook related tasks -- pagination, chapter and notebook
+ * selection.
+ */
+
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { Canvas, Chapter, Notebook } from "../types/notebook"
+
+// Types for the notebook context.
+type NotebookContextType = {
+	// Global list of all of the user's notebooks.
+	notebooks: Notebook[]
+	// Setter for the user's list of notebooks.
+	setNotebooks: React.Dispatch<React.SetStateAction<Notebook[]>>
+	// Current notebook that the user is on -- or null if there is no notebook.
+	notebook: Notebook | null
+	// Setter for the current notebook.
+	setNotebook: React.Dispatch<React.SetStateAction<Notebook | null>>
+	// Current chapter that the user is on -- or undefined if there is no notebook.
+	chapter: Chapter | undefined
+	// Setter for the current chapter.
+	setChapter: React.Dispatch<React.SetStateAction<Chapter | undefined>>
+	// Current canvas the user is on -- or undefined if there is no notebook.
+	canvas: Canvas | undefined
+	// Setter for the current canvas.
+	setCanvas: React.Dispatch<React.SetStateAction<Canvas | undefined>>
+}
+
+// React context for pagination, chapter and notebook selection.
+const NotebookContext = createContext<NotebookContextType | null>(null)
+
+/**
+ * NotebookProvider Component
+ *
+ * Wraps children components, providing notebook state values via context.
+ *
+ * @param children - JSX Components that require NotebookProvider shared values.
+ */
+export const NotebookProvider = ({ children }: { children: ReactNode }) => {
+	// Pagination, chapter and notebook state values.
+	const [notebooks, setNotebooks] = useState<Notebook[]>([])
+	const [notebook, setNotebook] = useState<Notebook | null>(null)
+	const [chapter, setChapter] = useState<Chapter | undefined>(notebook?.chapters[0])
+	const [canvas, setCanvas] = useState<Canvas | undefined>(chapter?.canvases[0])
+
+	useEffect(() => {
+		if (notebook && notebook.chapters.length > 0) {
+			setChapter(notebook.chapters[0])
+		} else {
+			setChapter(undefined)
+		}
+	}, [notebook])
+
+	useEffect(() => {
+		if (chapter && chapter.canvases.length > 0) {
+			setCanvas(chapter.canvases[0])
+		} else {
+			setCanvas(undefined)
+		}
+	}, [chapter])
+
+	return (
+		<NotebookContext.Provider
+			value={{
+				notebooks,
+				setNotebooks,
+				notebook,
+				setNotebook,
+				chapter,
+				setChapter,
+				canvas,
+				setCanvas,
+			}}
+		>
+			{children}
+		</NotebookContext.Provider>
+	)
+}
+
+/**
+ * useNotebook Hook
+ *
+ * Custom hook to provide shared notebook context values.
+ *
+ * @throws Error if used outside NotebookProvider.
+ * @returns NotebookContext shared values.
+ */
+export const useNotebook = () => {
+	const ctx = useContext(NotebookContext)
+	if (!ctx) throw new Error("useNotebook must be used within a NotebookProvider")
+	return ctx
+}

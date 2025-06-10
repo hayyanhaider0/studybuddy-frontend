@@ -5,7 +5,23 @@
  * chapters, and canvases.
  */
 
-import { Chapter, Notebook } from "../types/notebook"
+import { Canvas, Chapter, Notebook } from "../types/notebook"
+import uuid from "react-native-uuid"
+
+const createCanvas = (): Canvas => ({
+	id: uuid.v4() as string,
+	paths: [],
+	createdAt: Date.now(),
+	updatedAt: Date.now(),
+})
+
+const createChapter = (title: string): Chapter => ({
+	id: uuid.v4() as string,
+	title: title || "My Chapter",
+	canvases: [createCanvas()],
+	createdAt: Date.now(),
+	updatedAt: Date.now(),
+})
 
 /**
  * Creates a new notebook.
@@ -14,8 +30,8 @@ import { Chapter, Notebook } from "../types/notebook"
  * @returns An empty named notebook.
  */
 export const createNotebook = (title: string): Notebook => ({
-	id: crypto.randomUUID(),
-	title,
+	id: uuid.v4() as string,
+	title: title || "My Notebook",
 	chapters: [],
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
@@ -28,18 +44,8 @@ export const createNotebook = (title: string): Notebook => ({
  * @param title - Name of the new chapter.
  * @returns An empty chapter with an array of canvases inside the selected notebook.
  */
-export const addChapter = (notebook: Notebook, title: string): Notebook => {
-	const newChapter: Chapter = {
-		id: crypto.randomUUID(),
-		title,
-		canvases: [],
-		createdAt: Date.now(),
-		updatedAt: Date.now(),
-	}
-
-	return {
-		...notebook,
-		chapters: [...notebook.chapters, newChapter],
-		updatedAt: Date.now(),
-	}
-}
+export const addChapter = (notebook: Notebook, title: string): Notebook => ({
+	...notebook,
+	chapters: [...notebook.chapters, createChapter(title)],
+	updatedAt: Date.now(),
+})

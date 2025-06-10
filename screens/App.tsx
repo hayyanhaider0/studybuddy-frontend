@@ -10,15 +10,18 @@ import Modal from "../components/common/Modal"
 import { ModalProvider } from "../contexts/ModalContext"
 import { ThemeProvider } from "../contexts/ThemeContext"
 import Navigation from "../navigation/Navigation"
+import { NotebookProvider } from "../contexts/NotebookContext"
 
 export default function App() {
 	return (
 		<ThemeProvider>
-			<GestureHandlerRootView style={{ flex: 1 }}>
-				<ModalProvider>
-					<Navigation />
-				</ModalProvider>
-			</GestureHandlerRootView>
+			<NotebookProvider>
+				<GestureHandlerRootView style={{ flex: 1 }}>
+					<ModalProvider>
+						<Navigation />
+					</ModalProvider>
+				</GestureHandlerRootView>
+			</NotebookProvider>
 		</ThemeProvider>
 	)
 }

@@ -16,9 +16,16 @@ import { AnimatePresence, MotiView } from "moti"
 import { useCanvasActions } from "../../hooks/useCanvasActions"
 import { useModal } from "../../contexts/ModalContext"
 import { LinearGradient } from "expo-linear-gradient"
+import { useNotebook } from "../../contexts/NotebookContext"
+import { addChapter } from "../../utils/notebook"
+import { getChapterTabStyles } from "../../styles/chapterTab"
+import Pagination from "./Pagination"
+import ChapterList from "./ChapterList"
 
 export default function ChapterTab() {
 	const [extended, setExtended] = useState(false)
+	const { notebooks, notebook, chapter } = useNotebook()
+	const chapters = notebooks.length > 0 ? notebooks[0].chapters : []
 
 	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
 		useModal() // Get modal context
@@ -27,118 +34,39 @@ export default function ChapterTab() {
 
 	// Theming
 	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
-
-	const [chapters, setChapters] = useState([
-		{ id: 1, name: "Chapter 1" },
-		{ id: 2, name: "Chapter 2" },
-		{ id: 3, name: "Chapter 3" },
-		{ id: 4, name: "Chapter 4" },
-		{ id: 5, name: "Chapter 5" },
-	])
-
-	const selectChapter = (i: number) => {
-		console.log(`Selected Chapter: \n\tIndex: ${i}\n\tID: ${chapters[i].id}`)
-	}
-
-	const openChapterMenu = (i: number) => {
-		console.log(`Open menu for chapter with ID: ${chapters[i].id}`)
-	}
+	const styles = getChapterTabStyles(theme.colors)
 
 	const addNewChapter = () => {
-		console.log("addNewChapter called")
-		setTitle("Add a Chapter")
-		setDescription("Add a new chapter")
-		setPlaceholder("Insert chapter name...")
-		setButtonText("Add Chapter")
-
-		setOnPress(() => (inputValue: string) => {
-			setChapters((prev) => {
-				const newChapters = [
-					...prev,
-					{ id: prev.length + 1, name: inputValue.trim() || (prev.length + 1).toString() },
-				]
-				return newChapters
-			})
-			setShowModal(false)
-		})
-		setShowModal(true)
+		// setTitle("Add a Chapter")
+		// setDescription("Add a new chapter")
+		// setPlaceholder("Insert chapter name...")
+		// setButtonText("Add Chapter")
+		// setOnPress(() => (inputValue: string) => {
+		// 	setChapters((prev) => {
+		// 		const newChapters = [
+		// 			...prev,
+		// 			{ id: prev.length + 1, name: inputValue.trim() || (prev.length + 1).toString() },
+		// 		]
+		// 		return newChapters
+		// 	})
+		// 	setShowModal(false)
+		// })
+		// setShowModal(true)
 	}
 
-	const prevPage = () => {
-		console.log("Previous page")
-	}
-
-	const newPage = () => {
-		console.log("New page")
-	}
-
-	const nextPage = () => {
-		console.log("Next page")
-	}
-
-	const togglePageOptions = () => {
+	const togglePaginationOptions = () => {
 		setExtended(!extended)
 	}
 
 	return (
-		<View
-			style={{
-				position: "relative",
-				width: "100%",
-				backgroundColor: theme.colors.primary,
-				padding: 8,
-				paddingTop: 48,
-				flexDirection: "row",
-				justifyContent: "center",
-				alignItems: "center",
-				zIndex: 10,
-			}}
-		>
+		<View style={styles.container}>
 			<TouchableOpacity onPress={toggleMenu} style={{ padding: 8 }}>
 				<MaterialC name='dots-horizontal' size={24} color={theme.colors.onPrimary} />
 			</TouchableOpacity>
 
-			<FlatList
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				data={chapters}
-				renderItem={({ item, index }) => (
-					<Pressable
-						onPress={() => selectChapter(index)}
-						onLongPress={() => openChapterMenu(index)}
-						style={({ pressed }) => [
-							{
-								backgroundColor: pressed ? theme.colors.tertiary : theme.colors.secondary,
-								borderRadius: 999,
-								padding: 16,
-								paddingVertical: 8,
-							},
-						]}
-					>
-						<Text style={GlobalStyles.buttonText}>{item.name}</Text>
-					</Pressable>
-				)}
-				ItemSeparatorComponent={() => <View style={{ width: 4 }} />}
-				ListFooterComponent={
-					<Pressable
-						onPress={addNewChapter}
-						style={({ pressed }) => [
-							{
-								backgroundColor: pressed ? theme.colors.tertiary : theme.colors.secondary,
-								borderRadius: 999,
-								padding: 6,
-								aspectRatio: 1 / 1,
-								marginLeft: 4,
-							},
-						]}
-					>
-						<MaterialC name='plus' size={24} color={theme.colors.onPrimary} />
-					</Pressable>
-				}
-			/>
+			<ChapterList />
 
-			<TouchableOpacity onPress={togglePageOptions} style={{ paddingLeft: 4 }}>
+			<TouchableOpacity onPress={togglePaginationOptions} style={{ paddingLeft: 4 }}>
 				<MotiView
 					animate={{ rotateZ: extended ? "180deg" : "0deg" }}
 					transition={{ type: "timing", duration: 100 }}
@@ -146,66 +74,8 @@ export default function ChapterTab() {
 					<MaterialC name='chevron-double-down' size={32} color={theme.colors.onPrimary} />
 				</MotiView>
 			</TouchableOpacity>
-			<AnimatePresence>
-				{extended && (
-					<MotiView
-						from={{ translateY: -36, opacity: 0 }}
-						animate={{ translateY: 0, opacity: 1 }}
-						exit={{ translateY: -36, opacity: 0 }}
-						transition={{ duration: 100, type: "timing" }}
-						style={{
-							position: "absolute",
-							top: 88,
-							right: 0,
-							flexDirection: "row",
-							backgroundColor: theme.colors.primary,
-							borderBottomStartRadius: 26,
-							paddingVertical: 8,
-							marginLeft: 8,
-							zIndex: -10,
-						}}
-					>
-						<TouchableOpacity
-							onPress={prevPage}
-							style={{
-								justifyContent: "center",
-								alignItems: "center",
-								paddingHorizontal: 8,
-							}}
-						>
-							<Material name='arrow-back-ios-new' size={24} color={theme.colors.textPrimary} />
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={newPage}
-							style={{
-								backgroundColor: theme.colors.secondary,
-								borderRadius: 999,
-								justifyContent: "center",
-								alignItems: "center",
-								overflow: "hidden",
-							}}
-						>
-							<LinearGradient
-								colors={theme.accent.gradient.colors}
-								start={theme.accent.gradient.start}
-								end={theme.accent.gradient.end}
-							>
-								<MaterialC name='plus' size={32} color={theme.accent.onAccent} />
-							</LinearGradient>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={nextPage}
-							style={{
-								justifyContent: "center",
-								alignItems: "center",
-								paddingHorizontal: 8,
-							}}
-						>
-							<Material name='arrow-forward-ios' size={24} color={theme.colors.textPrimary} />
-						</TouchableOpacity>
-					</MotiView>
-				)}
-			</AnimatePresence>
+
+			<Pagination extended={extended} />
 		</View>
 	)
 }

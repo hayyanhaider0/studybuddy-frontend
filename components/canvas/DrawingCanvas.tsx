@@ -16,6 +16,7 @@ import { useToolContext } from "../../contexts/ToolContext"
 import { useTransformContext } from "../../contexts/TransformContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { useCanvasGestures } from "../../hooks/useCanvasGestures"
+import { useNotebook } from "../../contexts/NotebookContext"
 
 interface DrawingCanvasProps {
 	onLayout: (e: LayoutChangeEvent) => void
@@ -24,11 +25,11 @@ interface DrawingCanvasProps {
 export default function DrawingCanvas({ onLayout }: DrawingCanvasProps) {
 	// Context Imports.
 	const { paths, current, layout } = useCanvasContext()
+	const { canvas } = useNotebook()
 	const { tool, toolSettings } = useToolContext()
 	const { translateX, translateY, scale } = useTransformContext()
 	const { theme } = useThemeContext()
 
-	// const { width } = useWindowDimensions()
 	const CANVAS_WIDTH = 360
 	const CANVAS_HEIGHT = CANVAS_WIDTH * (16 / 9)
 

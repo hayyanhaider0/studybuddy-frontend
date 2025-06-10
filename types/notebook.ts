@@ -8,8 +8,7 @@ import { PathType } from "./global"
 
 export type Canvas = {
 	id: string
-	title: string
-	paths: PathType
+	paths: PathType[]
 	createdAt: number
 	updatedAt: number
 }

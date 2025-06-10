@@ -5,10 +5,10 @@
  * Now simplified to focus on layout and coordination between components.
  */
 
-import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { LayoutChangeEvent, Pressable, Text, View } from "react-native"
+import { LayoutChangeEvent, Pressable, Text, TouchableOpacity, View } from "react-native"
 import Toolbar from "../components/canvas/toolbar/Toolbar"
 import DrawingCanvas from "../components/canvas/DrawingCanvas"
 import { useTransformContext } from "../contexts/TransformContext"
@@ -18,7 +18,10 @@ import { AnimatePresence, MotiView } from "moti"
 import { getGlobalStyles } from "../styles/global"
 import { getCanvasStyles } from "../styles/canvas"
 import ChapterTab from "../components/chapterTab/ChapterTab"
-import Modal from "../components/common/Modal"
+import { useNotebook } from "../contexts/NotebookContext"
+import Material from "react-native-vector-icons/MaterialCommunityIcons"
+import { useModal } from "../contexts/ModalContext"
+import useNotebooks from "../hooks/useNotebooks"
 
 /**
  * ZoomIndicator Component
@@ -90,7 +93,14 @@ function ZoomIndicator() {
 export default function CanvasScreen() {
 	// Context Imports
 	const { setLayout } = useCanvasContext()
+	const { notebooks, chapter } = useNotebook()
+	const { addNotebook } = useNotebooks()
+	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
+		useModal()
+
+	// Theming
 	const { theme } = useThemeContext()
+	const GlobalStyles = getGlobalStyles(theme.colors)
 
 	/**
 	 * handleCanvasLayout Function
@@ -105,6 +115,15 @@ export default function CanvasScreen() {
 		setLayout({ x, y, width, height })
 	}
 
+	const handleCreateNotebook = () => {
+		setTitle("Add a New Notebook")
+		setDescription("Give your new notebook a name!")
+		setPlaceholder("Type the name of your new notebook...")
+		setButtonText("Add Notebook")
+		setOnPress(() => (input: string) => addNotebook(input))
+		setShowModal(true)
+	}
+
 	return (
 		<View
 			style={{
@@ -115,7 +134,27 @@ export default function CanvasScreen() {
 			<ChapterTab />
 			<ZoomIndicator />
 			<Toolbar />
-			<DrawingCanvas onLayout={handleCanvasLayout} />
+			{notebooks.length > 0 ? (
+				<FlatList
+					data={chapter?.canvases}
+					keyExtractor={(item) => item.id}
+					renderItem={({ item }) => <DrawingCanvas key={item.id} onLayout={handleCanvasLayout} />}
+				/>
+			) : (
+				<TouchableOpacity
+					onPress={handleCreateNotebook}
+					style={{
+						flex: 1,
+						justifyContent: "center",
+						alignItems: "center",
+						paddingBottom: 112,
+						gap: 16,
+					}}
+				>
+					<Material name='plus-circle-outline' size={64} color={theme.colors.onPrimary} />
+					<Text style={GlobalStyles.paragraph}>Add a new notebook, and start studying now!</Text>
+				</TouchableOpacity>
+			)}
 		</View>
 	)
 }

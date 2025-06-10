@@ -8,7 +8,7 @@
 import { StyleSheet } from "react-native"
 import { ThemeColors } from "../types/global"
 
-export const getCanvasStyles = (colors: ThemeColors, stroke?: string) =>
+export const getCanvasStyles = (colors: ThemeColors) =>
 	StyleSheet.create({
 		// Toolbar styles
 		toolbarContainer: {

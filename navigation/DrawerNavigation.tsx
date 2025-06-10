@@ -19,6 +19,7 @@ import LoginScreen from "../screens/LoginScreen"
 import SettingsScreen from "../screens/SettingsScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
+import NotebooksScreen from "../screens/NotebooksScreen"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -38,12 +39,12 @@ const Drawer = createDrawerNavigator<DrawerParamList>()
 export default function DrawerNavigation() {
 	// All screens except Canvas and Settings.
 	const screens = [
-		{ name: "notebooks", title: "Notebooks", icon: "notebook" },
-		{ name: "aiNotes", title: "AI Notes", icon: "robot" },
-		{ name: "flashcards", title: "Flashcards", icon: "cards-outline" },
-		{ name: "quizzes", title: "Quizzes", icon: "clipboard-list-outline" },
-		{ name: "exams", title: "Exams", icon: "file-document-outline" },
-		{ name: "account", title: "Account", icon: "account-circle-outline" },
+		{ name: "notebooks", title: "Notebooks", icon: "notebook", component: NotebooksScreen },
+		{ name: "aiNotes", title: "AI Notes", icon: "robot", component: LoginScreen },
+		{ name: "flashcards", title: "Flashcards", icon: "cards-outline", component: LoginScreen },
+		{ name: "quizzes", title: "Quizzes", icon: "clipboard-list-outline", component: LoginScreen },
+		{ name: "exams", title: "Exams", icon: "file-document-outline", component: LoginScreen },
+		{ name: "account", title: "Account", icon: "account-circle-outline", component: LoginScreen },
 	]
 
 	const DRAWER_WIDTH = 252 // Set the drawer width
@@ -160,7 +161,7 @@ export default function DrawerNavigation() {
 				<Drawer.Screen
 					key={i}
 					name={s.name as keyof DrawerParamList}
-					component={LoginScreen}
+					component={s.component}
 					options={{
 						drawerIcon: ({ color, size }) => <Material name={s.icon} size={size} color={color} />,
 						title: s.title,

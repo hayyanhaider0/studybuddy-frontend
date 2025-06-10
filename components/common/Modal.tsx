@@ -34,11 +34,12 @@ export default function Modal() {
 		if (onPress) {
 			onPress(input)
 			setInput("")
+			setShowModal(false)
 		}
 	}
 
-	const routeCount = useNavigationState((state) => state.routes.length)
-	const prevRouteCount = useRef(routeCount)
+	const routeCount = useNavigationState((state) => state?.routes?.length ?? 0)
+	const prevRouteCount = useRef<number>(routeCount)
 
 	useEffect(() => {
 		if (!showModal) return
@@ -47,7 +48,7 @@ export default function Modal() {
 			setShowModal(false)
 			prevRouteCount.current = routeCount
 		}
-	}, [routeCount])
+	}, [showModal, routeCount])
 
 	return (
 		<AnimatePresence>
