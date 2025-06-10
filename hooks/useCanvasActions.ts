@@ -9,16 +9,14 @@ import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { SidebarNavProp } from "../types/global"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
-import { DrawerParamList } from "../navigation/Navigation"
 import { useToolContext } from "../contexts/ToolContext"
+import { DrawerParamList } from "../navigation/DrawerNavigation"
+import { useNotebook } from "../contexts/NotebookContext"
 
 export function useCanvasActions() {
 	// Get values from contexts
 	const { setPaths } = useCanvasContext()
 	const { toolSettings, collapsed, setCollapsed } = useToolContext()
-
-	// Theming
-	const { toggleTheme } = useThemeContext()
 
 	// Navigation for the sidebar menu.
 	const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
@@ -30,7 +28,9 @@ export function useCanvasActions() {
 	 *
 	 * @returns an empty paths array.
 	 */
-	const clearCanvas = () => setPaths([])
+	const clearCanvas = (canvasId: string) => {
+		setPaths((prev) => ({ ...prev, [canvasId]: [] }))
+	}
 
 	/**
 	 * undo function
@@ -39,7 +39,15 @@ export function useCanvasActions() {
 	 *
 	 * @returns Paths array except the last path.
 	 */
-	const undo = () => setPaths((prev) => prev.slice(0, -1))
+	const undo = (canvasId: string) => {
+		setPaths((prev) => {
+			const canvasPaths = prev[canvasId] || []
+			return {
+				...prev,
+				[canvasId as string]: canvasPaths.slice(0, -1),
+			}
+		})
+	}
 
 	/**
 	 * redo function
@@ -48,7 +56,7 @@ export function useCanvasActions() {
 	 *
 	 * @returns Paths array and the popped stack path(s).
 	 */
-	const redo = () => console.log("redo")
+	const redo = (canvasId: string) => console.log("redo")
 
 	/**
 	 * toggleMenu function
@@ -67,30 +75,25 @@ export function useCanvasActions() {
 	 * @param x - x-coordinate of the eraser's center.
 	 * @param y - y-coordinate of the eraser's center.
 	 */
-	const handleErase = (x: number, y: number) => {
-		const radius = toolSettings["eraser"].size / 2 // Radius of the eraser
+	const handleErase = (canvasId: string, x: number, y: number) => {
+		const radius = toolSettings["eraser"].size / 2
 
-		setPaths((prev) =>
-			prev.filter((pathData) => {
-				// Get the path bounds to do a quick check first
+		setPaths((prev) => {
+			const canvasPaths = prev[canvasId] || []
+
+			const updatedPaths = canvasPaths.filter((pathData) => {
 				const bounds = pathData.path.getBounds()
 
-				// Quick bounds check - if eraser is nowhere near the path, skip detailed check
+				// Quick bounds check
 				if (
 					x + radius < bounds.x ||
 					x - radius > bounds.x + bounds.width ||
 					y + radius < bounds.y ||
 					y - radius > bounds.y + bounds.height
 				) {
-					return true // Keep the path
+					return true
 				}
 
-				// For more accurate checking, you could:
-				// 1. Check if the eraser point is near the path stroke
-				// 2. Use path.contains() if the path is filled
-				// 3. Sample points along the path and check distance
-
-				// Simple approach: check if eraser center is within stroke width of path bounds
 				const strokeRadius = pathData.size
 				const expandedBounds = {
 					x: bounds.x - strokeRadius,
@@ -105,9 +108,14 @@ export function useCanvasActions() {
 					y >= expandedBounds.y &&
 					y <= expandedBounds.y + expandedBounds.height
 
-				return !eraserOverlaps // Return false to remove (erase) the path
+				return !eraserOverlaps
 			})
-		)
+
+			return {
+				...prev,
+				[canvasId]: updatedPaths,
+			}
+		})
 	}
 
 	const collapseToolbar = () => {

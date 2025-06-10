@@ -22,7 +22,7 @@ import { useNotebook } from "../contexts/NotebookContext"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import { useModal } from "../contexts/ModalContext"
 import useNotebooks from "../hooks/useNotebooks"
-import { useCanvasGestures } from "../hooks/useCanvasGestures"
+import { useCanvasTranslateGestures } from "../hooks/useCanvasTranslateGestures"
 
 /**
  * ZoomIndicator Component
@@ -94,12 +94,12 @@ function ZoomIndicator() {
 export default function CanvasScreen() {
 	// Context Imports
 	const { setLayout } = useCanvasContext()
-	const { notebooks, chapter } = useNotebook()
+	const { notebooks, chapter, activeCanvasId } = useNotebook()
 	const { addNotebook } = useNotebooks()
 	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
 		useModal()
 	const { scale, translateX, translateY } = useTransformContext()
-	const { translateGestures } = useCanvasGestures()
+	const translateGestures = useCanvasTranslateGestures()
 
 	// Theming
 	const { theme } = useThemeContext()

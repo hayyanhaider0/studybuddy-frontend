@@ -23,6 +23,11 @@ type ToolSettingsMap = {
 	[toolName in ToolName]: ToolSettings
 }
 
+type EraserPosType = {
+	x: number
+	y: number
+}
+
 type ToolContextType = {
 	// Currently selected tool.
 	tool: ToolName
@@ -32,6 +37,10 @@ type ToolContextType = {
 	toolSettings: ToolSettingsMap
 	// Setter for all tools settings.
 	setToolSettings: React.Dispatch<React.SetStateAction<ToolSettingsMap>>
+	// Position of the eraser.
+	eraserPos: EraserPosType
+	// Setter for the position of the eraser.
+	setEraserPos: React.Dispatch<React.SetStateAction<EraserPosType>>
 
 	// Value for whether the toolbar is collapsed or not.
 	collapsed: boolean
@@ -96,6 +105,7 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 	// Tool and tool setting values.
 	const [tool, setTool] = useState<ToolName>("pen")
 	const [toolSettings, setToolSettings] = useState<ToolSettingsMap>(DEFAULT_TOOL_SETTINGS)
+	const [eraserPos, setEraserPos] = useState<EraserPosType>({ x: 0, y: 0 })
 	// Toolbar collapsed values.
 	const [collapsed, setCollapsed] = useState(false)
 	// Swatch related state.
@@ -134,6 +144,8 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 				setTool,
 				toolSettings,
 				setToolSettings,
+				eraserPos,
+				setEraserPos,
 				collapsed,
 				setCollapsed,
 				swatches,

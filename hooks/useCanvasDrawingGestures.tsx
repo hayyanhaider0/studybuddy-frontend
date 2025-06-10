@@ -1,28 +1,19 @@
-/**
- * useCanvasGestures Hook
- *
- * Contains all logic related to canvas gestures -- tapping, pinching, panning, etc.
- */
-
+import { Skia } from "@shopify/react-native-skia"
+import { useState } from "react"
 import { Gesture } from "react-native-gesture-handler"
 import { runOnJS } from "react-native-reanimated"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useToolContext } from "../contexts/ToolContext"
-import { useCanvasActions } from "./useCanvasActions"
 import { useTransformContext } from "../contexts/TransformContext"
-import { Skia } from "@shopify/react-native-skia"
-import { useState } from "react"
+import { useCanvasActions } from "./useCanvasActions"
 
-export function useCanvasGestures() {
+export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
 	const { current, setCurrent, setPaths, layout } = useCanvasContext()
-	const { tool, toolSettings } = useToolContext()
-	const { offsetX, offsetY, translateX, translateY, scale, savedScale } = useTransformContext()
-
-	const [eraserPos, setEraserPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+	const { tool, toolSettings, setEraserPos } = useToolContext()
 
 	// Current path.
-	let skPath = current
+	let skPath = current[canvasId] ?? Skia.Path.Make()
 
 	// Handle erase logic from useCanvasActions hook.
 	const { handleErase } = useCanvasActions()
@@ -42,18 +33,6 @@ export function useCanvasGestures() {
 	const screenToCanvasCoords = (screenX: number, screenY: number) => {
 		return { x: screenX - layout.x, y: screenY - layout.y }
 	}
-
-	// Pinch gesture: Allows user to zoom in or out within a defined limit.
-	const pinchGesture = Gesture.Pinch()
-		.onUpdate((e) => {
-			const nextScale = savedScale.value * e.scale // Determine the next scale.
-			// Set the scale value if it is 0.7x or 4x the original scale.
-			scale.value = Math.min(Math.max(nextScale, 0.8), 5)
-		})
-		.onEnd(() => {
-			savedScale.value = scale.value
-		})
-		.runOnJS(true)
 
 	// Draw gesture: Allows user to draw on the canvas.
 	const drawGesture = Gesture.Pan()
@@ -76,7 +55,10 @@ export function useCanvasGestures() {
 			// Start creating a path object.
 			skPath = Skia.Path.Make()
 			skPath.moveTo(x, y)
-			setCurrent(skPath)
+			setCurrent((prev) => ({
+				...prev,
+				[canvasId]: skPath,
+			}))
 		})
 		.onUpdate((e) => {
 			// Calculate local x and y values using canvas layout.
@@ -84,29 +66,39 @@ export function useCanvasGestures() {
 			// Handle erase if the currently selected tool is the eraser.
 			if (tool === "eraser") {
 				setEraserPos({ x: x, y: y })
-				runOnJS(handleErase)(x, y)
+				runOnJS(handleErase)(canvasId, x, y)
 				return
 			}
 
 			// Set the current path on the local x and y coordinates.
 			skPath.lineTo(x, y)
-			setCurrent(skPath.copy())
+			setCurrent((prev) => ({
+				...prev,
+				[canvasId]: skPath,
+			}))
 		})
 		.onEnd(() => {
 			if (current) {
 				if (tool === "eraser") return
 				// Insert new path into the paths array and reset the current path string.
 				if (skPath) {
-					setPaths((prev) => [
+					setPaths((prev) => ({
 						...prev,
-						{
-							path: skPath.copy(),
-							color: toolSettings[tool].color,
-							size: toolSettings[tool].size,
-							strokeLinecap: toolSettings[tool].strokeLinecap || "round",
-						},
-					])
-					setCurrent(Skia.Path.Make())
+						[canvasId]: [
+							...(prev[canvasId] || []),
+							{
+								path: skPath.copy(),
+								color: toolSettings[tool].color,
+								size: toolSettings[tool].size,
+								strokeLinecap: toolSettings[tool].strokeLinecap || "round",
+							},
+						],
+					}))
+
+					setCurrent((prev) => ({
+						...prev,
+						[canvasId]: Skia.Path.Make(),
+					}))
 				}
 			}
 		})
@@ -128,43 +120,20 @@ export function useCanvasGestures() {
 			skPath.lineTo(x + 0.1, y + 0.1)
 
 			// Update the paths array.
-			setPaths((prev) => [
+			setPaths((prev) => ({
 				...prev,
-				{
-					path: skPath.copy(),
-					color: toolSettings[tool].color,
-					size: toolSettings[tool].size,
-					strokeLinecap: toolSettings[tool].strokeLinecap || "round",
-				},
-			])
+				[canvasId]: [
+					...(prev[canvasId] || []),
+					{
+						path: skPath.copy(),
+						color: toolSettings[tool].color,
+						size: toolSettings[tool].size,
+						strokeLinecap: toolSettings[tool].strokeLinecap || "round",
+					},
+				],
+			}))
 		})
 		.runOnJS(true)
 
-	// panGesture limits
-	const minX = -1200
-	const maxX = 1200
-	const minY = -1800
-	const maxY = 1800
-
-	// PanGesture: Allows the user to pan using two fingers.
-	const panGesture = Gesture.Pan()
-		.minPointers(2)
-		.maxPointers(2)
-		.onStart(() => {
-			// Set the offsets according the translate values.
-			offsetX.value = translateX.value
-			offsetY.value = translateY.value
-		})
-		.onUpdate((e) => {
-			// Translate accordingly within panGesture limits.
-			translateX.value = Math.max(minX, Math.min(offsetX.value + e.translationX, maxX))
-			translateY.value = Math.max(minY, Math.min(offsetY.value + e.translationY, maxY))
-		})
-		.runOnJS(true)
-
-	return {
-		drawingGestures: Gesture.Exclusive(drawGesture, tapGesture),
-		translateGestures: Gesture.Simultaneous(panGesture, pinchGesture),
-		eraserPos,
-	}
+	return Gesture.Exclusive(drawGesture, tapGesture)
 }

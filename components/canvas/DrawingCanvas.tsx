@@ -7,16 +7,15 @@
 
 import { Canvas, Circle, Path, Text as SkiaText, useFont } from "@shopify/react-native-skia"
 import { PathType } from "../../types/global"
-import Animated, { useAnimatedStyle } from "react-native-reanimated"
 import { LayoutChangeEvent, View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import Background1 from "./Background1"
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
 import { useToolContext } from "../../contexts/ToolContext"
-import { useTransformContext } from "../../contexts/TransformContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { useCanvasGestures } from "../../hooks/useCanvasGestures"
 import { useNotebook } from "../../contexts/NotebookContext"
+import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
+import { useEffect } from "react"
 
 interface DrawingCanvasProps {
 	canvasId: string
@@ -26,20 +25,25 @@ interface DrawingCanvasProps {
 export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps) {
 	// Context Imports.
 	const { paths, current, layout } = useCanvasContext()
-	const { chapter } = useNotebook()
-	const { tool, toolSettings } = useToolContext()
-	const { translateX, translateY, scale } = useTransformContext()
+	const { chapter, setActiveCanvasId } = useNotebook()
+	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 
 	const canvas = chapter?.canvases.find((c) => c.id === canvasId)
+	const canvasPaths = paths[canvasId] || []
+	const currentPath = current[canvasId] || ""
 
 	const CANVAS_WIDTH = 360
 	const CANVAS_HEIGHT = CANVAS_WIDTH * (16 / 9)
 
 	// Gesture.
-	const { drawingGestures, eraserPos } = useCanvasGestures()
+	const drawingGestures = useCanvasDrawingGestures(canvasId)
 
 	const Roboto = useFont(require("../../assets/fonts/Roboto-Bold.ttf"), 16)
+
+	useEffect(() => {
+		setActiveCanvasId(canvasId)
+	}, [canvasId])
 
 	return (
 		<View style={{ flex: 1 }}>
@@ -60,7 +64,7 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 						color={theme.colors.textPrimary}
 					/>
 					{/* Render completed paths */}
-					{paths.map((p: PathType, i: number) => (
+					{canvasPaths.map((p: PathType, i: number) => (
 						<Path
 							key={i}
 							path={p.path}
@@ -73,7 +77,7 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 					))}
 					{/* Render current path being drawn */}
 					<Path
-						path={current}
+						path={currentPath}
 						color={toolSettings[tool].color}
 						style='stroke'
 						strokeWidth={toolSettings[tool].size}

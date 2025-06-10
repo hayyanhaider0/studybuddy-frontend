@@ -21,15 +21,23 @@ type LayoutType = {
 	height: number
 }
 
+type CanvasPathMap = {
+	[id: string]: PathType[]
+}
+
+type CurrentPathMap = {
+	[id: string]: SkPath
+}
+
 export type CanvasContextType = {
 	// Array of drawing paths captured on the canvas.
-	paths: PathType[]
+	paths: CanvasPathMap
 	// Setter for updating the paths array.
-	setPaths: React.Dispatch<React.SetStateAction<PathType[]>>
+	setPaths: React.Dispatch<React.SetStateAction<CanvasPathMap>>
 	// Current path being drawn.
-	current: SkPath
+	current: CurrentPathMap
 	// Setter for the current path being drawn.
-	setCurrent: React.Dispatch<React.SetStateAction<SkPath>>
+	setCurrent: React.Dispatch<React.SetStateAction<CurrentPathMap>>
 	// Current layout rectangle of the canvas.
 	layout: LayoutType
 	// Setter for updating canvas dimensions.
@@ -48,15 +56,9 @@ export const CanvasStateContext = createContext<CanvasContextType | null>(null)
  */
 export function CanvasStateProvider({ children }: { children: ReactNode }) {
 	// Stored drawing paths on the canvas.
-	const [paths, setPaths] = useState<PathType[]>([])
+	const [paths, setPaths] = useState<CanvasPathMap>({})
 	// Path currently being drawn.
-	const [current, setCurrent] = useState<SkPath>(() => {
-		if (Skia && Skia.Path) {
-			return Skia.Path.Make()
-		}
-		console.warn("Skia not available - using placeholder path")
-		return {} as SkPath
-	})
+	const [current, setCurrent] = useState<CurrentPathMap>({})
 	// Canvas coordinates and layout dimensions.
 	const [layout, setLayout] = useState<LayoutType>({ x: 0, y: 0, width: 0, height: 0 })
 

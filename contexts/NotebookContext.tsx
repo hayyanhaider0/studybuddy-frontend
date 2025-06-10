@@ -26,6 +26,10 @@ type NotebookContextType = {
 	canvas: Canvas | undefined
 	// Setter for the current canvas.
 	setCanvas: React.Dispatch<React.SetStateAction<Canvas | undefined>>
+	// Tracks the active canvas ID.
+	activeCanvasId: string | null
+	// Setter for the active canvas ID.
+	setActiveCanvasId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 // React context for pagination, chapter and notebook selection.
@@ -44,6 +48,7 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	const [notebook, setNotebook] = useState<Notebook | null>(null)
 	const [chapter, setChapter] = useState<Chapter | undefined>(notebook?.chapters[0])
 	const [canvas, setCanvas] = useState<Canvas | undefined>(chapter?.canvases[0])
+	const [activeCanvasId, setActiveCanvasId] = useState<string | null>(null)
 
 	useEffect(() => {
 		if (!chapter) return
@@ -61,6 +66,8 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 				setChapter,
 				canvas,
 				setCanvas,
+				activeCanvasId,
+				setActiveCanvasId,
 			}}
 		>
 			{children}
