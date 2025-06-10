@@ -10,6 +10,21 @@ import { ThemeColors } from "../types/global"
 
 export const getCanvasStyles = (colors: ThemeColors) =>
 	StyleSheet.create({
+		// The surface sits behind canvases
+		surface: {
+			flex: 1,
+			backgroundColor: colors.surface,
+			alignItems: "center",
+			justifyContent: "center",
+		},
+		// Add notebook button shown when there's no notebooks
+		addNotebookButton: {
+			flex: 1,
+			justifyContent: "center",
+			alignItems: "center",
+			paddingBottom: 112,
+			gap: 16,
+		},
 		// Toolbar styles
 		toolbarContainer: {
 			position: "absolute",

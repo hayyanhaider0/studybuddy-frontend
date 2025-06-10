@@ -6,8 +6,6 @@
 
 import { useNavigation } from "@react-navigation/native"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
-import { useThemeContext } from "../contexts/ThemeContext"
-import { SidebarNavProp } from "../types/global"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { useToolContext } from "../contexts/ToolContext"
 import { DrawerParamList } from "../navigation/DrawerNavigation"
@@ -17,6 +15,8 @@ export function useCanvasActions() {
 	// Get values from contexts
 	const { setPaths } = useCanvasContext()
 	const { toolSettings, collapsed, setCollapsed } = useToolContext()
+	const { activeCanvasId } = useNotebook()
+	const canvasId = activeCanvasId as string
 
 	// Navigation for the sidebar menu.
 	const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
@@ -28,7 +28,7 @@ export function useCanvasActions() {
 	 *
 	 * @returns an empty paths array.
 	 */
-	const clearCanvas = (canvasId: string) => {
+	const clearCanvas = () => {
 		setPaths((prev) => ({ ...prev, [canvasId]: [] }))
 	}
 
@@ -39,7 +39,7 @@ export function useCanvasActions() {
 	 *
 	 * @returns Paths array except the last path.
 	 */
-	const undo = (canvasId: string) => {
+	const undo = () => {
 		setPaths((prev) => {
 			const canvasPaths = prev[canvasId] || []
 			return {
@@ -56,7 +56,7 @@ export function useCanvasActions() {
 	 *
 	 * @returns Paths array and the popped stack path(s).
 	 */
-	const redo = (canvasId: string) => console.log("redo")
+	const redo = () => console.log("redo")
 
 	/**
 	 * toggleMenu function
