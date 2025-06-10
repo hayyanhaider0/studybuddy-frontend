@@ -50,11 +50,6 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	const [canvas, setCanvas] = useState<Canvas | undefined>(chapter?.canvases[0])
 	const [activeCanvasId, setActiveCanvasId] = useState<string | null>(null)
 
-	useEffect(() => {
-		if (!chapter) return
-		setCanvas(chapter.canvases[0])
-	}, [chapter])
-
 	return (
 		<NotebookContext.Provider
 			value={{

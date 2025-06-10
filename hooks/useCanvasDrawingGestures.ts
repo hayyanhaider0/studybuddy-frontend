@@ -1,18 +1,14 @@
 import { Skia } from "@shopify/react-native-skia"
-import { useState } from "react"
 import { Gesture } from "react-native-gesture-handler"
 import { runOnJS } from "react-native-reanimated"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useToolContext } from "../contexts/ToolContext"
-import { useTransformContext } from "../contexts/TransformContext"
 import { useCanvasActions } from "./useCanvasActions"
-import { useNotebook } from "../contexts/NotebookContext"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
 	const { current, setCurrent, setPaths, layout } = useCanvasContext()
 	const { tool, toolSettings, setEraserPos } = useToolContext()
-	const { setActiveCanvasId } = useNotebook()
 
 	// Current path.
 	let skPath = current[canvasId] ?? Skia.Path.Make()
@@ -44,7 +40,6 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 		.onBegin((e) => {
 			// Calculate local x and y values using canvas layout.
 			const { x, y } = screenToCanvasCoords(e.x, e.y)
-			setActiveCanvasId(canvasId)
 
 			if (tool === "eraser") {
 				setEraserPos({ x: x, y: y })
@@ -112,7 +107,6 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 		.onEnd((e) => {
 			// Calculate local x and y values using canvas layout.
 			const { x, y } = screenToCanvasCoords(e.x, e.y)
-			setActiveCanvasId(canvasId)
 
 			if (tool === "eraser" || tool === "pointer") return
 

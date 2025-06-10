@@ -10,8 +10,7 @@ import { useModal } from "../../contexts/ModalContext"
 export default function ChapterList() {
 	const { notebooks, notebook, setChapter } = useNotebook()
 	const { addChapterToCurrentNotebook } = useNotebooks()
-	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
-		useModal()
+	const { openModal } = useModal()
 	const chapters = notebook?.chapters || []
 
 	const { theme } = useThemeContext()
@@ -32,14 +31,13 @@ export default function ChapterList() {
 	}
 
 	const handleNewChapter = () => {
-		setTitle("Add a New Chapter")
-		setDescription("Give your new chapter a name!")
-		setPlaceholder("Type the name of your new chapter...")
-		setButtonText("Add Chapter")
-		setOnPress(() => (input: string) => addChapterToCurrentNotebook(input))
-		setShowModal(true)
-		console.log(notebook)
-		console.log(notebook?.chapters)
+		openModal({
+			title: "Create New Chapter",
+			description: "Organize your content by adding a new chapter to this notebook.",
+			placeholder: "Enter chapter title...",
+			buttonText: "Create Chapter",
+			onSubmit: (input) => addChapterToCurrentNotebook(input),
+		})
 	}
 
 	return (

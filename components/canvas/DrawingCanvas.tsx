@@ -41,10 +41,6 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 
 	const Roboto = useFont(require("../../assets/fonts/Roboto-Bold.ttf"), 16)
 
-	useEffect(() => {
-		setActiveCanvasId(canvasId)
-	}, [canvasId])
-
 	return (
 		<View style={{ flex: 1 }}>
 			{/* This View allows for gestures outside the canvas like pan and pinch */}

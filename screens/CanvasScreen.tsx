@@ -21,8 +21,7 @@ export default function CanvasScreen() {
 	// Context Imports
 	const { notebooks } = useNotebook()
 	const { addNotebook } = useNotebooks()
-	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
-		useModal()
+	const { openModal } = useModal()
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -30,12 +29,13 @@ export default function CanvasScreen() {
 	const styles = getCanvasStyles(theme.colors)
 
 	const handleCreateNotebook = () => {
-		setTitle("Add a New Notebook")
-		setDescription("Give your new notebook a name!")
-		setPlaceholder("Type the name of your new notebook...")
-		setButtonText("Add Notebook")
-		setOnPress(() => (input: string) => addNotebook(input))
-		setShowModal(true)
+		openModal({
+			title: "Add New Notebook",
+			description: "Give your notebook a title to start organizing your study materials.",
+			placeholder: "Enter notebook name...",
+			buttonText: "Create Notebook",
+			onSubmit: (input: string) => addNotebook(input),
+		})
 	}
 
 	return (

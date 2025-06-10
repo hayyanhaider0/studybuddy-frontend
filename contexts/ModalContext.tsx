@@ -1,5 +1,13 @@
 import { createContext, ReactNode, useContext, useState } from "react"
 
+type OpenModalProps = {
+	title: string
+	description: string
+	placeholder: string
+	buttonText: string
+	onSubmit: (input: string) => void
+}
+
 type ModalContextType = {
 	showModal: boolean
 	setShowModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -15,6 +23,7 @@ type ModalContextType = {
 	setButtonText: React.Dispatch<React.SetStateAction<string>>
 	onPress: (inputValue: string) => void
 	setOnPress: React.Dispatch<React.SetStateAction<(inputValue: string) => void>>
+	openModal: ({ title, description, placeholder, buttonText, onSubmit }: OpenModalProps) => void
 }
 
 const ModalContext = createContext<ModalContextType | null>(null)
@@ -29,6 +38,15 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 	const [onPress, setOnPress] = useState<(inputValue: string) => void>(
 		() => (inputValue: string) => console.log(inputValue)
 	)
+
+	const openModal = ({ title, description, placeholder, buttonText, onSubmit }: OpenModalProps) => {
+		setTitle(title)
+		setDescription(description)
+		setPlaceholder(placeholder)
+		setButtonText(buttonText)
+		setOnPress(() => onSubmit)
+		setShowModal(true)
+	}
 
 	return (
 		<ModalContext.Provider
@@ -47,6 +65,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 				setButtonText,
 				onPress,
 				setOnPress,
+				openModal,
 			}}
 		>
 			{children}

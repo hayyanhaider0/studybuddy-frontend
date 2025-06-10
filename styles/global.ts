@@ -55,6 +55,7 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 		input: {
 			width: "100%",
 			borderRadius: 999,
+			paddingVertical: 8,
 			paddingHorizontal: 16,
 			backgroundColor: colors.secondary,
 			color: colors.textPrimary,

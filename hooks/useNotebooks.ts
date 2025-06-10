@@ -1,10 +1,8 @@
 import { useNotebook } from "../contexts/NotebookContext"
-import { Notebook } from "../types/notebook"
 import { addCanvas, addChapter, createNotebook } from "../utils/notebook"
 
 export default function useNotebooks() {
-	const { notebooks, setNotebooks, notebook, setNotebook, chapter, setChapter, canvas, setCanvas } =
-		useNotebook()
+	const { setNotebooks, notebook, setNotebook, chapter, setChapter, setCanvas } = useNotebook()
 
 	const addNotebook = (title: string) => {
 		const notebook = createNotebook(title)
