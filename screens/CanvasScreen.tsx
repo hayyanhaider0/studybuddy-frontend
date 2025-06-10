@@ -5,15 +5,15 @@
  * Now simplified to focus on layout and coordination between components.
  */
 
-import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler"
+import { FlatList, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { LayoutChangeEvent, Text, Pressable, View } from "react-native"
+import { LayoutChangeEvent, Text, Pressable, View, useWindowDimensions } from "react-native"
 import Toolbar from "../components/canvas/toolbar/Toolbar"
 import DrawingCanvas from "../components/canvas/DrawingCanvas"
 import { useTransformContext } from "../contexts/TransformContext"
 import { useEffect, useState } from "react"
-import { runOnJS, useAnimatedReaction } from "react-native-reanimated"
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from "react-native-reanimated"
 import { AnimatePresence, MotiView } from "moti"
 import { getGlobalStyles } from "../styles/global"
 import { getCanvasStyles } from "../styles/canvas"
@@ -22,6 +22,7 @@ import { useNotebook } from "../contexts/NotebookContext"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import { useModal } from "../contexts/ModalContext"
 import useNotebooks from "../hooks/useNotebooks"
+import { useCanvasGestures } from "../hooks/useCanvasGestures"
 
 /**
  * ZoomIndicator Component
@@ -93,10 +94,12 @@ function ZoomIndicator() {
 export default function CanvasScreen() {
 	// Context Imports
 	const { setLayout } = useCanvasContext()
-	const { notebooks, chapter, canvas } = useNotebook()
+	const { notebooks, chapter } = useNotebook()
 	const { addNotebook } = useNotebooks()
 	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
 		useModal()
+	const { scale, translateX, translateY } = useTransformContext()
+	const { translateGestures } = useCanvasGestures()
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -124,27 +127,64 @@ export default function CanvasScreen() {
 		setShowModal(true)
 	}
 
+	// Animated style for transform.
+	const animatedStyle = useAnimatedStyle(() => ({
+		transform: [
+			{ translateX: translateX.value },
+			{ translateY: translateY.value },
+			{ scale: scale.value },
+		],
+	}))
+
+	const CANVAS_WIDTH = 360
+	const GAP = 16
+	const { width: screenWidth } = useWindowDimensions()
+
 	return (
 		<View
 			style={{
 				flex: 1,
 				backgroundColor: theme.colors.surface,
+				alignItems: "center",
+				justifyContent: "center",
 			}}
 		>
 			<ChapterTab />
 			<ZoomIndicator />
 			<Toolbar />
 			{notebooks.length > 0 ? (
-				// <FlatList
-				// 	data={chapter?.canvases}
-				// 	keyExtractor={(item) => item.id}
-				// 	renderItem={({ item }) => <DrawingCanvas key={item.id} onLayout={handleCanvasLayout} />}
-				// 	pagingEnabled
-				// 	contentContainerStyle={{ gap: 8 }}
-				// 	horizontal
-				// />
-				<DrawingCanvas key={canvas?.id} onLayout={handleCanvasLayout} />
+				<GestureDetector gesture={translateGestures}>
+					{/* Canvas UI allowing for drawing gestures */}
+					<Animated.View
+						style={[{ flex: 1, alignItems: "center", justifyContent: "center" }, animatedStyle]}
+					>
+						<FlatList
+							data={chapter?.canvases}
+							horizontal
+							decelerationRate='fast'
+							snapToInterval={CANVAS_WIDTH + GAP}
+							contentContainerStyle={{
+								paddingHorizontal: (screenWidth - CANVAS_WIDTH) / 2, // centers first and last canvas
+							}}
+							keyExtractor={(item) => item.id}
+							renderItem={({ item }) => (
+								<View
+									style={{
+										width: CANVAS_WIDTH,
+										marginRight: GAP,
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<DrawingCanvas canvasId={item.id} onLayout={handleCanvasLayout} />
+								</View>
+							)}
+							showsHorizontalScrollIndicator={false}
+						/>
+					</Animated.View>
+				</GestureDetector>
 			) : (
+				// <DrawingCanvas key={canvas?.id} onLayout={handleCanvasLayout} />
 				<Pressable
 					onPress={handleCreateNotebook}
 					style={{

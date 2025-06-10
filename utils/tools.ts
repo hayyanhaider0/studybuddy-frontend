@@ -54,13 +54,6 @@ export function useToolDefinitions() {
 			image: require("../assets/canvasImages/eraser.png"),
 			action: () => handleToolSelection("eraser"),
 		},
-		// Pen tool but with a rougher path look to resemble a pencil stroke.
-		{
-			name: "pencil",
-			icon: "pencil",
-			image: require("../assets/canvasImages/pencil.png"),
-			action: () => handleToolSelection("pencil"),
-		},
 		// Thicker pen tool with decreased opacity.
 		{
 			name: "highlighter",
@@ -74,6 +67,13 @@ export function useToolDefinitions() {
 			icon: "format-text",
 			image: require("../assets/canvasImages/text.png"),
 			action: () => handleToolSelection("text"),
+		},
+		// Pointer tool to allow for gestures.
+		{
+			name: "pointer",
+			icon: "pointer",
+			image: require("../assets/canvasImages/pointer.png"),
+			action: () => handleToolSelection("pointer"),
 		},
 	]
 

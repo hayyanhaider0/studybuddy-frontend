@@ -59,6 +59,7 @@ export function useCanvasGestures() {
 	const drawGesture = Gesture.Pan()
 		.minPointers(1)
 		.maxPointers(1)
+		.enabled(tool !== "pointer")
 		.onBegin((e) => {
 			// Calculate local x and y values using canvas layout.
 			const { x, y } = screenToCanvasCoords(e.x, e.y)
@@ -113,6 +114,7 @@ export function useCanvasGestures() {
 
 	// Tap Gesture: Allows the user to tap and draw a dot.
 	const tapGesture = Gesture.Tap()
+		.enabled(tool !== "pointer")
 		.onEnd((e) => {
 			if (tool === "eraser") return
 			// Calculate local x and y values using canvas layout.

@@ -51,7 +51,7 @@ export type PathType = {
 }
 
 // Tool Types
-export type ToolName = "pen" | "eraser" | "pencil" | "highlighter" | "text"
+export type ToolName = "pen" | "eraser" | "pencil" | "highlighter" | "text" | "pointer"
 
 export type ToolType = {
 	name: string

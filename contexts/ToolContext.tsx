@@ -68,6 +68,7 @@ const DEFAULT_TOOL_SETTINGS = {
 	pencil: { color: "black", size: 1, strokeLinecap: "round", strokeLinejoin: "round" },
 	highlighter: { color: "#FFFF004D", size: 32, strokeLinecap: "butt", strokeLinejoin: "bevel" },
 	text: { color: "black", size: 8 },
+	pointer: { color: "black", size: 8 },
 } as const
 const DEFAULT_SWATCH_MAP = {
 	pen: DEFAULT_SWATCHES,
@@ -75,6 +76,7 @@ const DEFAULT_SWATCH_MAP = {
 	pencil: DEFAULT_SWATCHES,
 	highlighter: DEFAULT_SWATCHES,
 	text: DEFAULT_SWATCHES,
+	pointer: [],
 }
 
 /////////////////////////////////////////
@@ -107,7 +109,7 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		const loadSwatches = async () => {
-			const tools = ["pen", "pencil", "highlighter", "text"]
+			const tools = ["pen", "pencil", "highlighter", "text", "pointer"]
 			const result: Partial<ToolSwatches> = {}
 
 			for (const t of tools) {

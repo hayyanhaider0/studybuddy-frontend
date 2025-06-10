@@ -46,19 +46,8 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	const [canvas, setCanvas] = useState<Canvas | undefined>(chapter?.canvases[0])
 
 	useEffect(() => {
-		if (notebook && notebook.chapters.length > 0) {
-			setChapter(notebook.chapters[0])
-		} else {
-			setChapter(undefined)
-		}
-	}, [notebook])
-
-	useEffect(() => {
-		if (chapter && chapter.canvases.length > 0) {
-			setCanvas(chapter.canvases[0])
-		} else {
-			setCanvas(undefined)
-		}
+		if (!chapter) return
+		setCanvas(chapter.canvases[0])
 	}, [chapter])
 
 	return (
