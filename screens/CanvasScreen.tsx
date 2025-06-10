@@ -137,7 +137,7 @@ export default function CanvasScreen() {
 	}))
 
 	const CANVAS_WIDTH = 360
-	const GAP = 16
+	const GAP = 4
 	const { width: screenWidth } = useWindowDimensions()
 
 	return (
