@@ -1,6 +1,6 @@
 import { useNotebook } from "../contexts/NotebookContext"
 import { Notebook } from "../types/notebook"
-import { addChapter, createNotebook } from "../utils/notebook"
+import { addCanvas, addChapter, createNotebook } from "../utils/notebook"
 
 export default function useNotebooks() {
 	const { notebooks, setNotebooks, notebook, setNotebook, chapter, setChapter, canvas, setCanvas } =
@@ -11,7 +11,7 @@ export default function useNotebooks() {
 		setNotebooks((prev) => [...prev, notebook])
 		setNotebook(notebook)
 		setChapter(notebook.chapters[0])
-		// setCanvas(notebook.chapters[0].canvases[0])
+		setCanvas(notebook.chapters[0].canvases[0])
 	}
 
 	const addChapterToCurrentNotebook = (title: string) => {
@@ -21,8 +21,16 @@ export default function useNotebooks() {
 		setNotebook(updated)
 	}
 
+	const addCanvasToCurrentChapter = () => {
+		if (!notebook || !chapter) return
+		const updated = addCanvas(chapter)
+		setCanvas(chapter.canvases[chapter.canvases.length - 1])
+		setChapter(updated)
+	}
+
 	return {
 		addNotebook,
 		addChapterToCurrentNotebook,
+		addCanvasToCurrentChapter,
 	}
 }

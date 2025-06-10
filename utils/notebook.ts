@@ -32,7 +32,7 @@ const createChapter = (title: string): Chapter => ({
 export const createNotebook = (title: string): Notebook => ({
 	id: uuid.v4() as string,
 	title: title || "My Notebook",
-	chapters: [],
+	chapters: [createChapter("Chapter 1")],
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
 })
@@ -47,5 +47,11 @@ export const createNotebook = (title: string): Notebook => ({
 export const addChapter = (notebook: Notebook, title: string): Notebook => ({
 	...notebook,
 	chapters: [...notebook.chapters, createChapter(title)],
+	updatedAt: Date.now(),
+})
+
+export const addCanvas = (chapter: Chapter): Chapter => ({
+	...chapter,
+	canvases: [...chapter.canvases, createCanvas()],
 	updatedAt: Date.now(),
 })

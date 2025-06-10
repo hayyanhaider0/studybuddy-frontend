@@ -8,7 +8,7 @@
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { LayoutChangeEvent, Pressable, Text, TouchableOpacity, View } from "react-native"
+import { LayoutChangeEvent, Text, Pressable, View } from "react-native"
 import Toolbar from "../components/canvas/toolbar/Toolbar"
 import DrawingCanvas from "../components/canvas/DrawingCanvas"
 import { useTransformContext } from "../contexts/TransformContext"
@@ -93,7 +93,7 @@ function ZoomIndicator() {
 export default function CanvasScreen() {
 	// Context Imports
 	const { setLayout } = useCanvasContext()
-	const { notebooks, chapter } = useNotebook()
+	const { notebooks, chapter, canvas } = useNotebook()
 	const { addNotebook } = useNotebooks()
 	const { setShowModal, setTitle, setDescription, setPlaceholder, setButtonText, setOnPress } =
 		useModal()
@@ -135,13 +135,17 @@ export default function CanvasScreen() {
 			<ZoomIndicator />
 			<Toolbar />
 			{notebooks.length > 0 ? (
-				<FlatList
-					data={chapter?.canvases}
-					keyExtractor={(item) => item.id}
-					renderItem={({ item }) => <DrawingCanvas key={item.id} onLayout={handleCanvasLayout} />}
-				/>
+				// <FlatList
+				// 	data={chapter?.canvases}
+				// 	keyExtractor={(item) => item.id}
+				// 	renderItem={({ item }) => <DrawingCanvas key={item.id} onLayout={handleCanvasLayout} />}
+				// 	pagingEnabled
+				// 	contentContainerStyle={{ gap: 8 }}
+				// 	horizontal
+				// />
+				<DrawingCanvas key={canvas?.id} onLayout={handleCanvasLayout} />
 			) : (
-				<TouchableOpacity
+				<Pressable
 					onPress={handleCreateNotebook}
 					style={{
 						flex: 1,
@@ -153,7 +157,7 @@ export default function CanvasScreen() {
 				>
 					<Material name='plus-circle-outline' size={64} color={theme.colors.onPrimary} />
 					<Text style={GlobalStyles.paragraph}>Add a new notebook, and start studying now!</Text>
-				</TouchableOpacity>
+				</Pressable>
 			)}
 		</View>
 	)

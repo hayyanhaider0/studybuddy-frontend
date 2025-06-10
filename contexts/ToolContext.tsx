@@ -63,7 +63,7 @@ type ToolContextType = {
 /////////////////////////////////////////
 const DEFAULT_SWATCHES = ["#dc2626", "#fb923c", "#facc15", "#3b82f6", "#10b981", "#000000"]
 const DEFAULT_TOOL_SETTINGS = {
-	pen: { color: "black", size: 4, strokeLinecap: "round", strokeLinejoin: "round" },
+	pen: { color: "#dc2626", size: 4, strokeLinecap: "round", strokeLinejoin: "round" },
 	eraser: { color: "transparent", size: 4 },
 	pencil: { color: "black", size: 1, strokeLinecap: "round", strokeLinejoin: "round" },
 	highlighter: { color: "#FFFF004D", size: 32, strokeLinecap: "butt", strokeLinejoin: "bevel" },
