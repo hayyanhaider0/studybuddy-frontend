@@ -7,6 +7,7 @@ import { AnimatePresence, MotiView } from "moti"
 import { getChapterTabStyles } from "../../styles/chapterTab"
 import useNotebooks from "../../hooks/useNotebooks"
 import { useNotebook } from "../../contexts/NotebookContext"
+import CustomPressable from "../common/CustomPressable"
 
 export default function AddPageButton() {
 	const { chapter } = useNotebook()
@@ -18,24 +19,13 @@ export default function AddPageButton() {
 	return (
 		<>
 			{chapter && (
-				<Pressable
+				<CustomPressable
+					type='primary'
 					onPress={addCanvasToCurrentChapter}
-					style={{
-						backgroundColor: theme.colors.secondary,
-						borderRadius: 999,
-						justifyContent: "center",
-						alignItems: "center",
-						overflow: "hidden",
-					}}
+					style={{ padding: 4, aspectRatio: 1 / 1, borderRadius: 999, marginLeft: 8 }}
 				>
-					<LinearGradient
-						colors={theme.accent.gradient.colors}
-						start={theme.accent.gradient.start}
-						end={theme.accent.gradient.end}
-					>
-						<MaterialC name='plus' size={32} color={theme.accent.onAccent} />
-					</LinearGradient>
-				</Pressable>
+					<MaterialC name='plus' size={28} color={theme.accent.onAccent} />
+				</CustomPressable>
 			)}
 		</>
 	)

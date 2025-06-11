@@ -77,8 +77,17 @@ export default function Modal() {
 							style={GlobalStyles.input}
 						/>
 						<View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
-							<CustomPressable title='Close' onPress={() => setShowModal(false)} />
-							<CustomPressable type='primary' title={buttonText} onPress={handleConfirm} />
+							<CustomPressable
+								title='Close'
+								onPress={() => setShowModal(false)}
+								style={GlobalStyles.secondaryButton}
+							/>
+							<CustomPressable
+								type='primary'
+								title={buttonText}
+								onPress={handleConfirm}
+								style={GlobalStyles.button}
+							/>
 						</View>
 					</MotiView>
 				</MotiView>

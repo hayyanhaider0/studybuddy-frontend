@@ -121,7 +121,12 @@ export default function Login({ setForm }: LoginProps) {
 			</TouchableOpacity>
 
 			{/* Login Button: Form submission button */}
-			<CustomPressable type='primary' title='Login' onPress={handleSubmit(handleLogin)} />
+			<CustomPressable
+				type='primary'
+				title='Login'
+				onPress={handleSubmit(handleLogin)}
+				style={[GlobalStyles.button, { paddingVertical: 12 }]}
+			/>
 
 			{/* Switch Form Button: Allows user to switch to the sign up component */}
 			<View style={{ flexDirection: "row", justifyContent: "center" }}>

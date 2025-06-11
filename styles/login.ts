@@ -25,8 +25,8 @@ export const getLoginStyles = (colors: ThemeColors) =>
 			borderColor: colors.textPrimary,
 			borderRadius: 999,
 			width: "100%",
+			paddingVertical: 12,
 			paddingHorizontal: 16,
-			paddingVertical: 8,
 		},
 		label: {
 			position: "absolute",
@@ -38,7 +38,6 @@ export const getLoginStyles = (colors: ThemeColors) =>
 		},
 		input: {
 			textAlign: "left",
-			paddingVertical: 4,
 			outlineWidth: 0,
 		},
 	})

@@ -7,39 +7,58 @@
  */
 
 import { LinearGradient } from "expo-linear-gradient"
-import { Text, Pressable } from "react-native"
+import { Text, Pressable, StyleProp, ViewStyle } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { MotiView } from "moti"
+import { getGlobalStyles } from "../../styles/global"
+import { ReactNode } from "react"
 
-type CustomPressableProps = {
-	type?: "primary" | "secondary" // Defaults to secondary if type is not provided.
-	title: string
+type BaseProps = {
+	type?: "primary" | "secondary"
 	onPress: () => void
+	onLongPress?: () => void
+	style?: StyleProp<ViewStyle>
 }
+
+type WithTitle = BaseProps & {
+	title: string
+	children?: never
+}
+
+type WithChildren = BaseProps & {
+	title?: never
+	children: ReactNode
+}
+
+type CustomPressableProps = WithTitle | WithChildren
 
 export default function CustomPressable({
 	type = "secondary",
 	title,
 	onPress,
+	onLongPress,
+	style,
+	children,
 }: CustomPressableProps) {
 	// Theming
 	const { theme } = useThemeContext()
+	const GlobalStyles = getGlobalStyles(theme.colors)
 
 	return (
-		<Pressable onPress={onPress}>
+		<Pressable onPress={onPress} onLongPress={onLongPress}>
 			{({ pressed }) => (
 				// Animated button that scales and bounces up on press.
 				<MotiView
 					from={{ scale: 1, opacity: 1, translateY: 0 }}
 					animate={{
-						scale: pressed ? 0.97 : 1,
+						scale: pressed ? 0.9 : 1,
 						opacity: pressed ? 0.9 : 1,
-						translateY: pressed ? 2 : 0,
 					}}
 					transition={{
 						type: "timing",
 						duration: 120,
 					}}
+					style={type === "secondary" && style}
 				>
 					{/* Primary Button -- with a gradient */}
 					{type === "primary" ? (
@@ -47,36 +66,17 @@ export default function CustomPressable({
 							colors={theme.accent.gradient.colors}
 							start={theme.accent.gradient.start}
 							end={theme.accent.gradient.end}
-							style={{
-								justifyContent: "center",
-								alignItems: "center",
-								borderRadius: 999,
-							}}
+							style={style}
 						>
-							<Text
-								style={{
-									color: theme.colors.textPrimary,
-									paddingVertical: 12,
-									paddingHorizontal: 24,
-								}}
-							>
-								{title}
-							</Text>
+							{children && children}
+							{title && <Text style={GlobalStyles.buttonText}>{title}</Text>}
 						</LinearGradient>
 					) : (
 						// Secondary Button -- with an underline.
-						<Text
-							style={{
-								color: theme.colors.onPrimary,
-								borderBottomWidth: 1,
-								paddingVertical: 12,
-								paddingHorizontal: 24,
-								marginHorizontal: 12,
-								borderColor: theme.colors.onPrimary,
-							}}
-						>
-							{title}
-						</Text>
+						<>
+							{children && children}
+							{title && <Text style={GlobalStyles.buttonText}>{title}</Text>}
+						</>
 					)}
 				</MotiView>
 			)}

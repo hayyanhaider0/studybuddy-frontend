@@ -16,24 +16,13 @@ export const getChapterTabStyles = (colors: ThemeColors) =>
 		},
 		list: {
 			borderRadius: 999,
-			padding: 16,
 			paddingVertical: 8,
+			paddingHorizontal: 16,
 		},
 		addChapterButton: {
 			borderRadius: 999,
-			padding: 6,
+			padding: 2,
 			aspectRatio: 1 / 1,
 			marginLeft: 4,
-		},
-		paginationContainer: {
-			position: "absolute",
-			top: 88,
-			right: 0,
-			flexDirection: "row",
-			backgroundColor: colors.primary,
-			borderBottomStartRadius: 26,
-			paddingVertical: 8,
-			marginLeft: 8,
-			zIndex: -10,
 		},
 	})

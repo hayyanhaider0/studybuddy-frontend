@@ -25,7 +25,7 @@ interface DrawingCanvasProps {
 export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps) {
 	// Context Imports.
 	const { paths, current, layout } = useCanvasContext()
-	const { chapter, setActiveCanvasId } = useNotebook()
+	const { chapter } = useNotebook()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 

@@ -1,5 +1,4 @@
 import {
-	Animated,
 	FlatList,
 	LayoutChangeEvent,
 	NativeScrollEvent,
@@ -10,7 +9,7 @@ import {
 import { GestureDetector } from "react-native-gesture-handler"
 import DrawingCanvas from "./DrawingCanvas"
 import { useRef } from "react"
-import { useAnimatedStyle } from "react-native-reanimated"
+import Animated, { useAnimatedStyle } from "react-native-reanimated"
 import { useNotebook } from "../../contexts/NotebookContext"
 import { useTransformContext } from "../../contexts/TransformContext"
 import { useCanvasTranslateGestures } from "../../hooks/useCanvasTranslateGestures"
@@ -18,7 +17,7 @@ import { useCanvasContext } from "../../contexts/CanvasStateContext"
 
 export default function CanvasList() {
 	const { setLayout } = useCanvasContext()
-	const { chapter, activeCanvasId, setActiveCanvasId } = useNotebook()
+	const { chapter, setActiveCanvasId } = useNotebook()
 	const { scale, translateX, translateY } = useTransformContext()
 	const translateGestures = useCanvasTranslateGestures()
 
@@ -85,7 +84,6 @@ export default function CanvasList() {
 					renderItem={({ item }) => (
 						<View
 							style={{
-								backgroundColor: item.id === activeCanvasId ? "red" : "blue",
 								width: CANVAS_WIDTH,
 								marginRight: GAP,
 								alignItems: "center",

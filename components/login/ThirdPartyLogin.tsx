@@ -9,6 +9,8 @@ import { TouchableOpacity, View, Image } from "react-native"
 import { Text } from "react-native-gesture-handler"
 import HorizontalRule from "../common/HorizontalRule"
 import { useThemeContext } from "../../contexts/ThemeContext"
+import CustomPressable from "../common/CustomPressable"
+import tinycolor from "tinycolor2"
 
 export default function ThirdPartyLogin() {
 	// Theming
@@ -20,19 +22,27 @@ export default function ThirdPartyLogin() {
 			<HorizontalRule>OR</HorizontalRule>
 
 			{/* Google login */}
-			<TouchableOpacity
-				style={[GlobalStyles.secondaryButton, { flexDirection: "row", justifyContent: "center" }]}
+			<CustomPressable
+				onPress={() => null}
+				style={[
+					GlobalStyles.secondaryButton,
+					{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 },
+				]}
 			>
 				<Image
 					source={{ uri: "https://developers.google.com/identity/images/g-logo.png" }}
 					style={{ width: 20, height: 20, marginRight: 8 }}
 				/>
 				<Text style={GlobalStyles.buttonText}>Sign in with Google</Text>
-			</TouchableOpacity>
+			</CustomPressable>
 
 			{/* Facebook login */}
-			<TouchableOpacity
-				style={[GlobalStyles.secondaryButton, { flexDirection: "row", justifyContent: "center" }]}
+			<CustomPressable
+				onPress={() => null}
+				style={[
+					GlobalStyles.secondaryButton,
+					{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 },
+				]}
 			>
 				<Image
 					source={{
@@ -41,20 +51,25 @@ export default function ThirdPartyLogin() {
 					style={{ width: 20, height: 20, marginRight: 8 }}
 				/>
 				<Text style={GlobalStyles.buttonText}>Sign in with Facebook</Text>
-			</TouchableOpacity>
+			</CustomPressable>
 
 			{/* Apple login */}
-			<TouchableOpacity
-				style={[GlobalStyles.secondaryButton, { flexDirection: "row", justifyContent: "center" }]}
+			<CustomPressable
+				onPress={() => null}
+				style={[
+					GlobalStyles.secondaryButton,
+					{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 },
+				]}
 			>
 				<Image
 					source={{
 						uri: "https://purepng.com/public/uploads/large/purepng.com-apple-logologobrand-logoiconslogos-251519938788qhgdl.png",
 					}}
 					style={{ width: 20, height: 20, marginRight: 8, resizeMode: "contain" }}
+					tintColor={tinycolor(GlobalStyles.container.backgroundColor).isDark() ? "#fff" : "#000"}
 				/>
 				<Text style={GlobalStyles.buttonText}>Sign in with Apple</Text>
-			</TouchableOpacity>
+			</CustomPressable>
 		</View>
 	)
 }

@@ -14,14 +14,22 @@ export default function useNotebooks() {
 
 	const addChapterToCurrentNotebook = (title: string) => {
 		if (!notebook) return
-		const updated = addChapter(notebook, title)
-		setNotebook(updated)
+		const updatedNotebook = addChapter(notebook, title)
+		setNotebook(updatedNotebook)
 	}
 
 	const addCanvasToCurrentChapter = () => {
 		if (!notebook || !chapter) return
-		const updated = addCanvas(chapter)
-		setChapter(updated)
+		const updatedChapter = addCanvas(chapter)
+
+		const updatedNotebook = {
+			...notebook,
+			chapters: notebook.chapters.map((c) => (c.id === chapter.id ? updatedChapter : c)),
+			updatedAt: Date.now(),
+		}
+
+		setChapter(updatedChapter)
+		setNotebook(updatedNotebook)
 	}
 
 	return {

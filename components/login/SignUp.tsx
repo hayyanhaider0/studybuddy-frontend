@@ -8,11 +8,10 @@
 import { View, Text, TouchableOpacity } from "react-native"
 import LoginInput from "./LoginInput"
 import { useForm } from "react-hook-form"
-import CustomTouchableOpacity from "../common/CustomTouchableOpacity"
 import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { getGlobalStyles } from "../../styles/global"
 import { getLoginStyles } from "../../styles/login"
+import CustomPressable from "../common/CustomPressable"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -157,7 +156,12 @@ export default function SignUp({ setForm }: SignUpProps) {
 			</View>
 
 			{/* Sign Up Button: Form submission button */}
-			<CustomTouchableOpacity text='Sign Up' onPress={handleSubmit(handleSignUp)} />
+			<CustomPressable
+				type='primary'
+				title='Sign Up'
+				onPress={handleSubmit(handleSignUp)}
+				style={[GlobalStyles.button, { paddingVertical: 12 }]}
+			/>
 
 			{/* Switch Form Button: Allows user to switch to the login component */}
 			<View style={{ flexDirection: "row", justifyContent: "center" }}>
