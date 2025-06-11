@@ -53,7 +53,7 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 					/>
 					{/* Render page number on the top right */}
 					<SkiaText
-						text={`${chapter?.canvases.findIndex((c) => c.id === canvas?.id)}`}
+						text={`${(chapter?.canvases.findIndex((c) => c.id === canvas?.id) ?? -1) + 1}`}
 						x={CANVAS_WIDTH - 32}
 						y={36}
 						font={Roboto}

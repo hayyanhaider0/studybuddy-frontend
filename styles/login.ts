@@ -25,7 +25,7 @@ export const getLoginStyles = (colors: ThemeColors) =>
 			borderColor: colors.textPrimary,
 			borderRadius: 999,
 			width: "100%",
-			paddingVertical: 12,
+			paddingVertical: 4,
 			paddingHorizontal: 16,
 		},
 		label: {

@@ -8,10 +8,7 @@ export const getChapterTabStyles = (colors: ThemeColors) =>
 			width: "100%",
 			backgroundColor: colors.primary,
 			padding: 8,
-			paddingTop: 48,
-			flexDirection: "row",
-			justifyContent: "center",
-			alignItems: "center",
+			paddingTop: 40,
 			zIndex: 10,
 		},
 		list: {

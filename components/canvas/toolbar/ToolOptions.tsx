@@ -25,7 +25,7 @@ export default function ToolOptions() {
 	return (
 		// Collapsable tool options view
 		<MotiView
-			animate={{ width: collapsed ? 36 : 184 }}
+			animate={{ width: collapsed ? 32 : 184, height: collapsed ? 72 : 110 }}
 			transition={{ type: "spring", damping: 20, stiffness: 150, mass: 1 }}
 			style={styles.toolOptions}
 		>

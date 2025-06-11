@@ -51,7 +51,7 @@ export default function CustomPressable({
 				<MotiView
 					from={{ scale: 1, opacity: 1, translateY: 0 }}
 					animate={{
-						scale: pressed ? 0.9 : 1,
+						scale: pressed ? 0.97 : 1,
 						opacity: pressed ? 0.9 : 1,
 					}}
 					transition={{

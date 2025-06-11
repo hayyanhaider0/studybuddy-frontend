@@ -22,7 +22,13 @@ export default function AddPageButton() {
 				<CustomPressable
 					type='primary'
 					onPress={addCanvasToCurrentChapter}
-					style={{ padding: 4, aspectRatio: 1 / 1, borderRadius: 999, marginLeft: 8 }}
+					style={{
+						padding: 4,
+						aspectRatio: 1 / 1,
+						borderRadius: 999,
+						marginLeft: 8,
+						alignItems: "center",
+					}}
 				>
 					<MaterialC name='plus' size={28} color={theme.accent.onAccent} />
 				</CustomPressable>
