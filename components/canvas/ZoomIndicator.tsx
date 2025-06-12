@@ -1,3 +1,9 @@
+/**
+ * ZoomIndicator Component
+ *
+ * Shows the current scale value in percentage. Allows for long pressing
+ * which resets the canvas scale and translations to the default.
+ */
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { Text, Pressable } from "react-native"
 import { useTransformContext } from "../../contexts/TransformContext"
@@ -7,14 +13,8 @@ import { AnimatePresence, MotiView } from "moti"
 import { getGlobalStyles } from "../../styles/global"
 import { getCanvasStyles } from "../../styles/canvas"
 
-/**
- * ZoomIndicator Component
- *
- * Shows the current scale value in percentage. Allows for long pressing
- * which resets the canvas scale and translations to the default.
- */
 export default function ZoomIndicator() {
-	// Contexts imports
+	// Get values from context.
 	const { scale, translateX, translateY } = useTransformContext()
 
 	// Theming

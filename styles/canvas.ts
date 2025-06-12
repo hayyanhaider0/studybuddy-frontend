@@ -39,7 +39,6 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 			paddingLeft: 28,
 			paddingRight: 16,
 			gap: 16,
-			borderRadius: 28,
 			alignItems: "center",
 			justifyContent: "space-around",
 		},
@@ -55,7 +54,7 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 			padding: 16,
 			gap: 24,
 			margin: 8,
-			borderRadius: 28,
+			borderRadius: 26,
 			backgroundColor: colors.primary,
 		},
 		// Color container styles
@@ -74,6 +73,8 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 			backgroundColor: colors.secondary,
 			padding: 8,
 			borderRadius: 16,
+			overflow: "hidden",
+			justifyContent: "center",
 		},
 		options: {
 			borderRadius: 999,

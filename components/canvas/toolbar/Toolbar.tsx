@@ -5,8 +5,11 @@ import { useThemeContext } from "../../../contexts/ThemeContext"
 import { getCanvasStyles } from "../../../styles/canvas"
 import ColorPickerComponent from "./ColorPickerComponent"
 import ToolMenu from "./ToolMenu"
+import { MotiView } from "moti"
+import { useToolContext } from "../../../contexts/ToolContext"
 
 export default function Toolbar() {
+	const { collapsed } = useToolContext()
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
 
@@ -19,10 +22,14 @@ export default function Toolbar() {
 			<ToolMenu />
 
 			{/* Fixed toolbar row at bottom */}
-			<View style={styles.toolbar}>
+			<MotiView
+				animate={{ borderRadius: collapsed ? 50 : 25 }}
+				transition={{ type: "timing" }}
+				style={styles.toolbar}
+			>
 				<ToolOptions />
 				<CanvasOptions />
-			</View>
+			</MotiView>
 		</View>
 	)
 }

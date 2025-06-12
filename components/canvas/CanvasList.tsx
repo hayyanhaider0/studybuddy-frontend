@@ -5,6 +5,7 @@ import {
 	NativeSyntheticEvent,
 	useWindowDimensions,
 	View,
+	ViewStyle,
 } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import DrawingCanvas from "./DrawingCanvas"
@@ -16,10 +17,15 @@ import { useCanvasTranslateGestures } from "../../hooks/useCanvasTranslateGestur
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
 
 export default function CanvasList() {
+	const flatListRef = useRef<FlatList>(null)
+	const { width: screenWidth } = useWindowDimensions()
 	const { setLayout } = useCanvasContext()
 	const { chapter, setActiveCanvasId } = useNotebook()
 	const { scale, translateX, translateY } = useTransformContext()
 	const translateGestures = useCanvasTranslateGestures()
+
+	const CANVAS_WIDTH = 360
+	const GAP = 4
 
 	/**
 	 * handleCanvasLayout Function
@@ -43,44 +49,47 @@ export default function CanvasList() {
 		],
 	}))
 
-	const CANVAS_WIDTH = 360
-	const GAP = 4
-	const { width: screenWidth } = useWindowDimensions()
+	// Animated container style.
+	const containerStyle: ViewStyle = { flex: 1, alignItems: "center", justifyContent: "center" }
 
-	const flatListRef = useRef<FlatList>(null)
-
+	/**
+	 * Sets the active canvas to the one currently centered on the screen.
+	 *
+	 * @param e - The native scroll event from the FlatList.
+	 */
 	const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-		if (!chapter) return
+		if (!chapter) return // Exit if there's no active chapter.
 
+		// Find the current horizontal scroll offset.
 		const scrollX = e.nativeEvent.contentOffset.x
+		// Calculate the horizontal center of the screen.
 		const screenCenter = scrollX + screenWidth / 2
+
+		// Subtract padding offset -- due to centering first/last canvas.
 		const offset = (screenWidth - CANVAS_WIDTH) / 2
-
 		const targetCenter = screenCenter - offset
-		const step = CANVAS_WIDTH + GAP
 
+		// Determine the nearest canvas index based on step size.
+		const step = CANVAS_WIDTH + GAP
 		const closestIndex = Math.round(targetCenter / step)
+
+		// Clamp index within bnounds.
 		const clampedIndex = Math.max(0, Math.min(closestIndex, chapter.canvases.length - 1))
 
+		// Set the active canvas.
 		setActiveCanvasId(chapter.canvases[clampedIndex].id)
 	}
 
 	return (
 		<GestureDetector gesture={translateGestures}>
 			{/* Canvas UI allowing for drawing gestures */}
-			<Animated.View
-				style={[{ flex: 1, alignItems: "center", justifyContent: "center" }, animatedStyle]}
-			>
+			<Animated.View style={[containerStyle, animatedStyle]}>
 				<FlatList
+					// Core config
 					ref={flatListRef}
 					data={chapter?.canvases}
-					horizontal
-					decelerationRate='fast'
-					snapToInterval={CANVAS_WIDTH + GAP}
-					contentContainerStyle={{
-						paddingHorizontal: (screenWidth - CANVAS_WIDTH) / 2, // centers first and last canvas
-					}}
 					keyExtractor={(item) => item.id}
+					horizontal
 					renderItem={({ item }) => (
 						<View
 							style={{
@@ -93,9 +102,16 @@ export default function CanvasList() {
 							<DrawingCanvas canvasId={item.id} onLayout={handleCanvasLayout} />
 						</View>
 					)}
-					showsHorizontalScrollIndicator={false}
+					// Scrolling behaviour
 					onScroll={onScroll}
 					scrollEventThrottle={16}
+					decelerationRate='fast'
+					snapToInterval={CANVAS_WIDTH + GAP}
+					showsHorizontalScrollIndicator={false}
+					// Styling
+					contentContainerStyle={{
+						paddingHorizontal: (screenWidth - CANVAS_WIDTH) / 2, // centers first and last canvas
+					}}
 				/>
 			</Animated.View>
 		</GestureDetector>

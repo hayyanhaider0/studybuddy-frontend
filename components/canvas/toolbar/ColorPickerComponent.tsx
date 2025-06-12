@@ -15,25 +15,23 @@ import ColorPicker, {
 import { useToolContext } from "../../../contexts/ToolContext"
 import { getCanvasStyles } from "../../../styles/canvas"
 import { useThemeContext } from "../../../contexts/ThemeContext"
-import Handle from "../../common/Handle"
 import { ToolName, ToolSwatches } from "../../../types/global"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function ColorPickerComponent() {
-	const {
-		tool,
-		toolSettings,
-		setSwatches,
-		swatchEditInfo,
-		colorPicker,
-		setColorPicker,
-		activeMenu,
-	} = useToolContext() // Get tool context
+	const { tool, toolSettings, setSwatches, swatchEditInfo, colorPicker, activeMenu } =
+		useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
 
+	/**
+	 * Saves swatches to local storage keyed with the tool they're selected for.
+	 *
+	 * @param t - Tool to save the swatches to.
+	 * @param swatches - Swatches to save with the tool.
+	 */
 	const saveSwatchesToStorage = async (t: ToolName, swatches: ToolSwatches) => {
 		try {
 			await AsyncStorage.setItem(`${t}_swatches`, JSON.stringify(swatches))
@@ -54,18 +52,20 @@ export default function ColorPickerComponent() {
 						transition={{ type: "timing", duration: 300 }}
 						style={styles.colorPickerContainer}
 					>
-						<Handle close={() => setColorPicker(false)} />
 						{/* Actual ColorPicker Component */}
 						<ColorPicker
 							value={toolSettings[tool].color} // Set the picked color
 							style={{ gap: 16, width: 235 }}
 							onCompleteJS={(e) => {
 								if (swatchEditInfo) {
+									// Get the tool and swatch index.
 									const { tool, index } = swatchEditInfo
+									// Set the swatches for the tool upon new color selection.
 									setSwatches((prev) => {
 										const updated = [...prev[tool]]
 										updated[index] = e.hex
 										const newSwatches = { ...prev, [tool]: updated }
+										// Save the swatches to local storage.
 										saveSwatchesToStorage(tool, newSwatches)
 										return newSwatches
 									})

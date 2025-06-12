@@ -13,8 +13,9 @@ import { useThemeContext } from "../../../contexts/ThemeContext"
 import { getCanvasStyles } from "../../../styles/canvas"
 
 export default function ToolOptions() {
-	const { tool, collapsed } = useToolContext() // Get tool context
-	const tools = useToolDefinitions() // Get all available tool options
+	// Get context values.
+	const { tool, collapsed } = useToolContext()
+	const tools = useToolDefinitions()
 
 	// Theming
 	const { theme } = useThemeContext()

@@ -9,10 +9,8 @@
 import Slider from "@react-native-community/slider"
 import { useToolContext } from "../../../contexts/ToolContext"
 import { Text, View } from "react-native"
-import { useRef, useState } from "react"
 import { useThemeContext } from "../../../contexts/ThemeContext"
 import { getCanvasStyles } from "../../../styles/canvas"
-import { MotiView } from "moti"
 
 /**
  * ToolTip Component
@@ -23,10 +21,9 @@ import { MotiView } from "moti"
  * @returns JSX Component
  */
 function ToolTip({ currentValue }: { currentValue: number }) {
-	const { tool, toolSettings } = useToolContext()
 	// Theming
 	const { theme } = useThemeContext()
-	const styles = getCanvasStyles(theme.colors, toolSettings[tool].color)
+	const styles = getCanvasStyles(theme.colors)
 
 	return (
 		<View style={styles.tooltipContainer}>
@@ -44,11 +41,13 @@ function ToolTip({ currentValue }: { currentValue: number }) {
  */
 export default function SizeOptions() {
 	const { tool, toolSettings, setToolSettings } = useToolContext() // Get tool context
+	// Default minimum and maximum values for the slider.
 	const MINIMUM_VALUE = 1
 	const MAXIMUM_VALUE = 50
+
 	// Theming
 	const { theme } = useThemeContext()
-	const styles = getCanvasStyles(theme.colors, toolSettings[tool].color)
+	const styles = getCanvasStyles(theme.colors)
 
 	return (
 		<View style={styles.sliderContainer}>
@@ -60,6 +59,7 @@ export default function SizeOptions() {
 				maximumValue={50}
 				step={1}
 				value={toolSettings[tool].size}
+				// Change the size of the tool according to the slider value.
 				onValueChange={(v) => {
 					setToolSettings((prev) => ({
 						...prev,

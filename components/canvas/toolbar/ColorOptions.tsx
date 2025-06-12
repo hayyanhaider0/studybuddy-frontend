@@ -13,10 +13,18 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import tinycolor from "tinycolor2"
 
 export default function ColorOptions({ tool }: { tool: ToolName }) {
-	const { toolSettings, setToolSettings, swatches, setSwatchEditInfo, setColorPicker } =
-		useToolContext() // Get tool context
+	const {
+		toolSettings,
+		setToolSettings,
+		swatches,
+		setSwatchEditInfo,
+		colorPicker,
+		setColorPicker,
+	} = useToolContext() // Get tool context
 
-	const activeColor = toolSettings[tool].color // Currently active color for the active tool.
+	// Theming
+	const { theme } = useThemeContext()
+	const styles = getCanvasStyles(theme.colors)
 
 	/**
 	 * checkMarkColor Function
@@ -29,9 +37,6 @@ export default function ColorOptions({ tool }: { tool: ToolName }) {
 	const checkMarkColor = (color: string) => {
 		return tinycolor(color).isDark() ? "#fff" : "#000"
 	}
-	// Theming
-	const { theme } = useThemeContext()
-	const styles = getCanvasStyles(theme.colors)
 
 	return (
 		<View style={styles.colorContainer}>
@@ -41,20 +46,32 @@ export default function ColorOptions({ tool }: { tool: ToolName }) {
 					key={i}
 					// Change the color on press and close the color picker.
 					onPress={() => {
-						setToolSettings((prev) => ({ ...prev, [tool]: { ...prev[tool], color: c } }))
-						setColorPicker(false)
-					}}
-					// Open up a color wheel and let user edit the swatch.
-					onLongPress={() => {
-						setSwatchEditInfo({ tool: tool, index: i })
-						setColorPicker(true)
+						// Track the currently selected swatch.
+						const isSelected = toolSettings[tool].activeSwatchIndex === i
+
+						// If swatch is selected, toggle the color picker.
+						if (isSelected) {
+							setSwatchEditInfo({ tool, index: i })
+							setColorPicker(!colorPicker)
+							// If swatch is not selected, set the new swatch, and close the color picker.
+						} else {
+							setToolSettings((prev) => ({
+								...prev,
+								[tool]: {
+									...prev[tool],
+									color: c,
+									activeSwatchIndex: i,
+								},
+							}))
+							setColorPicker(false)
+						}
 					}}
 					activeOpacity={0.2}
 				>
 					{/* Color Swatch */}
 					<View style={[styles.options, { backgroundColor: c }]}>
 						{/* Render a check mark within the selected swatch. */}
-						{i === swatches[tool].findIndex((c: string) => c === activeColor) && (
+						{i === toolSettings[tool].activeSwatchIndex && (
 							<Icon name='check-bold' size={16} color={checkMarkColor(c)} />
 						)}
 					</View>

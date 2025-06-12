@@ -5,7 +5,7 @@
  * Check utils/options.ts for all options and their actions.
  */
 
-import { TouchableOpacity, View } from "react-native"
+import { Pressable, TouchableOpacity, View } from "react-native"
 import { useOptionDefinitions } from "../../../utils/options"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import { useThemeContext } from "../../../contexts/ThemeContext"
@@ -24,30 +24,40 @@ export default function CanvasOptions() {
 
 	const [showAll, setShowAll] = useState(collapsed)
 
-	useEffect(() => {
-		if (!collapsed) {
-			const timeout = setTimeout(() => setShowAll(true), 300) // Delay in ms
-			return () => clearTimeout(timeout)
-		} else {
-			setShowAll(false) // Reset when collapsing
-		}
-	}, [collapsed])
+	// useEffect(() => {
+	// 	if (!collapsed) {
+	// 		const timeout = setTimeout(() => setShowAll(true), 300) // Delay in ms
+	// 		return () => clearTimeout(timeout)
+	// 	} else {
+	// 		setShowAll(false) // Reset when collapsing
+	// 	}
+	// }, [collapsed])
 
 	return (
 		<MotiView
-			animate={{ width: collapsed ? 48 : 84, height: collapsed ? 48 : 84 }}
+			animate={{
+				width: collapsed ? 48 : 84,
+				height: collapsed ? 48 : 84,
+				borderRadius: collapsed ? 30 : 16,
+			}}
 			transition={{ type: "timing" }}
 			style={styles.optionContainer}
 		>
 			{/* Map out all options */}
 			{options?.map((o, i) => {
 				if (collapsed && o.name !== "collapse") return null
-				if (!collapsed && !showAll && o.name !== "collapse") return null
+				// if (!collapsed && !showAll && o.name !== "collapse") return null
 
 				return (
-					<TouchableOpacity key={i} onPress={o.action}>
-						<Icon name={o.icon} size={30} color={theme.colors.textPrimary} />
-					</TouchableOpacity>
+					<Pressable key={i} onPress={o.action}>
+						<MotiView
+							from={{ scale: 0 }}
+							animate={{ scale: 1 }}
+							transition={{ type: "timing", delay: 200 }}
+						>
+							<Icon name={o.icon} size={30} color={theme.colors.textPrimary} />
+						</MotiView>
+					</Pressable>
 				)
 			})}
 		</MotiView>

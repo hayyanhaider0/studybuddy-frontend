@@ -22,4 +22,11 @@ export const getChapterTabStyles = (colors: ThemeColors) =>
 			aspectRatio: 1 / 1,
 			marginLeft: 4,
 		},
+		addPageButton: {
+			padding: 4,
+			aspectRatio: 1 / 1,
+			borderRadius: 999,
+			marginLeft: 8,
+			alignItems: "center",
+		},
 	})

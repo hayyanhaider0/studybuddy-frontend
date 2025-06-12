@@ -12,10 +12,9 @@ import SizeOptions from "./SizeOptions"
 import { useToolContext } from "../../../contexts/ToolContext"
 import { getCanvasStyles } from "../../../styles/canvas"
 import { useThemeContext } from "../../../contexts/ThemeContext"
-import Handle from "../../common/Handle"
 
 export default function ToolMenu() {
-	const { tool, activeMenu, setActiveMenu, setColorPicker } = useToolContext() // Get tool context
+	const { tool, activeMenu } = useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -34,12 +33,6 @@ export default function ToolMenu() {
 						transition={{ type: "timing", duration: 300 }}
 						style={styles.toolMenu}
 					>
-						<Handle
-							close={() => {
-								setActiveMenu(null)
-								setColorPicker(false)
-							}}
-						/>
 						<ColorOptions tool={tool} />
 						<SizeOptions />
 					</MotiView>

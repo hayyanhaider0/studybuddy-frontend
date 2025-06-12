@@ -20,23 +20,12 @@ import { getCanvasStyles } from "../styles/canvas"
 export default function CanvasScreen() {
 	// Context Imports
 	const { notebooks } = useNotebook()
-	const { addNotebook } = useNotebooks()
-	const { openModal } = useModal()
+	const { handleCreateNotebook } = useNotebooks()
 
 	// Theming
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 	const styles = getCanvasStyles(theme.colors)
-
-	const handleCreateNotebook = () => {
-		openModal({
-			title: "Add New Notebook",
-			description: "Give your notebook a title to start organizing your study materials.",
-			placeholder: "Enter notebook name...",
-			buttonText: "Create Notebook",
-			onSubmit: (input: string) => addNotebook(input),
-		})
-	}
 
 	return (
 		<View style={styles.surface}>

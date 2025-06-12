@@ -20,6 +20,8 @@ import SettingsScreen from "../screens/SettingsScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import NotebooksScreen from "../screens/NotebooksScreen"
+import { getGlobalStyles } from "../styles/global"
+import { useNotebook } from "../contexts/NotebookContext"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -51,6 +53,9 @@ export default function DrawerNavigation() {
 
 	// Theming
 	const { theme } = useThemeContext()
+	const GlobalStyles = getGlobalStyles(theme.colors)
+
+	const { notebook } = useNotebook()
 
 	return (
 		<Drawer.Navigator
@@ -70,7 +75,7 @@ export default function DrawerNavigation() {
 						{/* Map all of the drawer content. */}
 						{state.routes.map((r, i) => {
 							const isFocused = state.index === i // Find the current selected option.
-							const { drawerLabel, drawerIcon, title } = descriptors[r.key].options // Get descriptors of each menu option.
+							const { drawerIcon, title } = descriptors[r.key].options // Get descriptors of each menu option.
 							const label = title // Set label to be the title.
 
 							const separator = r.name === "account" // Used to separate menu options.
@@ -141,7 +146,10 @@ export default function DrawerNavigation() {
 				)
 			}}
 			initialRouteName='canvas' // Go to canvas initially.
-			screenOptions={{ headerShown: false, drawerStyle: { width: DRAWER_WIDTH } }} // No header and set drawer width.
+			screenOptions={{
+				drawerStyle: { width: DRAWER_WIDTH },
+				headerShown: false,
+			}} // No header and set drawer width.
 		>
 			{/* Canvas option */}
 			<Drawer.Screen

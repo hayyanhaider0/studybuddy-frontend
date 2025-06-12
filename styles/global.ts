@@ -30,6 +30,11 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			color: colors.textPrimary,
 			textAlign: "center",
 		},
+		subtext: {
+			fontSize: 10,
+			color: colors.textSecondary,
+			textAlign: "center",
+		},
 		button: {
 			paddingVertical: 8,
 			paddingHorizontal: 16,

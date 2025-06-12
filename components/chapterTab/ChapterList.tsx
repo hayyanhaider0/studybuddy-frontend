@@ -1,3 +1,10 @@
+/**
+ * ChapterList Component
+ *
+ * Renders a scrollable chapter list allowing navigation to different chapters
+ * within the same notebook.
+ */
+
 import { FlatList, Pressable, View, Text } from "react-native"
 import { useNotebook } from "../../contexts/NotebookContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
@@ -5,15 +12,13 @@ import { getChapterTabStyles } from "../../styles/chapterTab"
 import { getGlobalStyles } from "../../styles/global"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import useNotebooks from "../../hooks/useNotebooks"
-import { useModal } from "../../contexts/ModalContext"
 import { useEffect } from "react"
 import CustomPressable from "../common/CustomPressable"
 
 export default function ChapterList() {
 	// Get context values
 	const { notebooks, notebook, chapter, setChapter, setActiveCanvasId } = useNotebook()
-	const { addChapterToCurrentNotebook } = useNotebooks()
-	const { openModal } = useModal()
+	const { handleNewChapter } = useNotebooks()
 
 	// Available chapters in the current notebook.
 	const chapters = notebook?.chapters || []
@@ -23,28 +28,19 @@ export default function ChapterList() {
 	const GlobalStyles = getGlobalStyles(theme.colors)
 	const styles = getChapterTabStyles(theme.colors)
 
+	/**
+	 * Allows the user to select a chapter from the chapter tab to navigate to it.
+	 *
+	 * @param i - Index of the selected chapter.
+	 */
 	const selectChapter = (i: number) => {
-		if (!notebook) return
+		if (!notebook) return // Exit if notebook doesn't exist.
 		const newChapter = notebook.chapters[i]
-		if (newChapter) {
-			console.log(`Selected Chapter: \n\tIndex: ${i}\n\tID: ${newChapter.id}`)
-			setChapter(newChapter)
-		}
+		setChapter(newChapter)
 	}
 
 	const openChapterMenu = (i: number) => {
 		console.log(`Open menu for chapter with ID: ${chapters[i].id}`)
-	}
-
-	// Allows the user to create a new chapter with a title.
-	const handleNewChapter = () => {
-		openModal({
-			title: "Create New Chapter",
-			description: "Organize your content by adding a new chapter to this notebook.",
-			placeholder: "Enter chapter title...",
-			buttonText: "Create Chapter",
-			onSubmit: (input) => addChapterToCurrentNotebook(input),
-		})
 	}
 
 	// Sets the active canvas to the first canvas in a chapter upon chapter change.
@@ -56,9 +52,12 @@ export default function ChapterList() {
 
 	return (
 		<FlatList
+			// Core config.
+			data={notebook?.chapters}
+			keyExtractor={(item) => item.id}
 			horizontal
 			showsHorizontalScrollIndicator={false}
-			data={notebook?.chapters}
+			// Item renderer.
 			renderItem={({ item, index }) => {
 				if (!notebook || !chapter) return null
 				const focused = chapter.id === item.id
@@ -89,7 +88,9 @@ export default function ChapterList() {
 					</Pressable>
 				)
 			}}
+			// Item separator.
 			ItemSeparatorComponent={() => <View style={{ width: 4 }} />}
+			// List footer -- adds a new chapter to the list and notebook.
 			ListFooterComponent={
 				notebooks.length > 0
 					? () => (

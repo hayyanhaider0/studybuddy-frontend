@@ -15,7 +15,6 @@ import { useToolContext } from "../../contexts/ToolContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { useNotebook } from "../../contexts/NotebookContext"
 import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
-import { useEffect } from "react"
 
 interface DrawingCanvasProps {
 	canvasId: string
@@ -23,23 +22,28 @@ interface DrawingCanvasProps {
 }
 
 export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps) {
-	// Context Imports.
+	// Get values from context.
 	const { paths, current, layout } = useCanvasContext()
 	const { chapter } = useNotebook()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 
+	// Get the current canvas id from CanvasScreen.
 	const canvas = chapter?.canvases.find((c) => c.id === canvasId)
+
+	// Get the current canvas's paths and current path if any.
 	const canvasPaths = paths[canvasId] || []
 	const currentPath = current[canvasId] || ""
 
+	// Set canvas dimensions.
 	const CANVAS_WIDTH = 360
 	const CANVAS_HEIGHT = CANVAS_WIDTH * (16 / 9)
 
+	// Font import for Skia -- used for page number.
+	const Roboto = useFont(require("../../assets/fonts/Roboto-Bold.ttf"), 16)
+
 	// Gesture.
 	const drawingGestures = useCanvasDrawingGestures(canvasId)
-
-	const Roboto = useFont(require("../../assets/fonts/Roboto-Bold.ttf"), 16)
 
 	return (
 		<View style={{ flex: 1 }}>

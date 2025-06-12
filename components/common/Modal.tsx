@@ -11,7 +11,7 @@ import { TextInput } from "react-native-gesture-handler"
 import { useModal } from "../../contexts/ModalContext"
 import CustomPressable from "./CustomPressable"
 import { AnimatePresence, MotiView } from "moti"
-import { useFocusEffect, useNavigationState } from "@react-navigation/native"
+import { useNavigationState } from "@react-navigation/native"
 import { useEffect, useRef } from "react"
 
 export default function Modal() {
@@ -30,6 +30,10 @@ export default function Modal() {
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
+	const routeCount = useNavigationState((state) => state?.routes?.length ?? 0)
+	const prevRouteCount = useRef<number>(routeCount)
+
+	// Runs the onPress function with the input value, and resets and closes the modal.
 	const handleConfirm = () => {
 		if (onPress) {
 			onPress(input)
@@ -38,9 +42,7 @@ export default function Modal() {
 		}
 	}
 
-	const routeCount = useNavigationState((state) => state?.routes?.length ?? 0)
-	const prevRouteCount = useRef<number>(routeCount)
-
+	// Closes the modal if the user navigates to another screen while it is open.
 	useEffect(() => {
 		if (!showModal) return
 
@@ -53,6 +55,7 @@ export default function Modal() {
 	return (
 		<AnimatePresence>
 			{showModal && (
+				// Dim background behind the modal
 				<MotiView
 					from={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
@@ -60,6 +63,7 @@ export default function Modal() {
 					transition={{ type: "spring", damping: 18 }}
 					style={GlobalStyles.dimBackground}
 				>
+					{/* Modal Container */}
 					<MotiView
 						from={{ translateY: 256, opacity: 0 }}
 						animate={{ translateY: 0, opacity: 1 }}
@@ -67,6 +71,7 @@ export default function Modal() {
 						transition={{ type: "spring", damping: 18 }}
 						style={GlobalStyles.modalContainer}
 					>
+						{/* Modal components */}
 						<Text style={GlobalStyles.subheading}>{title}</Text>
 						<Text style={GlobalStyles.paragraph}>{description}</Text>
 						<TextInput
@@ -77,11 +82,13 @@ export default function Modal() {
 							style={GlobalStyles.input}
 						/>
 						<View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
+							{/* Close modal button */}
 							<CustomPressable
 								title='Close'
 								onPress={() => setShowModal(false)}
 								style={GlobalStyles.secondaryButton}
 							/>
+							{/* Confirm button */}
 							<CustomPressable
 								type='primary'
 								title={buttonText}

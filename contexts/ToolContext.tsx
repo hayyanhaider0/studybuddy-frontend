@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 type ToolSettings = {
 	color: string
 	size: number
+	activeSwatchIndex?: number
 	strokeLinecap?: "butt" | "round"
 	strokeLinejoin?: "bevel" | "round"
 }
@@ -72,10 +73,28 @@ type ToolContextType = {
 /////////////////////////////////////////
 const DEFAULT_SWATCHES = ["#dc2626", "#fb923c", "#facc15", "#3b82f6", "#10b981", "#000000"]
 const DEFAULT_TOOL_SETTINGS = {
-	pen: { color: "#dc2626", size: 4, strokeLinecap: "round", strokeLinejoin: "round" },
+	pen: {
+		color: "#dc2626",
+		size: 4,
+		activeSwatchIndex: 0,
+		strokeLinecap: "round",
+		strokeLinejoin: "round",
+	},
 	eraser: { color: "transparent", size: 4 },
-	pencil: { color: "black", size: 1, strokeLinecap: "round", strokeLinejoin: "round" },
-	highlighter: { color: "#FFFF004D", size: 32, strokeLinecap: "butt", strokeLinejoin: "bevel" },
+	pencil: {
+		color: "black",
+		size: 1,
+		activeSwatchIndex: 0,
+		strokeLinecap: "round",
+		strokeLinejoin: "round",
+	},
+	highlighter: {
+		color: "#FFFF004D",
+		size: 32,
+		activeSwatchIndex: 0,
+		strokeLinecap: "butt",
+		strokeLinejoin: "bevel",
+	},
 	text: { color: "black", size: 8 },
 	pointer: { color: "black", size: 8 },
 } as const
