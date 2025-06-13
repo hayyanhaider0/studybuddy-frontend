@@ -27,4 +27,5 @@ export type Notebook = {
 	chapters: Chapter[]
 	createdAt: number
 	updatedAt: number
+	fill: string
 }

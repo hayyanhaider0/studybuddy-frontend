@@ -11,15 +11,13 @@ import {
 } from "@react-navigation/drawer"
 import { LinearGradient } from "expo-linear-gradient"
 import React from "react"
-import { TouchableOpacity, View, Text, Pressable } from "react-native"
+import { TouchableOpacity, View, Text } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { CanvasProvider } from "../providers/CanvasProvider"
 import CanvasScreen from "../screens/CanvasScreen"
-import LoginScreen from "../screens/LoginScreen"
 import SettingsScreen from "../screens/SettingsScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import NotebooksScreen from "../screens/NotebooksScreen"
 import Header from "../components/common/Header"
 import { screens } from "../utils/drawer"
 
@@ -161,7 +159,9 @@ export default function DrawerNavigation() {
 					options={{
 						drawerIcon: ({ color, size }) => <MaterialC name={s.icon} size={size} color={color} />,
 						title: s.title,
-						header: ({ route, options }) => <Header title={options.title || route.name} />,
+						header: ({ route, options }) => (
+							<Header title={options.title || route.name} sort={() => null} />
+						),
 					}}
 				/>
 			))}
@@ -174,6 +174,7 @@ export default function DrawerNavigation() {
 						<Ionicons name='settings-outline' size={size} color={color} />
 					),
 					title: "Settings",
+					header: () => <Header title={"Settings"} />,
 				}}
 			/>
 		</Drawer.Navigator>

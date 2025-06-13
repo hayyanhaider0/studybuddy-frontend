@@ -45,6 +45,7 @@ export const createNotebook = (title: string): Notebook => ({
 	chapters: [createChapter("Chapter 1")],
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
+	fill: "blue",
 })
 
 /////////////////////////////////////////
