@@ -6,19 +6,19 @@
  */
 
 import { FlatList, Pressable, View, Text } from "react-native"
-import { useNotebook } from "../../contexts/NotebookContext"
+import { useNotebookContext } from "../../contexts/NotebookContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getChapterTabStyles } from "../../styles/chapterTab"
 import { getGlobalStyles } from "../../styles/global"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import useNotebooks from "../../hooks/useNotebooks"
+import useNotebookActions from "../../hooks/useNotebookActions"
 import { useEffect } from "react"
 import CustomPressable from "../common/CustomPressable"
 
 export default function ChapterList() {
 	// Get context values
-	const { notebooks, notebook, chapter, setChapter, setActiveCanvasId } = useNotebook()
-	const { handleNewChapter } = useNotebooks()
+	const { notebooks, notebook, chapter, setChapter, setActiveCanvasId } = useNotebookContext()
+	const { handleNewChapter } = useNotebookActions()
 
 	// Available chapters in the current notebook.
 	const chapters = notebook?.chapters || []

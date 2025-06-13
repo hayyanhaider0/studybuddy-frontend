@@ -1,8 +1,8 @@
 import { Pressable, Text, View } from "react-native"
-import { useNotebook } from "../contexts/NotebookContext"
+import { useNotebookContext } from "../contexts/NotebookContext"
 import { getGlobalStyles } from "../styles/global"
 import { useThemeContext } from "../contexts/ThemeContext"
-import useNotebooks from "../hooks/useNotebooks"
+import useNotebookActions from "../hooks/useNotebookActions"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { formatDate, timeAgo } from "../utils/date"
 import { ScrollView } from "react-native-gesture-handler"
@@ -11,8 +11,8 @@ import { useNavigation } from "@react-navigation/native"
 import { DrawerParamList } from "../navigation/DrawerNavigation"
 
 export default function NotebooksScreen() {
-	const { handleCreateNotebook } = useNotebooks()
-	const { notebooks } = useNotebook()
+	const { handleCreateNotebook } = useNotebookActions()
+	const { notebooks } = useNotebookContext()
 
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)

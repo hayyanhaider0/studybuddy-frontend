@@ -78,7 +78,7 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
  * @throws Error if used outside NotebookProvider.
  * @returns NotebookContext shared values.
  */
-export const useNotebook = () => {
+export const useNotebookContext = () => {
 	const ctx = useContext(NotebookContext)
 	if (!ctx) throw new Error("useNotebook must be used within a NotebookProvider")
 	return ctx

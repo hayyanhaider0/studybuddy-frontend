@@ -9,18 +9,17 @@ import { Text, Pressable, View } from "react-native"
 import Toolbar from "../components/canvas/toolbar/Toolbar"
 import { getGlobalStyles } from "../styles/global"
 import ChapterTab from "../components/chapterTab/ChapterTab"
-import { useNotebook } from "../contexts/NotebookContext"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
-import { useModal } from "../contexts/ModalContext"
-import useNotebooks from "../hooks/useNotebooks"
+import useNotebookActions from "../hooks/useNotebookActions"
 import ZoomIndicator from "../components/canvas/ZoomIndicator"
 import CanvasList from "../components/canvas/CanvasList"
 import { getCanvasStyles } from "../styles/canvas"
+import { useNotebookContext } from "../contexts/NotebookContext"
 
 export default function CanvasScreen() {
 	// Context Imports
-	const { notebooks } = useNotebook()
-	const { handleCreateNotebook } = useNotebooks()
+	const { notebooks } = useNotebookContext()
+	const { handleCreateNotebook } = useNotebookActions()
 
 	// Theming
 	const { theme } = useThemeContext()

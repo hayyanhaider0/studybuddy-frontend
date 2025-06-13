@@ -1,8 +1,16 @@
+/**
+ * chapterTab Styles
+ *
+ * Contains styles relating to components in the chapterTab including ChapterTab,
+ * ChapterList, and the AddPageButton.
+ */
+
 import { StyleSheet } from "react-native"
 import { ThemeColors } from "../types/global"
 
 export const getChapterTabStyles = (colors: ThemeColors) =>
 	StyleSheet.create({
+		// ChapterTab styles
 		container: {
 			position: "relative",
 			width: "100%",
@@ -11,6 +19,7 @@ export const getChapterTabStyles = (colors: ThemeColors) =>
 			paddingTop: 40,
 			zIndex: 10,
 		},
+		// ChapterList styles
 		list: {
 			borderRadius: 999,
 			paddingVertical: 8,
@@ -22,6 +31,7 @@ export const getChapterTabStyles = (colors: ThemeColors) =>
 			aspectRatio: 1 / 1,
 			marginLeft: 4,
 		},
+		// AddPageButton styles
 		addPageButton: {
 			padding: 4,
 			aspectRatio: 1 / 1,

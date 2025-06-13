@@ -12,7 +12,7 @@ import { useCanvasActions } from "../../hooks/useCanvasActions"
 import { getChapterTabStyles } from "../../styles/chapterTab"
 import ChapterList from "./ChapterList"
 import AddPageButton from "./AddPageButton"
-import { useNotebook } from "../../contexts/NotebookContext"
+import { useNotebookContext } from "../../contexts/NotebookContext"
 import { getGlobalStyles } from "../../styles/global"
 import { useState } from "react"
 import { MotiView } from "moti"
@@ -21,7 +21,7 @@ export default function ChapterTab() {
 	const [extended, setExtended] = useState<boolean>(true) // Extended state for ChapterTab component.
 
 	// Get context values.
-	const { notebook } = useNotebook()
+	const { notebook } = useNotebookContext()
 	const { toggleMenu } = useCanvasActions()
 
 	// Theming

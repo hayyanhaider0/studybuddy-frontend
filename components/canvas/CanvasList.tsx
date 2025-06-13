@@ -11,7 +11,7 @@ import { GestureDetector } from "react-native-gesture-handler"
 import DrawingCanvas from "./DrawingCanvas"
 import { useRef } from "react"
 import Animated, { useAnimatedStyle } from "react-native-reanimated"
-import { useNotebook } from "../../contexts/NotebookContext"
+import { useNotebookContext } from "../../contexts/NotebookContext"
 import { useTransformContext } from "../../contexts/TransformContext"
 import { useCanvasTranslateGestures } from "../../hooks/useCanvasTranslateGestures"
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
@@ -20,7 +20,7 @@ export default function CanvasList() {
 	const flatListRef = useRef<FlatList>(null)
 	const { width: screenWidth } = useWindowDimensions()
 	const { setLayout } = useCanvasContext()
-	const { chapter, setActiveCanvasId } = useNotebook()
+	const { chapter, setActiveCanvasId } = useNotebookContext()
 	const { scale, translateX, translateY } = useTransformContext()
 	const translateGestures = useCanvasTranslateGestures()
 

@@ -1,3 +1,15 @@
+/**
+ * date Util
+ *
+ * Contains helper functions for converting date timestamp to readable strings.
+ */
+
+/**
+ * Formats the date to a readable MM/DD/YY format.
+ *
+ * @param timestamp - JS timestamp from Date.
+ * @returns MM/DD/YY formatted string.
+ */
 export const formatDate = (timestamp: number): string => {
 	const date = new Date(timestamp)
 	return date.toLocaleDateString("en-US", {
@@ -7,6 +19,15 @@ export const formatDate = (timestamp: number): string => {
 	})
 }
 
+/**
+ * Shows how long ago the timestamp was in a readable string.
+ *
+ * @param timestamp - JS time stamp from Date.
+ * @returns x s ago string if time is < 60seconds ago.
+ * x m ago if time is < 60mins ago.
+ * x h ago if time is < 24hours ago.
+ * MM/DD/YY date from formatDate if none of the above.
+ */
 export const timeAgo = (timestamp: number): string => {
 	const now = new Date()
 	const past = new Date(timestamp)

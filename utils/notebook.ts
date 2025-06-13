@@ -8,6 +8,10 @@
 import { Canvas, Chapter, Notebook } from "../types/notebook"
 import uuid from "react-native-uuid"
 
+/////////////////////////////////////////
+// Factory Functions
+/////////////////////////////////////////
+// Creates a new canvas/page.
 const createCanvas = (): Canvas => ({
 	id: uuid.v4() as string,
 	paths: [],
@@ -15,6 +19,12 @@ const createCanvas = (): Canvas => ({
 	updatedAt: Date.now(),
 })
 
+/**
+ * Creates a new chapter.
+ *
+ * @param title - Name of the new chapter.
+ * @returns A named chapter with a canvas.
+ */
 const createChapter = (title: string): Chapter => ({
 	id: uuid.v4() as string,
 	title: title || "My Chapter",
@@ -27,7 +37,7 @@ const createChapter = (title: string): Chapter => ({
  * Creates a new notebook.
  *
  * @param title - Name of the new notebook.
- * @returns An empty named notebook.
+ * @returns A named notebook with a new chapter called "Chapter 1".
  */
 export const createNotebook = (title: string): Notebook => ({
 	id: uuid.v4() as string,
@@ -37,6 +47,9 @@ export const createNotebook = (title: string): Notebook => ({
 	updatedAt: Date.now(),
 })
 
+/////////////////////////////////////////
+// Mutation Functions
+/////////////////////////////////////////
 /**
  * Creates a new chapter and adds it to the specified notebook.
  *

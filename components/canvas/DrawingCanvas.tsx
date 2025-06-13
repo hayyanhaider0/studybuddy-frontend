@@ -13,7 +13,7 @@ import Background1 from "./Background1"
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
 import { useToolContext } from "../../contexts/ToolContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { useNotebook } from "../../contexts/NotebookContext"
+import { useNotebookContext } from "../../contexts/NotebookContext"
 import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
 
 interface DrawingCanvasProps {
@@ -24,7 +24,7 @@ interface DrawingCanvasProps {
 export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps) {
 	// Get values from context.
 	const { paths, current, layout } = useCanvasContext()
-	const { chapter } = useNotebook()
+	const { chapter } = useNotebookContext()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 

@@ -20,8 +20,6 @@ import SettingsScreen from "../screens/SettingsScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import NotebooksScreen from "../screens/NotebooksScreen"
-import { getGlobalStyles } from "../styles/global"
-import { useNotebook } from "../contexts/NotebookContext"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -53,9 +51,6 @@ export default function DrawerNavigation() {
 
 	// Theming
 	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
-
-	const { notebook } = useNotebook()
 
 	return (
 		<Drawer.Navigator

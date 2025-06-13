@@ -9,13 +9,13 @@ import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { useToolContext } from "../contexts/ToolContext"
 import { DrawerParamList } from "../navigation/DrawerNavigation"
-import { useNotebook } from "../contexts/NotebookContext"
+import { useNotebookContext } from "../contexts/NotebookContext"
 
 export function useCanvasActions() {
 	// Get values from contexts
 	const { setPaths } = useCanvasContext()
 	const { toolSettings, collapsed, setCollapsed } = useToolContext()
-	const { activeCanvasId } = useNotebook()
+	const { activeCanvasId } = useNotebookContext()
 	const canvasId = activeCanvasId as string
 
 	// Navigation for the sidebar menu.
