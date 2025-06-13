@@ -11,15 +11,17 @@ import {
 } from "@react-navigation/drawer"
 import { LinearGradient } from "expo-linear-gradient"
 import React from "react"
-import { TouchableOpacity, View, Text } from "react-native"
+import { TouchableOpacity, View, Text, Pressable } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { CanvasProvider } from "../providers/CanvasProvider"
 import CanvasScreen from "../screens/CanvasScreen"
 import LoginScreen from "../screens/LoginScreen"
 import SettingsScreen from "../screens/SettingsScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
-import Material from "react-native-vector-icons/MaterialCommunityIcons"
+import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import NotebooksScreen from "../screens/NotebooksScreen"
+import Header from "../components/common/Header"
+import { screens } from "../utils/drawer"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -37,16 +39,6 @@ export type DrawerParamList = {
 const Drawer = createDrawerNavigator<DrawerParamList>()
 
 export default function DrawerNavigation() {
-	// All screens except Canvas and Settings.
-	const screens = [
-		{ name: "notebooks", title: "Notebooks", icon: "notebook", component: NotebooksScreen },
-		{ name: "aiNotes", title: "AI Notes", icon: "robot", component: LoginScreen },
-		{ name: "flashcards", title: "Flashcards", icon: "cards-outline", component: LoginScreen },
-		{ name: "quizzes", title: "Quizzes", icon: "clipboard-list-outline", component: LoginScreen },
-		{ name: "exams", title: "Exams", icon: "file-document-outline", component: LoginScreen },
-		{ name: "account", title: "Account", icon: "account-circle-outline", component: LoginScreen },
-	]
-
 	const DRAWER_WIDTH = 252 // Set the drawer width
 
 	// Theming
@@ -143,7 +135,7 @@ export default function DrawerNavigation() {
 			initialRouteName='canvas' // Go to canvas initially.
 			screenOptions={{
 				drawerStyle: { width: DRAWER_WIDTH },
-				headerShown: false,
+				headerShown: true,
 			}} // No header and set drawer width.
 		>
 			{/* Canvas option */}
@@ -156,7 +148,8 @@ export default function DrawerNavigation() {
 				)}
 				options={{
 					title: "Canvas",
-					drawerIcon: ({ color, size }) => <Material name='draw' size={size} color={color} />,
+					drawerIcon: ({ color, size }) => <MaterialC name='draw' size={size} color={color} />,
+					headerShown: false,
 				}}
 			/>
 			{/* Render all options except Canvas and Settings. */}
@@ -166,8 +159,9 @@ export default function DrawerNavigation() {
 					name={s.name as keyof DrawerParamList}
 					component={s.component}
 					options={{
-						drawerIcon: ({ color, size }) => <Material name={s.icon} size={size} color={color} />,
+						drawerIcon: ({ color, size }) => <MaterialC name={s.icon} size={size} color={color} />,
 						title: s.title,
+						header: ({ route, options }) => <Header title={options.title || route.name} />,
 					}}
 				/>
 			))}

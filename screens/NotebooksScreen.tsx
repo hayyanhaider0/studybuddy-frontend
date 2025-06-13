@@ -24,23 +24,6 @@ export default function NotebooksScreen() {
 		<ScrollView style={GlobalStyles.container}>
 			<View
 				style={{
-					paddingTop: 72,
-					paddingBottom: 36,
-					marginHorizontal: 36,
-					borderBottomWidth: 1,
-					borderBottomColor: theme.colors.textPrimary,
-					flexDirection: "row",
-					alignItems: "center",
-					gap: 16,
-				}}
-			>
-				<Pressable onPress={() => navigation.toggleDrawer()}>
-					<MaterialC name='chevron-right' size={24} color={theme.colors.textPrimary} />
-				</Pressable>
-				<Text style={GlobalStyles.heading}>Notebooks</Text>
-			</View>
-			<View
-				style={{
 					flexDirection: "row",
 					flexWrap: "wrap",
 					padding: 32,
