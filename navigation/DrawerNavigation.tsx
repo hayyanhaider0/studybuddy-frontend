@@ -18,8 +18,10 @@ import CanvasScreen from "../screens/CanvasScreen"
 import SettingsScreen from "../screens/SettingsScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import Header from "../components/common/Header"
+import Header from "./Header"
 import { screens } from "../utils/drawer"
+import CustomDrawer from "./CustomDrawer"
+import { useModal } from "../contexts/ModalContext"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -39,8 +41,7 @@ const Drawer = createDrawerNavigator<DrawerParamList>()
 export default function DrawerNavigation() {
 	const DRAWER_WIDTH = 252 // Set the drawer width
 
-	// Theming
-	const { theme } = useThemeContext()
+	const { openModal } = useModal()
 
 	return (
 		<Drawer.Navigator
@@ -48,87 +49,7 @@ export default function DrawerNavigation() {
 			drawerContent={(props: DrawerContentComponentProps) => {
 				const { state, descriptors, navigation } = props // Get properties of drawer content.
 
-				return (
-					// Main drawer and its styling.
-					<DrawerContentScrollView
-						contentContainerStyle={{
-							backgroundColor: theme.colors.background,
-							minHeight: "100%",
-							gap: 4,
-						}}
-					>
-						{/* Map all of the drawer content. */}
-						{state.routes.map((r, i) => {
-							const isFocused = state.index === i // Find the current selected option.
-							const { drawerIcon, title } = descriptors[r.key].options // Get descriptors of each menu option.
-							const label = title // Set label to be the title.
-
-							const separator = r.name === "account" // Used to separate menu options.
-
-							// Navigate to the selected option.
-							const onPress = () => {
-								if (!isFocused) navigation.navigate(r.name)
-							}
-
-							return (
-								// Menu option
-								<TouchableOpacity
-									key={r.key}
-									onPress={onPress}
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										padding: 4,
-										marginTop: separator ? "auto" : 0,
-									}}
-								>
-									{/* Check whether the option is selected */}
-									{isFocused ? (
-										// If selected, render a gradient.
-										<LinearGradient
-											colors={theme.accent.gradient.colors}
-											start={theme.accent.gradient.start}
-											end={theme.accent.gradient.end}
-											style={{
-												flexDirection: "row",
-												alignItems: "center",
-												width: "100%",
-												borderRadius: 999,
-												paddingHorizontal: 16,
-												gap: 8,
-											}}
-										>
-											{/* Render drawer icon and title */}
-											{drawerIcon?.({ color: theme.accent.onAccent, size: 24, focused: true })}
-											<Text style={{ color: theme.accent.onAccent, paddingVertical: 20 }}>
-												{label}
-											</Text>
-										</LinearGradient>
-									) : (
-										// No gradient if option is not selected.
-										<View
-											style={{
-												backgroundColor: theme.colors.primary,
-												borderRadius: 999,
-												paddingHorizontal: 16,
-												width: "100%",
-												flexDirection: "row",
-												alignItems: "center",
-												gap: 8,
-											}}
-										>
-											{/* Render drawer icon and title */}
-											{drawerIcon?.({ color: theme.colors.textPrimary, size: 24, focused: true })}
-											<Text style={{ color: theme.colors.textPrimary, paddingVertical: 20 }}>
-												{label}
-											</Text>
-										</View>
-									)}
-								</TouchableOpacity>
-							)
-						})}
-					</DrawerContentScrollView>
-				)
+				return <CustomDrawer state={state} descriptors={descriptors} navigation={navigation} />
 			}}
 			initialRouteName='canvas' // Go to canvas initially.
 			screenOptions={{
@@ -160,7 +81,7 @@ export default function DrawerNavigation() {
 						drawerIcon: ({ color, size }) => <MaterialC name={s.icon} size={size} color={color} />,
 						title: s.title,
 						header: ({ route, options }) => (
-							<Header title={options.title || route.name} sort={() => null} />
+							<Header title={options.title || route.name} sort={true} />
 						),
 					}}
 				/>

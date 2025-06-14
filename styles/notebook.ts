@@ -18,12 +18,11 @@ export const getNotebookStyles = (colors: ThemeColors) =>
 			alignItems: "center",
 		},
 		createNotebookButton: {
-			width: "28%",
+			width: 72,
 			height: 96,
 			backgroundColor: colors.secondary,
 			alignSelf: "flex-start",
 			alignItems: "center",
 			justifyContent: "center",
-			borderRadius: 8,
 		},
 	})

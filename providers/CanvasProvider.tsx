@@ -1,7 +1,7 @@
 /**
  * CanvasProvider Component
  *
- * Combines zoom, pan, tool, and canvas state providers.
+ * Combines transform, tool, and canvas state providers.
  */
 
 import { ReactNode } from "react"

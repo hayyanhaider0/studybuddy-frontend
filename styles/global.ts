@@ -69,6 +69,19 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 		error: {
 			color: colors.error,
 		},
+		headerContainer: {
+			backgroundColor: colors.primary,
+			paddingTop: 48,
+			paddingBottom: 16,
+			paddingHorizontal: 16,
+			borderBottomColor: colors.textPrimary,
+		},
+		headerItemsContainer: {
+			flexDirection: "row",
+			gap: 16,
+			alignItems: "center",
+			justifyContent: "space-between",
+		},
 		modalContainer: {
 			width: 292,
 			backgroundColor: colors.primary,

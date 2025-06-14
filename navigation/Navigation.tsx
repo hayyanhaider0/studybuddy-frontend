@@ -11,7 +11,6 @@ import LoginScreen from "../screens/LoginScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import DrawerNavigation from "./DrawerNavigation"
 import Modal from "../components/common/Modal"
-
 export type RootStackParamList = {
 	// All available screens.
 	login: undefined
