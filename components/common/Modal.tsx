@@ -15,17 +15,8 @@ import { useNavigationState } from "@react-navigation/native"
 import { useEffect, useRef } from "react"
 
 export default function Modal() {
-	const {
-		showModal,
-		setShowModal,
-		title,
-		description,
-		placeholder,
-		input,
-		setInput,
-		buttonText,
-		onPress,
-	} = useModal() // Get modal context
+	const { showModal, input, setInput, modalData, closeModal, handleSubmit } = useModal()
+
 	// Theming
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
@@ -33,24 +24,33 @@ export default function Modal() {
 	const routeCount = useNavigationState((state) => state?.routes?.length ?? 0)
 	const prevRouteCount = useRef<number>(routeCount)
 
-	// Runs the onPress function with the input value, and resets and closes the modal.
-	const handleConfirm = () => {
-		if (onPress) {
-			onPress(input)
-			setInput("")
-			setShowModal(false)
-		}
-	}
-
 	// Closes the modal if the user navigates to another screen while it is open.
 	useEffect(() => {
-		if (!showModal) return
+		if (!showModal) {
+			// Reset the ref when modal closes
+			prevRouteCount.current = routeCount
+			return
+		}
 
-		if (routeCount !== prevRouteCount.current) {
-			setShowModal(false)
+		// Only start checking for navigation changes after modal has been open briefly
+		const timer = setTimeout(() => {
+			if (routeCount !== prevRouteCount.current) {
+				closeModal()
+			}
+		}, 200) // Small delay to avoid closing on initial open
+
+		return () => clearTimeout(timer)
+	}, [showModal, routeCount, closeModal])
+
+	// Update the ref whenever route count changes (but don't close modal immediately)
+	useEffect(() => {
+		if (!showModal) {
 			prevRouteCount.current = routeCount
 		}
-	}, [showModal, routeCount])
+	}, [routeCount, showModal])
+
+	// Don't render if no modal data
+	if (!modalData) return null
 
 	return (
 		<AnimatePresence>
@@ -72,12 +72,12 @@ export default function Modal() {
 						style={GlobalStyles.modalContainer}
 					>
 						{/* Modal components */}
-						<Text style={GlobalStyles.subheading}>{title}</Text>
-						<Text style={GlobalStyles.paragraph}>{description}</Text>
+						<Text style={GlobalStyles.subheading}>{modalData.title}</Text>
+						<Text style={GlobalStyles.paragraph}>{modalData.description}</Text>
 						<TextInput
 							value={input}
 							onChangeText={setInput}
-							placeholder={placeholder}
+							placeholder={modalData.placeholder}
 							placeholderTextColor={theme.colors.placeholder}
 							style={GlobalStyles.input}
 						/>
@@ -85,14 +85,14 @@ export default function Modal() {
 							{/* Close modal button */}
 							<CustomPressable
 								title='Close'
-								onPress={() => setShowModal(false)}
+								onPress={closeModal}
 								style={GlobalStyles.secondaryButton}
 							/>
 							{/* Confirm button */}
 							<CustomPressable
 								type='primary'
-								title={buttonText}
-								onPress={handleConfirm}
+								title={modalData.buttonText}
+								onPress={handleSubmit}
 								style={GlobalStyles.button}
 							/>
 						</View>

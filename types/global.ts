@@ -70,3 +70,24 @@ export type OptionType = {
 	icon: string
 	action: () => void
 }
+
+// Sorting
+
+// All different sorting types.
+export type SortType =
+	| "name-asc"
+	| "name-desc"
+	| "updated-newest"
+	| "updated-oldest"
+	| "created-newest"
+	| "created-oldest"
+
+export type SortMap = {
+	notebooks: SortType
+}
+
+// Context Menu options
+export type ContextMenuOptionType = {
+	label: string
+	onPress: () => void
+}

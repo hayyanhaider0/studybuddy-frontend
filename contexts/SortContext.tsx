@@ -5,20 +5,7 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
-
-// All different sorting types.
-type SortType =
-	| "name-asc"
-	| "name-desc"
-	| "updated-newest"
-	| "updated-oldest"
-	| "created-newest"
-	| "created-oldest"
-
-// Map that allows sorting each section differently.
-type SortMap = {
-	notebooks: SortType
-}
+import { SortMap, SortType } from "../types/global"
 
 type SortContextType = {
 	// Current sort type.

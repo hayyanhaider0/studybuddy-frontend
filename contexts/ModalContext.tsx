@@ -8,64 +8,61 @@ type OpenModalProps = {
 	onSubmit: (input: string) => void
 }
 
+type ModalData = {
+	title: string
+	description: string
+	placeholder: string
+	buttonText: string
+	onSubmit: (input: string) => void
+}
+
 type ModalContextType = {
 	showModal: boolean
-	setShowModal: React.Dispatch<React.SetStateAction<boolean>>
-	title: string
-	setTitle: React.Dispatch<React.SetStateAction<string>>
-	description: string
-	setDescription: React.Dispatch<React.SetStateAction<string>>
-	placeholder: string
-	setPlaceholder: React.Dispatch<React.SetStateAction<string>>
 	input: string
-	setInput: React.Dispatch<React.SetStateAction<string>>
-	buttonText: string
-	setButtonText: React.Dispatch<React.SetStateAction<string>>
-	onPress: (inputValue: string) => void
-	setOnPress: React.Dispatch<React.SetStateAction<(inputValue: string) => void>>
-	openModal: ({ title, description, placeholder, buttonText, onSubmit }: OpenModalProps) => void
+	setInput: (input: string) => void
+	modalData: ModalData | null
+	openModal: (props: OpenModalProps) => void
+	closeModal: () => void
+	handleSubmit: () => void
 }
 
 const ModalContext = createContext<ModalContextType | null>(null)
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
 	const [showModal, setShowModal] = useState(false)
-	const [title, setTitle] = useState("")
-	const [description, setDescription] = useState("")
-	const [placeholder, setPlaceholder] = useState("")
 	const [input, setInput] = useState("")
-	const [buttonText, setButtonText] = useState("")
-	const [onPress, setOnPress] = useState<(inputValue: string) => void>(
-		() => (inputValue: string) => console.log(inputValue)
-	)
+	const [modalData, setModalData] = useState<ModalData | null>(null)
 
-	const openModal = ({ title, description, placeholder, buttonText, onSubmit }: OpenModalProps) => {
-		setTitle(title)
-		setDescription(description)
-		setPlaceholder(placeholder)
-		setButtonText(buttonText)
-		setOnPress(() => onSubmit)
+	const openModal = (props: OpenModalProps) => {
+		setModalData(props)
+		setInput("") // Clear previous input
 		setShowModal(true)
+	}
+
+	const closeModal = () => {
+		setShowModal(false)
+		setInput("")
+		// Clear modal data after animation completes
+		setTimeout(() => setModalData(null), 300)
+	}
+
+	const handleSubmit = () => {
+		if (modalData?.onSubmit) {
+			modalData.onSubmit(input)
+			closeModal()
+		}
 	}
 
 	return (
 		<ModalContext.Provider
 			value={{
 				showModal,
-				setShowModal,
-				title,
-				setTitle,
-				description,
-				setDescription,
-				placeholder,
-				setPlaceholder,
 				input,
 				setInput,
-				buttonText,
-				setButtonText,
-				onPress,
-				setOnPress,
+				modalData,
 				openModal,
+				closeModal,
+				handleSubmit,
 			}}
 		>
 			{children}
@@ -75,6 +72,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
 export const useModal = () => {
 	const ctx = useContext(ModalContext)
-	if (!ctx) throw new Error("useModalContext must be used within a ModalProvider")
+	if (!ctx) throw new Error("useModal must be used within a ModalProvider")
 	return ctx
 }

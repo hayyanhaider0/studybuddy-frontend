@@ -100,4 +100,11 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			justifyContent: "center",
 			backgroundColor: "#000000" + "90",
 		},
+		dropdownContainer: {
+			position: "absolute",
+			backgroundColor: colors.secondary,
+			transformOrigin: "top",
+			borderRadius: 8,
+			justifyContent: "center",
+		},
 	})

@@ -4,13 +4,16 @@
  * Handles all navigation related logic.
  */
 
-import { StatusBar, StatusBarStyle } from "react-native"
+import { StatusBar, StatusBarStyle, View, Text, Touchable, TouchableOpacity } from "react-native"
 import { ThemeProvider, useThemeContext } from "../contexts/ThemeContext"
 import { NavigationContainer } from "@react-navigation/native"
 import LoginScreen from "../screens/LoginScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import DrawerNavigation from "./DrawerNavigation"
 import Modal from "../components/common/Modal"
+import { useContextMenu } from "../contexts/ContextMenuContext"
+import { getGlobalStyles } from "../styles/global"
+import ContextMenu from "../components/common/ContextMenu"
 export type RootStackParamList = {
 	// All available screens.
 	login: undefined
@@ -36,6 +39,7 @@ export default function Navigation() {
 					<Stack.Screen name='login' component={LoginScreen} />
 					<Stack.Screen name='main' component={DrawerNavigation} />
 				</Stack.Navigator>
+				<ContextMenu />
 				<Modal />
 			</NavigationContainer>
 		</>

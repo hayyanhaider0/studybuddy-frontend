@@ -1,4 +1,4 @@
-import { View, Pressable, Text, useWindowDimensions } from "react-native"
+import { View, Pressable, Text, useWindowDimensions, Dimensions } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { getGlobalStyles } from "../styles/global"
@@ -6,32 +6,34 @@ import { useNavigation, useRoute } from "@react-navigation/native"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "./DrawerNavigation"
 import { useSort } from "../contexts/SortContext"
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import { useContextMenu } from "../contexts/ContextMenuContext"
+import { getSortOptions } from "../utils/contextMenuOptions"
 
 export default function Header({ title, sort }: { title: string; sort?: boolean }) {
 	const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
-	const { sorts, toggleSort, setSorts } = useSort()
+	const { sorts } = useSort()
 	const route = useRoute()
 	const section = route.name as keyof typeof sorts
+
+	const sortOptions = getSortOptions(section)
 
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
+	const { openMenu } = useContextMenu()
+
 	const buttonRef = useRef<View>(null)
 
-	const sortOptions = [
-		{ label: "Sort By Name", value: "name-asc", onPress: () => setSorts("notebooks", "name-asc") },
-		{
-			label: "Sort By Updated At",
-			value: "updated-newest",
-			onPress: () => setSorts("notebooks", "updated-newest"),
-		},
-		{
-			label: "Sort By Created At",
-			value: "created-newest",
-			onPress: () => setSorts("notebooks", "created-newest"),
-		},
-	]
+	const openSortMenu = () => {
+		buttonRef.current?.measureInWindow((x, y) => {
+			openMenu({
+				options: sortOptions,
+				position: { x, y },
+				selectedOption: "Edit",
+			})
+		})
+	}
 
 	return (
 		<View style={GlobalStyles.headerContainer}>
@@ -45,8 +47,8 @@ export default function Header({ title, sort }: { title: string; sort?: boolean 
 				<View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
 					{sort && (
 						<>
-							<Pressable ref={buttonRef} onPress={() => toggleSort(section)}>
-								<MaterialC name='sort' size={24} color={theme.colors.textPrimary} />
+							<Pressable ref={buttonRef} onPress={openSortMenu}>
+								<MaterialC name='sort-ascending' size={24} color={theme.colors.textPrimary} />
 							</Pressable>
 						</>
 					)}
