@@ -4,15 +4,16 @@
  * Uses the useModal() hook to generate a generic modal.
  */
 
-import { View, Text } from "react-native"
+import { View, Text, BackHandler } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getGlobalStyles } from "../../styles/global"
-import { TextInput } from "react-native-gesture-handler"
+import { GestureDetector, TextInput } from "react-native-gesture-handler"
 import { useModal } from "../../contexts/ModalContext"
 import CustomPressable from "./CustomPressable"
 import { AnimatePresence, MotiView } from "moti"
-import { useNavigationState } from "@react-navigation/native"
-import { useEffect, useRef } from "react"
+import { useFocusEffect } from "@react-navigation/native"
+import { useCallback } from "react"
+import Handle from "./Handle"
 
 export default function Modal() {
 	const { showModal, input, setInput, modalData, closeModal, handleSubmit } = useModal()
@@ -21,33 +22,22 @@ export default function Modal() {
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
-	const routeCount = useNavigationState((state) => state?.routes?.length ?? 0)
-	const prevRouteCount = useRef<number>(routeCount)
-
-	// Closes the modal if the user navigates to another screen while it is open.
-	useEffect(() => {
-		if (!showModal) {
-			// Reset the ref when modal closes
-			prevRouteCount.current = routeCount
-			return
-		}
-
-		// Only start checking for navigation changes after modal has been open briefly
-		const timer = setTimeout(() => {
-			if (routeCount !== prevRouteCount.current) {
-				closeModal()
+	// Close the menu on backpress.
+	useFocusEffect(
+		useCallback(() => {
+			const onBackPress = () => {
+				if (showModal) {
+					closeModal()
+					return true
+				}
+				return false
 			}
-		}, 200) // Small delay to avoid closing on initial open
 
-		return () => clearTimeout(timer)
-	}, [showModal, routeCount, closeModal])
+			const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress)
 
-	// Update the ref whenever route count changes (but don't close modal immediately)
-	useEffect(() => {
-		if (!showModal) {
-			prevRouteCount.current = routeCount
-		}
-	}, [routeCount, showModal])
+			return () => subscription.remove()
+		}, [showModal])
+	)
 
 	// Don't render if no modal data
 	if (!modalData) return null

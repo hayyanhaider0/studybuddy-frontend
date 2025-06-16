@@ -12,7 +12,7 @@ import { getSortOptions } from "../utils/contextMenuOptions"
 
 export default function Header({ title, sort }: { title: string; sort?: boolean }) {
 	const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
-	const { sorts } = useSort()
+	const { sorts, toggleOrder } = useSort()
 	const route = useRoute()
 	const section = route.name as keyof typeof sorts
 
@@ -42,13 +42,20 @@ export default function Header({ title, sort }: { title: string; sort?: boolean 
 					<Pressable onPress={() => navigation.toggleDrawer()}>
 						<MaterialC name='chevron-right' size={24} color={theme.colors.textPrimary} />
 					</Pressable>
-					<Text style={GlobalStyles.heading}>{title}</Text>
+					<Text style={GlobalStyles.subheading}>{title}</Text>
 				</View>
 				<View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
 					{sort && (
 						<>
 							<Pressable ref={buttonRef} onPress={openSortMenu}>
-								<MaterialC name='sort-ascending' size={24} color={theme.colors.textPrimary} />
+								<MaterialC name='sort-variant' size={24} color={theme.colors.textPrimary} />
+							</Pressable>
+							<Pressable onPress={() => toggleOrder(section)}>
+								<MaterialC
+									name={sorts[section].ascending ? "sort-ascending" : "sort-descending"}
+									size={24}
+									color={theme.colors.textPrimary}
+								/>
 							</Pressable>
 						</>
 					)}

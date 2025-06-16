@@ -16,7 +16,6 @@ import { DrawerParamList } from "../../navigation/DrawerNavigation"
 import { Notebook } from "../../types/notebook"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useSort } from "../../contexts/SortContext"
-import { useEffect } from "react"
 
 export default function NotebookList() {
 	// Get context values.
@@ -40,30 +39,20 @@ export default function NotebookList() {
 	}
 
 	const getSortMethod = () => {
-		const sort = sorts.notebooks
-		let result = (a: Notebook, b: Notebook) => a.title.localeCompare(b.title)
+		const { type, ascending } = sorts.notebooks
 
-		switch (sort) {
-			case "name-asc":
-				result = (a: Notebook, b: Notebook) => a.title.localeCompare(b.title)
-				return result
-			case "name-desc":
-				result = (a: Notebook, b: Notebook) => b.title.localeCompare(a.title)
-				return result
-			case "updated-newest":
-				result = (a: Notebook, b: Notebook) => a.updatedAt - b.updatedAt
-				return result
-			case "updated-oldest":
-				result = (a: Notebook, b: Notebook) => b.updatedAt - a.updatedAt
-				return result
-			case "created-newest":
-				result = (a: Notebook, b: Notebook) => a.createdAt - b.createdAt
-				return result
-			case "created-oldest":
-				result = (a: Notebook, b: Notebook) => b.createdAt - a.createdAt
-				return result
+		switch (type) {
+			case "name":
+				return (a: Notebook, b: Notebook) =>
+					ascending ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title)
+			case "updated":
+				return (a: Notebook, b: Notebook) =>
+					ascending ? a.updatedAt - b.updatedAt : b.updatedAt - a.updatedAt
+			case "created":
+				return (a: Notebook, b: Notebook) =>
+					ascending ? a.createdAt - b.createdAt : b.createdAt - a.createdAt
 			default:
-				return (a: Notebook, b: Notebook) => 0
+				return (_a: Notebook, _b: Notebook) => 0
 		}
 	}
 

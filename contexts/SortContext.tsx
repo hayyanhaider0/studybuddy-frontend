@@ -11,9 +11,9 @@ type SortContextType = {
 	// Current sort type.
 	sorts: SortMap
 	// Set the sort for a section.
-	setSorts: (section: keyof SortMap, value: SortType) => void
+	setSorts: (section: keyof SortMap, type: SortType, ascending: boolean) => void
 	// Toggle ascending or descending order.
-	toggleSort: (section: keyof SortMap) => void
+	toggleOrder: (section: keyof SortMap) => void
 }
 
 // React context for sorting.
@@ -28,7 +28,7 @@ export const SortContext = createContext<SortContextType | null>(null)
  */
 export const SortProvider = ({ children }: { children: ReactNode }) => {
 	// Allows amending the sort map and provides current value.
-	const [sorts, setSortMap] = useState<SortMap>({ notebooks: "updated-newest" })
+	const [sorts, setSortMap] = useState<SortMap>({ notebooks: { type: "updated", ascending: true } })
 
 	/**
 	 * Sets the sort map according to the section and value provided.
@@ -36,35 +36,20 @@ export const SortProvider = ({ children }: { children: ReactNode }) => {
 	 * @param section - Section of the app to be sorted.
 	 * @param value - Value that the section needs to be sorted with.
 	 */
-	const setSorts = (section: keyof SortMap, value: SortType) => {
-		setSortMap((prev) => ({ ...prev, [section]: value }))
+	const setSorts = (section: keyof SortMap, type: SortType, ascending: boolean) => {
+		setSortMap((prev) => ({ ...prev, [section]: { type, ascending } }))
 	}
 
-	/**
-	 * Toggles the sorting method between ascending and descending orders.
-	 *
-	 * @param section - Section of the app to be sorted.
-	 */
-	const toggleSort = (section: keyof SortMap) => {
-		setSortMap((prev) => {
-			const curr = prev[section] // Get the current sort setting of the section.
-			let next: SortType
-
-			// Toggle between ascending and descending orders.
-			if (curr.startsWith("name")) {
-				next = curr === "name-asc" ? "name-desc" : "name-asc"
-			} else if (curr.startsWith("updated")) {
-				next = curr === "updated-newest" ? "updated-oldest" : "updated-newest"
-			} else {
-				next = curr === "created-newest" ? "created-oldest" : "created-newest"
-			}
-
-			return { ...prev, [section]: next }
-		})
+	// Toggles the sorting method between ascending and descending orders.
+	const toggleOrder = (section: keyof SortMap) => {
+		setSortMap((prev) => ({
+			...prev,
+			[section]: { ...prev[section], ascending: !prev[section].ascending },
+		}))
 	}
 
 	return (
-		<SortContext.Provider value={{ sorts, setSorts, toggleSort }}>{children}</SortContext.Provider>
+		<SortContext.Provider value={{ sorts, setSorts, toggleOrder }}>{children}</SortContext.Provider>
 	)
 }
 

@@ -74,16 +74,16 @@ export type OptionType = {
 // Sorting
 
 // All different sorting types.
-export type SortType =
-	| "name-asc"
-	| "name-desc"
-	| "updated-newest"
-	| "updated-oldest"
-	| "created-newest"
-	| "created-oldest"
+export type SortType = "name" | "updated" | "created"
+export type SortOrder = boolean // true = ascending, false = descending
+
+export type SortState = {
+	type: SortType
+	ascending: SortOrder
+}
 
 export type SortMap = {
-	notebooks: SortType
+	notebooks: SortState
 }
 
 // Context Menu options

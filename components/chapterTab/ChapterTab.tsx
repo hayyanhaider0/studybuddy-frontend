@@ -53,10 +53,22 @@ export default function ChapterTab() {
 						{/* The whole title is a button which extends the top bar to reveal the ChapterList */}
 						<Pressable
 							onPress={() => setExtended(!extended)}
-							style={{ flexDirection: "row", alignItems: "center", marginRight: "auto" }}
+							style={{
+								flex: 1,
+								width: "50%",
+								flexDirection: "row",
+								alignItems: "center",
+								flexWrap: "nowrap",
+								paddingRight: 32,
+								paddingBottom: 1,
+							}}
 						>
 							{/* Notebook title */}
-							<Text style={[GlobalStyles.subheading, { textAlign: "left", padding: 8 }]}>
+							<Text
+								style={[GlobalStyles.subheading, { textAlign: "left", padding: 8 }]}
+								numberOfLines={1}
+								ellipsizeMode='middle'
+							>
 								{notebook.title}
 							</Text>
 							{/* Icon to show state of extended */}

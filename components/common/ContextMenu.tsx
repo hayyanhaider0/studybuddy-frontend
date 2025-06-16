@@ -6,11 +6,14 @@
  */
 
 import { AnimatePresence, MotiView } from "moti"
-import { View, Text } from "react-native"
+import { View, Text, BackHandler } from "react-native"
 import { TouchableOpacity } from "react-native"
 import { useContextMenu } from "../../contexts/ContextMenuContext"
 import { getGlobalStyles } from "../../styles/global"
 import { useThemeContext } from "../../contexts/ThemeContext"
+import { Gesture, GestureDetector } from "react-native-gesture-handler"
+import { useCallback, useEffect, useRef } from "react"
+import { useFocusEffect, useNavigationState } from "@react-navigation/native"
 
 export default function ContextMenu() {
 	// Get context values
@@ -20,11 +23,35 @@ export default function ContextMenu() {
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
+	// Close menu on tap.
+	const gesture = Gesture.Tap()
+		.onEnd(() => {
+			closeMenu()
+		})
+		.runOnJS(true)
+
+	// Close the menu on backpress.
+	useFocusEffect(
+		useCallback(() => {
+			const onBackPress = () => {
+				if (visible) {
+					closeMenu()
+					return true
+				}
+				return false
+			}
+
+			const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress)
+
+			return () => subscription.remove()
+		}, [visible])
+	)
+
 	return (
 		<AnimatePresence>
 			{visible && (
-				<View style={{ position: "absolute", width: "100%", height: "100%" }}>
-					<TouchableOpacity style={{ width: "100%", height: "100%" }} onPress={closeMenu}>
+				<GestureDetector gesture={gesture}>
+					<View style={{ flex: 1, position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
 						<MotiView
 							// Get the layout to protect the menu from going off screen.
 							onLayout={(e) => {
@@ -64,8 +91,8 @@ export default function ContextMenu() {
 								</TouchableOpacity>
 							))}
 						</MotiView>
-					</TouchableOpacity>
-				</View>
+					</View>
+				</GestureDetector>
 			)}
 		</AnimatePresence>
 	)
