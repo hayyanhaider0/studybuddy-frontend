@@ -7,13 +7,12 @@
 import { View, Text, BackHandler } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getGlobalStyles } from "../../styles/global"
-import { GestureDetector, TextInput } from "react-native-gesture-handler"
-import { useModal } from "../../contexts/ModalContext"
+import { TextInput } from "react-native-gesture-handler"
+import { ModalType, useModal } from "../../contexts/ModalContext"
 import CustomPressable from "./CustomPressable"
 import { AnimatePresence, MotiView } from "moti"
 import { useFocusEffect } from "@react-navigation/native"
 import { useCallback } from "react"
-import Handle from "./Handle"
 
 export default function Modal() {
 	const { showModal, input, setInput, modalData, closeModal, handleSubmit } = useModal()
@@ -62,15 +61,19 @@ export default function Modal() {
 						style={GlobalStyles.modalContainer}
 					>
 						{/* Modal components */}
-						<Text style={GlobalStyles.subheading}>{modalData.title}</Text>
-						<Text style={GlobalStyles.paragraph}>{modalData.description}</Text>
-						<TextInput
-							value={input}
-							onChangeText={setInput}
-							placeholder={modalData.placeholder}
-							placeholderTextColor={theme.colors.placeholder}
-							style={GlobalStyles.input}
-						/>
+						<Text style={[GlobalStyles.paragraph, { fontWeight: "bold" }]}>{modalData.title}</Text>
+						<Text style={[GlobalStyles.paragraph, { fontWeight: "400" }]}>
+							{modalData.description}
+						</Text>
+						{modalData.type === ModalType.INPUT && (
+							<TextInput
+								value={input}
+								onChangeText={setInput}
+								placeholder={modalData.placeholder}
+								placeholderTextColor={theme.colors.placeholder}
+								style={GlobalStyles.input}
+							/>
+						)}
 						<View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
 							{/* Close modal button */}
 							<CustomPressable
@@ -80,7 +83,7 @@ export default function Modal() {
 							/>
 							{/* Confirm button */}
 							<CustomPressable
-								type='primary'
+								type={modalData.type === ModalType.CONFIRM ? "delete" : "primary"}
 								title={modalData.buttonText}
 								onPress={handleSubmit}
 								style={GlobalStyles.button}

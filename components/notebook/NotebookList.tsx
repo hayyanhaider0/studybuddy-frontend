@@ -16,11 +16,15 @@ import { DrawerParamList } from "../../navigation/DrawerNavigation"
 import { Notebook } from "../../types/notebook"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useSort } from "../../contexts/SortContext"
+import { useContextMenu } from "../../contexts/ContextMenuContext"
+import useNotebookActions from "../../hooks/useNotebookActions"
 
 export default function NotebookList() {
 	// Get context values.
 	const { notebooks, setNotebook } = useNotebookContext()
+	const { handleEditNotebook, handleDeleteNotebook } = useNotebookActions()
 	const { sorts } = useSort()
+	const { openMenu } = useContextMenu()
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -38,6 +42,11 @@ export default function NotebookList() {
 		nav.navigate("canvas")
 	}
 
+	/**
+	 * Gets the selected sorted method for notebooks from the sort util.
+	 *
+	 * @returns Selected sorting method for notebooks.
+	 */
 	const getSortMethod = () => {
 		const { type, ascending } = sorts.notebooks
 
@@ -56,7 +65,9 @@ export default function NotebookList() {
 		}
 	}
 
+	// Sorted array of notebooks without amending the original notebooks array.
 	const sortedNotebooks = [...notebooks].sort(getSortMethod())
+
 	return (
 		<>
 			{sortedNotebooks.map((n) => (
@@ -70,7 +81,20 @@ export default function NotebookList() {
 						{/* Notebook icon with editable color */}
 						<NotebookIcon fill={n.fill} width={80} height={96} />
 						{/* Clickable menu icon */}
-						<Pressable style={{ position: "absolute", top: 4, right: -16 }}>
+						<Pressable
+							onPress={(e) => {
+								e.currentTarget.measureInWindow((x, y) => {
+									openMenu({
+										options: [
+											{ label: "Edit", onPress: () => handleEditNotebook(n) },
+											{ label: "Delete", onPress: () => handleDeleteNotebook(n) },
+										],
+										position: { x, y },
+									})
+								})
+							}}
+							style={{ position: "absolute", top: 4, right: -16 }}
+						>
 							<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
 						</Pressable>
 					</View>

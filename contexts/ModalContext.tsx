@@ -1,19 +1,29 @@
 import { createContext, ReactNode, useContext, useState } from "react"
 
+export enum ModalType {
+	INPUT = "INPUT",
+	CONFIRM = "CONFIRM",
+}
+
 type OpenModalProps = {
+	type: ModalType
 	title: string
 	description: string
-	placeholder: string
+	setInput?: string
+	placeholder?: string
 	buttonText: string
-	onSubmit: (input: string) => void
+	onSubmit?: (input: string) => void
+	onConfirm?: () => void
 }
 
 type ModalData = {
+	type: ModalType
 	title: string
 	description: string
-	placeholder: string
+	placeholder?: string
 	buttonText: string
-	onSubmit: (input: string) => void
+	onSubmit?: (input: string) => void
+	onConfirm?: () => void
 }
 
 type ModalContextType = {
@@ -35,7 +45,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
 	const openModal = (props: OpenModalProps) => {
 		setModalData(props)
-		setInput("") // Clear previous input
 		setShowModal(true)
 	}
 
@@ -47,6 +56,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 	}
 
 	const handleSubmit = () => {
+		if (!modalData) return
+
+		if (modalData?.onConfirm) {
+			modalData.onConfirm()
+			closeModal()
+		}
+
 		if (modalData?.onSubmit) {
 			modalData.onSubmit(input)
 			closeModal()

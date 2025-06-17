@@ -7,14 +7,14 @@
  */
 
 import { LinearGradient } from "expo-linear-gradient"
-import { Text, Pressable, StyleProp, ViewStyle } from "react-native"
+import { Text, Pressable, StyleProp, ViewStyle, ColorValue } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { MotiView } from "moti"
 import { getGlobalStyles } from "../../styles/global"
 import { ReactNode } from "react"
 
 type BaseProps = {
-	type?: "primary" | "secondary"
+	type?: "primary" | "secondary" | "delete"
 	onPress: () => void
 	onLongPress?: () => void
 	style?: StyleProp<ViewStyle>
@@ -44,6 +44,11 @@ export default function CustomPressable({
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
+	const colors =
+		type === "primary"
+			? theme.accent.gradient.colors
+			: (["#D31027", "#EA384D"] as [ColorValue, ColorValue, ...ColorValue[]])
+
 	return (
 		<Pressable onPress={onPress} onLongPress={onLongPress}>
 			{({ pressed }) => (
@@ -61,9 +66,9 @@ export default function CustomPressable({
 					style={type === "secondary" && style}
 				>
 					{/* Primary Button -- with a gradient */}
-					{type === "primary" ? (
+					{type !== "secondary" ? (
 						<LinearGradient
-							colors={theme.accent.gradient.colors}
+							colors={colors}
 							start={theme.accent.gradient.start}
 							end={theme.accent.gradient.end}
 							style={style}

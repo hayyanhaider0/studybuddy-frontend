@@ -32,7 +32,7 @@ export default function ChapterTab() {
 	return (
 		<MotiView
 			// Increase the height of the container to reveal the chapter tab upon extension.
-			animate={{ height: extended ? (notebook ? 138 : 96) : 96 }}
+			animate={{ height: extended ? (notebook ? 133 : 96) : 96 }}
 			transition={{ type: "timing", duration: 200 }}
 			style={styles.container}
 		>

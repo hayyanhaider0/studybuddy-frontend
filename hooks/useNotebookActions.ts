@@ -5,15 +5,17 @@
  * Also contains helper functions that open a modal when required.
  */
 
-import { useModal } from "../contexts/ModalContext"
+import { Alert } from "react-native"
+import { useModal, ModalType } from "../contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
+import { Notebook } from "../types/notebook"
 import { addCanvas, addChapter, createNotebook } from "../utils/notebook"
 
 export default function useNotebookActions() {
 	// Get context values.
-	const { setNotebooks, notebook, setNotebook, chapter, setChapter, setCanvas } =
+	const { notebooks, setNotebooks, notebook, setNotebook, chapter, setChapter, setCanvas } =
 		useNotebookContext()
-	const { openModal } = useModal()
+	const { openModal, setInput } = useModal()
 
 	/////////////////////////////////////////
 	// Updater Functions
@@ -29,6 +31,31 @@ export default function useNotebookActions() {
 		setNotebook(notebook)
 		setChapter(notebook.chapters[0])
 		setCanvas(notebook.chapters[0].canvases[0])
+	}
+
+	/**
+	 * Edits a notebook for the user.
+	 *
+	 * @param notebook - Notebook to be edited.
+	 * @param title - New chapter title, if any.
+	 * @param fill - New cover icon color, if any.
+	 */
+	const editNotebook = (notebook: Notebook, title?: string, fill?: string) => {
+		const updated = notebooks.map((n) =>
+			n.id === notebook.id
+				? { ...n, title: title ?? n.title, fill: fill ?? n.fill, updatedAt: Date.now() }
+				: n
+		)
+		setNotebooks(updated)
+	}
+
+	/**
+	 * Deletes a notebook from the user's account.
+	 * @param notebook - Notebook to be deleted
+	 */
+	const deleteNotebook = (notebook: Notebook) => {
+		const updated = notebooks.filter((n) => n.id !== notebook.id)
+		setNotebooks(updated)
 	}
 
 	/**
@@ -64,6 +91,7 @@ export default function useNotebookActions() {
 	// Helper function to create a new notebook with a title.
 	const handleCreateNotebook = () => {
 		openModal({
+			type: ModalType.INPUT,
 			title: "Add New Notebook",
 			description: "Give your notebook a title to start organizing your study materials.",
 			placeholder: "Enter notebook name...",
@@ -72,9 +100,35 @@ export default function useNotebookActions() {
 		})
 	}
 
+	// Helper function to edit a notebook's title and cover fill.
+	const handleEditNotebook = (notebook: Notebook) => {
+		setInput(notebook.title)
+		openModal({
+			type: ModalType.INPUT,
+			title: `Edit ${notebook.title}`,
+			description: "Change your notebook's name and cover icon color.",
+			setInput: notebook.title,
+			placeholder: "Enter notebook name...",
+			buttonText: "Apply Changes",
+			onSubmit: (input: string) => editNotebook(notebook, input),
+		})
+	}
+
+	const handleDeleteNotebook = (notebook: Notebook) => {
+		openModal({
+			type: ModalType.CONFIRM,
+			title: `Delete ${notebook.title}?`,
+			description:
+				"Are you sure you want to delete this notebook? This action can not be undone, and all of your progress will be lost.",
+			buttonText: "Delete Notebook",
+			onConfirm: () => deleteNotebook(notebook),
+		})
+	}
+
 	// Helper function to create a new chapter with a title.
 	const handleNewChapter = () => {
 		openModal({
+			type: ModalType.INPUT,
 			title: "Create New Chapter",
 			description: "Organize your content by adding a new chapter to this notebook.",
 			placeholder: "Enter chapter name...",
@@ -85,6 +139,8 @@ export default function useNotebookActions() {
 
 	return {
 		handleCreateNotebook,
+		handleEditNotebook,
+		handleDeleteNotebook,
 		handleNewChapter,
 		addCanvasToCurrentChapter,
 	}

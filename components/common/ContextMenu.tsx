@@ -69,6 +69,7 @@ export default function ContextMenu() {
 									left: position.x,
 									// Hide the menu initially if it's at 0,0 (not yet positioned)
 									opacity: position.x === 0 && position.y === 0 ? 0 : undefined,
+									elevation: 4,
 								},
 							]}
 						>
@@ -82,7 +83,7 @@ export default function ContextMenu() {
 											borderBottomWidth: 1,
 											borderColor: theme.colors.onSecondary,
 										},
-										{ padding: 16 },
+										{ padding: 16, paddingRight: 32 },
 									]}
 								>
 									<Text style={{ textAlign: "left", color: theme.colors.textPrimary }}>

@@ -51,7 +51,7 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 		},
 		buttonText: {
 			color: colors.onPrimary,
-			fontSize: 16,
+			fontSize: 14,
 			fontWeight: "bold",
 		},
 		input: {

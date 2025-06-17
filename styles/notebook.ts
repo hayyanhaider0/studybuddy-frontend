@@ -20,7 +20,6 @@ export const getNotebookStyles = (colors: ThemeColors) =>
 		createNotebookButton: {
 			width: 72,
 			height: 96,
-			backgroundColor: colors.secondary,
 			alignSelf: "flex-start",
 			alignItems: "center",
 			justifyContent: "center",
