@@ -4,15 +4,8 @@
  * Contains all UI and logic for the sidebar drawer navigation menu.
  */
 
-import {
-	createDrawerNavigator,
-	DrawerContentComponentProps,
-	DrawerContentScrollView,
-} from "@react-navigation/drawer"
-import { LinearGradient } from "expo-linear-gradient"
+import { createDrawerNavigator, DrawerContentComponentProps } from "@react-navigation/drawer"
 import React from "react"
-import { TouchableOpacity, View, Text } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
 import { CanvasProvider } from "../providers/CanvasProvider"
 import CanvasScreen from "../screens/CanvasScreen"
 import SettingsScreen from "../screens/SettingsScreen"
@@ -21,7 +14,6 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import Header from "./Header"
 import { screens } from "../utils/drawer"
 import CustomDrawer from "./CustomDrawer"
-import { useModal } from "../contexts/ModalContext"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -40,8 +32,6 @@ const Drawer = createDrawerNavigator<DrawerParamList>()
 
 export default function DrawerNavigation() {
 	const DRAWER_WIDTH = 252 // Set the drawer width
-
-	const { openModal } = useModal()
 
 	return (
 		<Drawer.Navigator
@@ -81,7 +71,7 @@ export default function DrawerNavigation() {
 						drawerIcon: ({ color, size }) => <MaterialC name={s.icon} size={size} color={color} />,
 						title: s.title,
 						header: ({ route, options }) => (
-							<Header title={options.title || route.name} sort={true} />
+							<Header title={options.title || route.name} sort={s.sort} />
 						),
 					}}
 				/>

@@ -5,7 +5,7 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
-import { SortMap, SortType } from "../types/global"
+import { SortMap, SortState, SortType } from "../types/global"
 
 type SortContextType = {
 	// Current sort type.
@@ -15,6 +15,16 @@ type SortContextType = {
 	// Toggle ascending or descending order.
 	toggleOrder: (section: keyof SortMap) => void
 }
+
+// Default sorting state to be updated newest.
+const defaultSortState: SortState = { type: "updated", ascending: true }
+
+// All the different sortable sections
+const sectionKeys: (keyof SortMap)[] = ["notebooks", "aiNotes", "flashcards", "quizzes", "exams"]
+
+const initialSortMap = Object.fromEntries(
+	sectionKeys.map((key) => [key, defaultSortState])
+) as SortMap
 
 // React context for sorting.
 export const SortContext = createContext<SortContextType | null>(null)
@@ -28,7 +38,7 @@ export const SortContext = createContext<SortContextType | null>(null)
  */
 export const SortProvider = ({ children }: { children: ReactNode }) => {
 	// Allows amending the sort map and provides current value.
-	const [sorts, setSortMap] = useState<SortMap>({ notebooks: { type: "updated", ascending: true } })
+	const [sorts, setSortMap] = useState<SortMap>(initialSortMap)
 
 	/**
 	 * Sets the sort map according to the section and value provided.

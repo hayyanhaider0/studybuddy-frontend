@@ -11,6 +11,7 @@ import Login from "../components/login/Login"
 import SignUp from "../components/login/SignUp"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { getLoginStyles } from "../styles/login"
+import tinycolor from "tinycolor2"
 
 export default function LoginScreen() {
 	const [form, setForm] = useState(false) // Toggle between Login and SignUp components
@@ -28,6 +29,7 @@ export default function LoginScreen() {
 					<Image
 						source={require("../assets/study-buddy-logo.png")}
 						style={{ width: 180, height: 180, alignSelf: "center" }}
+						tintColor={tinycolor(theme.colors.background).isDark() ? "#fff" : "#000"}
 					/>
 					<Text style={GlobalStyles.paragraph}>
 						Your personal AI-powered study assistant. Organize notes, stay focused, and study

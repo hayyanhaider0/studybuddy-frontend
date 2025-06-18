@@ -84,6 +84,10 @@ export type SortState = {
 
 export type SortMap = {
 	notebooks: SortState
+	aiNotes: SortState
+	flashcards: SortState
+	quizzes: SortState
+	exams: SortState
 }
 
 // Context Menu options
