@@ -85,7 +85,7 @@ export default function CustomDrawer({
 												gap: 8,
 											}}
 										>
-											{drawerIcon?.({ color: theme.colors.textPrimary, size: 28, focused: false })}
+											{drawerIcon?.({ color: theme.colors.textPrimary, size: 20, focused: false })}
 											<Text style={[GlobalStyles.paragraph, { paddingVertical: 20 }]}>{label}</Text>
 										</View>
 									)}

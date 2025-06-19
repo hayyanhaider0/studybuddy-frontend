@@ -1,78 +1,121 @@
-import { Switch, Text, TouchableOpacity, View } from "react-native"
-import { ThemeName, themeNames, useThemeContext } from "../contexts/ThemeContext"
+import { Text, View } from "react-native"
+import { useThemeContext } from "../contexts/ThemeContext"
 import { getGlobalStyles } from "../styles/global"
-import CustomTouchableOpacity from "../components/common/CustomTouchableOpacity"
-import { Dropdown } from "react-native-element-dropdown"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { MotiView } from "moti"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
+import { ScrollView } from "react-native-gesture-handler"
 
 export default function SettingsScreen() {
 	const { theme, setTheme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
-	const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+	const insets = useSafeAreaInsets()
 
-	const themeOptions = themeNames.map((name: string) => ({ label: capitalize(name), value: name }))
+	const settings = [
+		{
+			name: "General",
+			icon: "tune",
+			description: "Customize the app’s appearance, language, and basic behavior.",
+		},
+		{
+			name: "Notifications",
+			icon: "bell-ring-outline",
+			description: "Manage reminder frequency, study alerts, and push notifications.",
+		},
+		{
+			name: "Account",
+			icon: "account-circle-outline",
+			description: "Update your profile, email, password, and login methods.",
+		},
+		{
+			name: "Study Preferences",
+			icon: "book-outline",
+			description: "Set your study goals, focus timer defaults, and session habits.",
+		},
+	]
+
+	const aboutLinks = ["Feedback", "Report a Bug", "Terms & Privacy"]
 
 	return (
-		<SafeAreaView style={[GlobalStyles.container, { padding: 16 }]}>
-			{/* <View style={{ alignItems: "flex-start", gap: 8 }}>
-				<Text style={GlobalStyles.paragraph}>Select Theme</Text>
-				<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>
-					Toggles the theme. On = Light Mode Off = Dark Mode
-				</Text>
-				<Dropdown
-					data={themeOptions}
-					onChange={(item) => {
-						setTheme(item.value as ThemeName)
-					}}
-					labelField='label'
-					valueField='value'
+		<ScrollView
+			contentContainerStyle={{ flexGrow: 1 }}
+			style={[GlobalStyles.container, { padding: 8, paddingLeft: insets.left + 8 }]}
+		>
+			<View style={{ flex: 1, justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
+				<View
 					style={{
-						width: "100%",
-						borderWidth: 2,
-						borderColor: theme.colors.placeholder,
-						borderRadius: 999,
-						paddingVertical: 8,
-						paddingHorizontal: 16,
-						alignSelf: "center",
-					}}
-					selectedTextStyle={{ color: theme.colors.placeholder }}
-					activeColor='transparent'
-					containerStyle={{
 						backgroundColor: theme.colors.primary,
-						borderRadius: 25,
-						borderWidth: 0,
-						overflow: "hidden",
+						borderRadius: 28,
 					}}
-					value={themeOptions.find((opt) => opt.value === theme.name)?.value}
-					renderItem={(item, s) => (
+				>
+					{settings.map((s, i) => (
 						<View
-							style={{
-								paddingVertical: 16,
-								paddingHorizontal: 16,
-								backgroundColor: s ? theme.colors.secondary : theme.colors.surface,
-							}}
+							key={i}
+							style={[
+								{
+									borderColor: theme.colors.tertiary,
+									paddingVertical: 24,
+									paddingHorizontal: 16,
+									gap: 16,
+								},
+								i !== settings.length - 1 && { borderBottomWidth: 1 },
+							]}
 						>
-							<Text
+							<View
 								style={[
-									GlobalStyles.paragraph,
 									{
-										textAlign: "left",
-										color: s ? theme.colors.textPrimary : theme.colors.textSecondary,
+										flexDirection: "row",
+										justifyContent: "space-between",
+										paddingRight: 8,
 									},
 								]}
 							>
-								{capitalize(item.value)}
+								<View style={{ flexDirection: "row", gap: 2, alignItems: "center" }}>
+									<MaterialC name='menu-right' size={24} color={theme.colors.textPrimary} />
+									<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>{s.name}</Text>
+								</View>
+								<MaterialC name={s.icon} size={24} color={theme.colors.textPrimary} />
+							</View>
+							<Text style={[GlobalStyles.subtext, { textAlign: "left", paddingLeft: 8 }]}>
+								{s.description}
 							</Text>
 						</View>
-					)}
-				></Dropdown>
-			</View> */}
-			<CustomTouchableOpacity
-				text='Display'
-				onPress={() => setTheme(theme.name === "light" ? "dark" : "light")}
-			/>
-		</SafeAreaView>
+					))}
+				</View>
+				<View style={{ gap: 16 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							backgroundColor: theme.colors.primary,
+							borderRadius: 50,
+							paddingVertical: 24,
+							paddingHorizontal: 16,
+							paddingRight: 24,
+							justifyContent: "space-between",
+						}}
+					>
+						<View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+							<MaterialC name='menu-right' size={24} color={theme.colors.textPrimary} />
+							<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>About</Text>
+						</View>
+						<MaterialC name='information-outline' size={24} color={theme.colors.textPrimary} />
+					</View>
+					<View
+						style={{
+							backgroundColor: theme.colors.primary,
+							borderRadius: 28,
+							gap: 8,
+							padding: 16,
+						}}
+					>
+						{aboutLinks.map((l, i) => (
+							<Text key={i} style={[GlobalStyles.link, { textAlign: "center" }]}>
+								{l}
+							</Text>
+						))}
+					</View>
+				</View>
+			</View>
+		</ScrollView>
 	)
 }
