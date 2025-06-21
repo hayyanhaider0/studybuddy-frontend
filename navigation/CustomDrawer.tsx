@@ -15,13 +15,7 @@ export default function CustomDrawer({
 
 	return (
 		// Scrollable drawer container
-		<DrawerContentScrollView
-			contentContainerStyle={{
-				backgroundColor: theme.colors.background,
-				minHeight: "100%",
-				padding: 8,
-			}}
-		>
+		<DrawerContentScrollView contentContainerStyle={GlobalStyles.sidebarContainer}>
 			{/* Flex wrapper to allow spacing (for marginTop: "auto" to work) */}
 			<View style={{ flex: 1 }}>
 				<Image
@@ -45,13 +39,13 @@ export default function CustomDrawer({
 						<Pressable key={r.key} onPress={onPress}>
 							{({ pressed }) => (
 								<View
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										padding: 4,
-										opacity: pressed ? 0.7 : 1, // Feedback on press
-										transform: [{ scale: pressed ? 0.98 : 1 }],
-									}}
+									style={[
+										GlobalStyles.sidebarButtonContainer,
+										{
+											opacity: pressed ? 0.7 : 1, // Feedback on press
+											transform: [{ scale: pressed ? 0.98 : 1 }],
+										},
+									]}
 								>
 									{/* Highlight selected item with gradient */}
 									{isFocused ? (
@@ -59,14 +53,7 @@ export default function CustomDrawer({
 											colors={theme.accent.gradient.colors}
 											start={theme.accent.gradient.start}
 											end={theme.accent.gradient.end}
-											style={{
-												flexDirection: "row",
-												alignItems: "center",
-												width: "100%",
-												borderRadius: 999,
-												paddingHorizontal: 16,
-												gap: 8,
-											}}
+											style={GlobalStyles.sidebarFocused}
 										>
 											{/* Focused icon + label */}
 											{drawerIcon?.({ color: theme.accent.onAccent, size: 28, focused: true })}
@@ -74,17 +61,7 @@ export default function CustomDrawer({
 										</LinearGradient>
 									) : (
 										// Default unfocused item
-										<View
-											style={{
-												backgroundColor: theme.colors.primary,
-												borderRadius: 999,
-												paddingHorizontal: 16,
-												width: "100%",
-												flexDirection: "row",
-												alignItems: "center",
-												gap: 8,
-											}}
-										>
+										<View style={GlobalStyles.sidebarUnfocused}>
 											{drawerIcon?.({ color: theme.colors.textPrimary, size: 20, focused: false })}
 											<Text style={[GlobalStyles.paragraph, { paddingVertical: 20 }]}>{label}</Text>
 										</View>

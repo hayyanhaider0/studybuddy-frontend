@@ -1,3 +1,11 @@
+/**
+ * NotebooksScreen Component
+ *
+ * Contains all UI elements used on the Notebooks Screen, including a list of the user's
+ * notebooks and a button to add a new notebook. Check out components/notebook for more
+ * information.
+ */
+
 import { Pressable, Text, View } from "react-native"
 import { getGlobalStyles } from "../styles/global"
 import { useThemeContext } from "../contexts/ThemeContext"
@@ -8,8 +16,9 @@ import NotebookList from "../components/notebook/NotebookList"
 import { getNotebookStyles } from "../styles/notebook"
 
 export default function NotebooksScreen() {
-	const { handleCreateNotebook } = useNotebookActions()
+	const { handleCreateNotebook } = useNotebookActions() // Get create notebook action.
 
+	// Theming
 	const { theme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
 	const styles = getNotebookStyles(theme.colors)
@@ -17,7 +26,9 @@ export default function NotebooksScreen() {
 	return (
 		<ScrollView style={GlobalStyles.container}>
 			<View style={styles.listContainer}>
+				{/* List of Notebooks */}
 				<NotebookList />
+				{/* Add a new notebook button */}
 				<Pressable onPress={handleCreateNotebook} style={styles.createNotebookButton}>
 					<MaterialC name='plus-circle-outline' size={36} color={theme.colors.textPrimary} />
 					<Text style={[GlobalStyles.subtext, { paddingTop: 4 }]}>Add New Notebook</Text>

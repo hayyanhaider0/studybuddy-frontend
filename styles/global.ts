@@ -82,6 +82,33 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			alignItems: "center",
 			justifyContent: "space-between",
 		},
+		sidebarContainer: {
+			backgroundColor: colors.background,
+			minHeight: "100%",
+			padding: 8,
+		},
+		sidebarButtonContainer: {
+			flexDirection: "row",
+			alignItems: "center",
+			padding: 4,
+		},
+		sidebarFocused: {
+			flexDirection: "row",
+			alignItems: "center",
+			width: "100%",
+			borderRadius: 999,
+			paddingHorizontal: 16,
+			gap: 8,
+		},
+		sidebarUnfocused: {
+			backgroundColor: colors.primary,
+			borderRadius: 999,
+			paddingHorizontal: 16,
+			width: "100%",
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 8,
+		},
 		modalContainer: {
 			width: 292,
 			backgroundColor: colors.primary,
