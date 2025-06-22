@@ -51,6 +51,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 	// Setter for theme
 	const setTheme = (name: ThemeName) => {
+		if (useSystemTheme) setUseSystemTheme(false)
 		setThemeName(name)
 	}
 

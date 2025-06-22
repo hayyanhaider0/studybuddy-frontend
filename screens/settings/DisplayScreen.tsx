@@ -7,10 +7,39 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 import Settings from "../../components/settings/Settings"
 import { SettingsType } from "../../types/global"
+import { ModalType, useModal } from "../../contexts/ModalContext"
 
 export default function DisplayScreen() {
-	const { theme } = useThemeContext()
+	const { theme, setTheme, useSystemTheme, toggleSystemTheme } = useThemeContext()
 	const GlobalStyles = getGlobalStyles(theme.colors)
+
+	const { openModal } = useModal()
+	const handleSelectTheme = () => {
+		openModal({
+			type: ModalType.CHOICE,
+			title: "Select Theme",
+			description: "Choose a theme and personalize your Study Buddy experience.",
+			choices: [
+				{
+					label: "System Default",
+					onPress: () => {
+						if (!useSystemTheme) toggleSystemTheme()
+					},
+					selected: useSystemTheme,
+				},
+				{
+					label: "Light",
+					onPress: () => setTheme("light"),
+					selected: !useSystemTheme && theme.name === "light",
+				},
+				{
+					label: "Dark",
+					onPress: () => setTheme("dark"),
+					selected: !useSystemTheme && theme.name === "dark",
+				},
+			],
+		})
+	}
 
 	const insets = useSafeAreaInsets()
 
@@ -21,8 +50,7 @@ export default function DisplayScreen() {
 				{
 					name: "Select Theme",
 					description: "Choose a theme and personalize your Study Buddy experience.",
-					onPress: () => console.log("theme"),
-					switch: theme.name === "dark",
+					onPress: handleSelectTheme,
 				},
 				{
 					name: "Font Size",

@@ -118,6 +118,22 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 			borderRadius: 28,
 			gap: 16,
 		},
+		choiceModalContainer: {
+			position: "absolute",
+			bottom: 0,
+			minHeight: "40%",
+			maxHeight: "60%",
+			backgroundColor: colors.primary,
+			borderRadius: 36,
+			padding: 24,
+			gap: 8,
+		},
+		modalChoices: {
+			backgroundColor: colors.secondary,
+			width: "100%",
+			gap: 1,
+			marginVertical: 8,
+		},
 		dimBackground: {
 			position: "absolute",
 			zIndex: 100,
