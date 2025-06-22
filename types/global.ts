@@ -95,3 +95,14 @@ export type ContextMenuOptionType = {
 	label: string
 	onPress: () => void
 }
+
+// Settings Types
+export type SettingsType = {
+	name: string
+	options: {
+		name: string
+		description?: string
+		onPress: () => void
+		switch?: boolean
+	}[]
+}[]

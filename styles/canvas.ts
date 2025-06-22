@@ -119,7 +119,7 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 		// Zoom indicator styles
 		zoomIndicator: {
 			position: "absolute",
-			top: 104,
+			top: 144,
 			right: 16,
 			padding: 8,
 			backgroundColor: colors.primary,

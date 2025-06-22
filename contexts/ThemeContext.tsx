@@ -19,8 +19,10 @@ type ThemeContextType = {
 	theme: typeof themes.light
 	// Setter for the theme.
 	setTheme: (name: ThemeName) => void
-	// Toggles light and dark themes -- REMOVE ONCE DROPDOWN FOR THEMES IS IN PLACE.
-	toggleTheme: () => void
+	// Boolean to show whether the system theme is being used as the default.
+	useSystemTheme: boolean
+	// Toggles the use of system theme as the default.
+	toggleSystemTheme: () => void
 	// Global styles -- check out styles/global.ts for more information.
 	GlobalStyles: ReturnType<typeof getGlobalStyles>
 }
@@ -37,32 +39,30 @@ export const ThemeContext = createContext<ThemeContextType | null>(null)
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
 	// Get the system theme.
-	const systemTheme = Appearance.getColorScheme()
+	const systemTheme = Appearance.getColorScheme() || "light"
+	// Theme based on the system theme.
+	const [useSystemTheme, setUseSystemTheme] = useState<boolean>(true)
 	// Name of the current theme.
-	const [themeName, setThemeName] = useState<ThemeName>(systemTheme || "light")
+	const [themeName, setThemeName] = useState<ThemeName>("light")
 	// Find the current theme from an array of all themes.
-	const theme = themes[themeName]
+	const theme = useSystemTheme ? themes[systemTheme] : themes[themeName]
 	// Global styles -- styles/global.ts
 	const GlobalStyles = getGlobalStyles(theme.colors)
 
-	/**
-	 * setTheme function
-	 *
-	 * Setter for the current theme.
-	 *
-	 * @param name - Name of the new theme.
-	 */
+	// Setter for theme
 	const setTheme = (name: ThemeName) => {
 		setThemeName(name)
 	}
 
-	// REMOVE ONCE THEME DROPDOWN IS IMPLEMENTED.
-	const toggleTheme = () => {
-		setThemeName((prev) => (prev === "light" ? "dark" : "light"))
+	// Uses the system theme as the default theme.
+	const toggleSystemTheme = () => {
+		setUseSystemTheme((prev) => !prev)
 	}
 
 	return (
-		<ThemeContext.Provider value={{ theme, setTheme, toggleTheme, GlobalStyles }}>
+		<ThemeContext.Provider
+			value={{ theme, setTheme, useSystemTheme, toggleSystemTheme, GlobalStyles }}
+		>
 			{children}
 		</ThemeContext.Provider>
 	)

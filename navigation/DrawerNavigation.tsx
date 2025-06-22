@@ -8,12 +8,12 @@ import { createDrawerNavigator, DrawerContentComponentProps } from "@react-navig
 import React from "react"
 import { CanvasProvider } from "../providers/CanvasProvider"
 import CanvasScreen from "../screens/CanvasScreen"
-import SettingsScreen from "../screens/SettingsScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import Header from "./Header"
 import { screens } from "../utils/drawer"
 import CustomDrawer from "./CustomDrawer"
+import SettingsNavigation from "./SettingsNavigation"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -23,7 +23,7 @@ export type DrawerParamList = {
 	flashcards: undefined
 	quizzes: undefined
 	exams: undefined
-	settings: undefined
+	settingsMain: undefined
 	account: undefined
 }
 
@@ -78,14 +78,14 @@ export default function DrawerNavigation() {
 			))}
 			{/* Settings option */}
 			<Drawer.Screen
-				name='settings'
-				component={SettingsScreen}
+				name='settingsMain'
+				component={SettingsNavigation}
 				options={{
 					drawerIcon: ({ color, size }) => (
 						<Ionicons name='settings-outline' size={size} color={color} />
 					),
 					title: "Settings",
-					header: () => <Header title={"Settings"} />,
+					headerShown: false,
 				}}
 			/>
 		</Drawer.Navigator>

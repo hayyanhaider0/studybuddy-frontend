@@ -5,6 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { ScrollView } from "react-native-gesture-handler"
 import { getSettingsStyles } from "../styles/settings"
+import { useNavigation } from "@react-navigation/native"
+import { SettingsParamList } from "../navigation/SettingsNavigation"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { SettingsType } from "../types/global"
+import Settings from "../components/settings/Settings"
 
 export default function SettingsScreen() {
 	// Theming
@@ -13,23 +18,27 @@ export default function SettingsScreen() {
 	const styles = getSettingsStyles(theme.colors)
 
 	const insets = useSafeAreaInsets() // Inset to get a safe area view.
+	const navigation = useNavigation<NativeStackNavigationProp<SettingsParamList>>()
 
 	// All the settings options.
-	const settings = [
+	const settings: SettingsType = [
 		{
 			name: "General Settings",
 			options: [
 				{
 					name: "Display",
 					description: "Edit your display settings, theme, canvas settings, etc.",
+					onPress: () => navigation.navigate("display"),
 				},
 				{
 					name: "Language",
 					description: "Change the language of the app interface.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 				{
 					name: "Notifications",
 					description: "Manage push and in-app notifications.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 			],
 		},
@@ -39,14 +48,17 @@ export default function SettingsScreen() {
 				{
 					name: "Profile",
 					description: "Edit your personal information and profile picture.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 				{
 					name: "Security",
 					description: "Update your password and enable 2FA.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 				{
 					name: "Linked Accounts",
 					description: "Manage connected services like Google or GitHub.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 			],
 		},
@@ -56,14 +68,17 @@ export default function SettingsScreen() {
 				{
 					name: "Help Center",
 					description: "Browse FAQs and support articles.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 				{
 					name: "Contact Us",
 					description: "Reach out to our support team.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 				{
 					name: "Feedback",
 					description: "Send us your thoughts or report a bug.",
+					onPress: () => console.log("NOT YET IMPLEMENTED"),
 				},
 			],
 		},
@@ -77,50 +92,15 @@ export default function SettingsScreen() {
 			style={[GlobalStyles.container, { padding: 8, paddingLeft: insets.left + 8 }]}
 		>
 			<View style={{ flex: 1, justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
-				{settings.map((s, i) => (
-					<View key={i} style={{ gap: 8 }}>
-						{/* Heading, shows the category of settings */}
-						<View style={{ flexDirection: "row", gap: 8, padding: 8 }}>
-							<Text
-								style={[
-									GlobalStyles.paragraph,
-									{ color: theme.colors.textSecondary, textAlign: "left" },
-								]}
-							>
-								{s.name}
-							</Text>
-						</View>
-						<View style={styles.category}>
-							{s.options.map((opt, i) => (
-								// Pressable to allow navigation to the subcategory screen.
-								<Pressable
-									key={i}
-									style={[
-										styles.subcategory,
-										{ borderBottomWidth: i !== s.options.length - 1 ? 1 : 0 },
-									]}
-								>
-									{/* Subcategory name and description */}
-									<View style={{ flexDirection: "row", alignItems: "center" }}>
-										<MaterialC name='menu-right' size={20} color={theme.colors.textPrimary} />
-										<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>{opt.name}</Text>
-									</View>
-									<Text
-										style={[GlobalStyles.subtext, { textAlign: "left", paddingHorizontal: 20 }]}
-									>
-										{opt.description}
-									</Text>
-								</Pressable>
-							))}
-						</View>
-					</View>
-				))}
+				<Settings settings={settings} />
 				{/* About Section */}
 				<View style={{ gap: 16 }}>
 					<View style={styles.about}>
 						<View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
 							<MaterialC name='menu-right' size={24} color={theme.colors.textPrimary} />
-							<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>About</Text>
+							<Text style={[GlobalStyles.paragraph, { fontWeight: "bold", textAlign: "left" }]}>
+								About
+							</Text>
 						</View>
 						<MaterialC name='information-outline' size={24} color={theme.colors.textPrimary} />
 					</View>

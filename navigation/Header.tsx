@@ -10,7 +10,13 @@ import { useRef, useState } from "react"
 import { useContextMenu } from "../contexts/ContextMenuContext"
 import { getSortOptions } from "../utils/contextMenuOptions"
 
-export default function Header({ title, sort }: { title: string; sort?: boolean }) {
+type HeaderProps = {
+	title: string
+	sort?: boolean
+	menu?: boolean
+}
+
+export default function Header({ title, sort, menu = true }: HeaderProps) {
 	const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 	const { sorts, toggleOrder } = useSort()
 	const route = useRoute()
@@ -39,9 +45,15 @@ export default function Header({ title, sort }: { title: string; sort?: boolean 
 		<View style={GlobalStyles.headerContainer}>
 			<View style={GlobalStyles.headerItemsContainer}>
 				<View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-					<Pressable onPress={() => navigation.toggleDrawer()}>
-						<MaterialC name='chevron-right' size={24} color={theme.colors.textPrimary} />
-					</Pressable>
+					{menu ? (
+						<Pressable onPress={() => navigation.toggleDrawer()}>
+							<MaterialC name='chevron-right' size={24} color={theme.colors.textPrimary} />
+						</Pressable>
+					) : (
+						<Pressable onPress={() => navigation.goBack()}>
+							<MaterialC name='chevron-left' size={24} color={theme.colors.textPrimary} />
+						</Pressable>
+					)}
 					<Text style={GlobalStyles.subheading}>{title}</Text>
 				</View>
 				<View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
