@@ -6,8 +6,8 @@ import { SettingsType } from "../../types/global"
 import SettingsOption from "./SettingsOption"
 
 export default function Settings({ settings }: { settings: SettingsType }) {
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	// Theming
+	const { theme, GlobalStyles } = useThemeContext()
 	const styles = getSettingsStyles(theme.colors)
 
 	return (

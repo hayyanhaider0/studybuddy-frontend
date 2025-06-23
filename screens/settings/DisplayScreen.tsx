@@ -10,8 +10,15 @@ import { SettingsType } from "../../types/global"
 import { ModalType, useModal } from "../../contexts/ModalContext"
 
 export default function DisplayScreen() {
-	const { theme, setTheme, useSystemTheme, toggleSystemTheme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const {
+		theme,
+		setTheme,
+		useSystemTheme,
+		toggleSystemTheme,
+		fontScale,
+		setFontScale,
+		GlobalStyles,
+	} = useThemeContext()
 
 	const { openModal } = useModal()
 	const handleSelectTheme = () => {
@@ -41,6 +48,36 @@ export default function DisplayScreen() {
 		})
 	}
 
+	const handleFontScale = () => {
+		openModal({
+			type: ModalType.CHOICE,
+			title: "Font Size",
+			description: "Change your font size.",
+			choices: [
+				{
+					label: "Small",
+					onPress: () => setFontScale(1),
+					selected: fontScale === 1,
+				},
+				{
+					label: "Medium",
+					onPress: () => setFontScale(1.1),
+					selected: fontScale === 1.1,
+				},
+				{
+					label: "Large",
+					onPress: () => setFontScale(1.2),
+					selected: fontScale === 1.2,
+				},
+				{
+					label: "X-Large",
+					onPress: () => setFontScale(1.3),
+					selected: fontScale === 1.3,
+				},
+			],
+		})
+	}
+
 	const insets = useSafeAreaInsets()
 
 	const settings: SettingsType = [
@@ -56,7 +93,7 @@ export default function DisplayScreen() {
 					name: "Font Size",
 					description: "Change your font size.",
 					// onPress: () => navigation.navigate("fontSize"),
-					onPress: () => console.log("Navigate"),
+					onPress: handleFontScale,
 				},
 			],
 		},

@@ -10,8 +10,7 @@ export default function CustomDrawer({
 	descriptors,
 	navigation,
 }: DrawerContentComponentProps) {
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	return (
 		// Scrollable drawer container

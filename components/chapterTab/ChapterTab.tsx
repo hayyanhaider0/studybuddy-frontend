@@ -25,8 +25,8 @@ export default function ChapterTab() {
 	const { toggleMenu } = useCanvasActions()
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
+
 	const styles = getChapterTabStyles(theme.colors)
 
 	return (

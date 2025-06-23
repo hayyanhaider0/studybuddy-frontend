@@ -13,8 +13,8 @@ import Settings from "../components/settings/Settings"
 
 export default function SettingsScreen() {
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
+
 	const styles = getSettingsStyles(theme.colors)
 
 	const insets = useSafeAreaInsets() // Inset to get a safe area view.

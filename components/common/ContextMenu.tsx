@@ -20,8 +20,7 @@ export default function ContextMenu() {
 	const { visible, position, options, closeMenu, setMenuSize } = useContextMenu()
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	// Close menu on tap.
 	const gesture = Gesture.Tap()

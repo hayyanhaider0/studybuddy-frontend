@@ -41,8 +41,7 @@ export default function CustomPressable({
 	children,
 }: CustomPressableProps) {
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	const colors =
 		type === "primary"

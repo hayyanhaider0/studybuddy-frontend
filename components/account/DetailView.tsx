@@ -38,8 +38,7 @@ export default function DetailView(props: DetailViewProps) {
 	const { header, onPress, children, style } = props
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	return (
 		// Main DetailView box.

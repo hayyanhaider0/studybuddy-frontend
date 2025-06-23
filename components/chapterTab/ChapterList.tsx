@@ -24,8 +24,8 @@ export default function ChapterList() {
 	const chapters = notebook?.chapters || []
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
+
 	const styles = getChapterTabStyles(theme.colors)
 
 	/**

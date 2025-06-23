@@ -13,8 +13,7 @@ import DetailView from "../components/account/DetailView"
 
 export default function AccountScreen() {
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	// FAKE DATA
 	const predictedGrades = [

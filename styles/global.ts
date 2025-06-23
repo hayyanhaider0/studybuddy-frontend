@@ -6,32 +6,33 @@
 
 import { StyleSheet } from "react-native"
 import { ThemeColors } from "../types/global"
+import { fontSizes } from "./scales"
 
-export const getGlobalStyles = (colors: ThemeColors) =>
+export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 	StyleSheet.create({
 		container: {
 			flex: 1,
 			backgroundColor: colors.background,
 		},
 		heading: {
-			fontSize: 32,
+			fontSize: fontSizes.xl * fontScale,
 			fontWeight: "bold",
 			color: colors.textPrimary,
 			textAlign: "center",
 		},
 		subheading: {
-			fontSize: 24,
+			fontSize: fontSizes.lg * fontScale,
 			fontWeight: "bold",
 			color: colors.textPrimary,
 			textAlign: "center",
 		},
 		paragraph: {
-			fontSize: 16,
+			fontSize: fontSizes.md * fontScale,
 			color: colors.textPrimary,
 			textAlign: "center",
 		},
 		subtext: {
-			fontSize: 10,
+			fontSize: fontSizes.sm * fontScale,
 			color: colors.textSecondary,
 			textAlign: "center",
 		},
@@ -51,7 +52,7 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 		},
 		buttonText: {
 			color: colors.onPrimary,
-			fontSize: 14,
+			fontSize: fontSizes.md * fontScale,
 			fontWeight: "bold",
 		},
 		input: {
@@ -121,10 +122,12 @@ export const getGlobalStyles = (colors: ThemeColors) =>
 		choiceModalContainer: {
 			position: "absolute",
 			bottom: 0,
+			width: "100%",
 			minHeight: "40%",
 			maxHeight: "60%",
 			backgroundColor: colors.primary,
-			borderRadius: 36,
+			borderTopLeftRadius: 36,
+			borderTopRightRadius: 36,
 			padding: 24,
 			gap: 8,
 		},

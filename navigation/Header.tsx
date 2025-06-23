@@ -24,8 +24,7 @@ export default function Header({ title, sort, menu = true }: HeaderProps) {
 
 	const sortOptions = getSortOptions(section)
 
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	const { openMenu } = useContextMenu()
 

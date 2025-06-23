@@ -20,8 +20,7 @@ export default function Modal() {
 	const { showModal, input, setInput, modalData, closeModal, handleSubmit } = useModal()
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	// Close the menu on backpress.
 	useFocusEffect(

@@ -22,8 +22,8 @@ export default function CanvasScreen() {
 	const { handleCreateNotebook } = useNotebookActions()
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
+
 	const styles = getCanvasStyles(theme.colors)
 
 	return (

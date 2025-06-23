@@ -10,16 +10,16 @@ import { useTransformContext } from "../../contexts/TransformContext"
 import { useEffect, useState } from "react"
 import { runOnJS, useAnimatedReaction } from "react-native-reanimated"
 import { AnimatePresence, MotiView } from "moti"
-import { getGlobalStyles } from "../../styles/global"
 import { getCanvasStyles } from "../../styles/canvas"
+import { getGlobalStyles } from "../../styles/global"
 
 export default function ZoomIndicator() {
 	// Get values from context.
 	const { scale, translateX, translateY } = useTransformContext()
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
+
 	const styles = getCanvasStyles(theme.colors)
 
 	// State management

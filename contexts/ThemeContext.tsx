@@ -23,6 +23,10 @@ type ThemeContextType = {
 	useSystemTheme: boolean
 	// Toggles the use of system theme as the default.
 	toggleSystemTheme: () => void
+	// The current font scale set by the user.
+	fontScale: number
+	// Setter for the font scale.
+	setFontScale: React.Dispatch<React.SetStateAction<number>>
 	// Global styles -- check out styles/global.ts for more information.
 	GlobalStyles: ReturnType<typeof getGlobalStyles>
 }
@@ -41,13 +45,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 	// Get the system theme.
 	const systemTheme = Appearance.getColorScheme() || "light"
 	// Theme based on the system theme.
-	const [useSystemTheme, setUseSystemTheme] = useState<boolean>(true)
+	const [useSystemTheme, setUseSystemTheme] = useState(true)
 	// Name of the current theme.
 	const [themeName, setThemeName] = useState<ThemeName>("light")
 	// Find the current theme from an array of all themes.
 	const theme = useSystemTheme ? themes[systemTheme] : themes[themeName]
+	// Font Size scale multiplier for Study Buddy.
+	const [fontScale, setFontScale] = useState(1)
 	// Global styles -- styles/global.ts
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const GlobalStyles = getGlobalStyles(theme.colors, fontScale)
 
 	// Setter for theme
 	const setTheme = (name: ThemeName) => {
@@ -62,7 +68,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 	return (
 		<ThemeContext.Provider
-			value={{ theme, setTheme, useSystemTheme, toggleSystemTheme, GlobalStyles }}
+			value={{
+				theme,
+				setTheme,
+				useSystemTheme,
+				toggleSystemTheme,
+				fontScale,
+				setFontScale,
+				GlobalStyles,
+			}}
 		>
 			{children}
 		</ThemeContext.Provider>

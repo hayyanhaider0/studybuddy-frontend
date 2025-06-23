@@ -19,8 +19,8 @@ export default function NotebooksScreen() {
 	const { handleCreateNotebook } = useNotebookActions() // Get create notebook action.
 
 	// Theming
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	const { theme, GlobalStyles } = useThemeContext()
+
 	const styles = getNotebookStyles(theme.colors)
 
 	return (

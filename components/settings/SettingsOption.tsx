@@ -5,8 +5,8 @@ import { SettingsOptionsType } from "../../types/global"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 
 export default function SettingsOption({ option }: { option: SettingsOptionsType }) {
-	const { theme } = useThemeContext()
-	const GlobalStyles = getGlobalStyles(theme.colors)
+	// Theming
+	const { theme, GlobalStyles } = useThemeContext()
 
 	return (
 		<>
