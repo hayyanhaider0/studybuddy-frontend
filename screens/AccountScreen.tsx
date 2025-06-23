@@ -99,7 +99,7 @@ export default function AccountScreen() {
 					onPress={() => console.log("Manage subscription")}
 					hintText='Manage Subscription'
 					hintIcon='credit-card-edit'
-					style={{ justifyContent: "space-between", alignItems: "center" }}
+					style={{ justifyContent: "space-between" }}
 				>
 					<View style={{ width: "30%", alignItems: "center" }}>
 						{/* Current plan */}

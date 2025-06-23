@@ -6,9 +6,9 @@
 
 import { View, Pressable, Text, StyleProp, ViewStyle } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { getGlobalStyles } from "../../styles/global"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { ReactNode } from "react"
+import { getAccountStyles } from "../../styles/account"
 
 // Base props for all DetailView.
 type BaseProps = {
@@ -39,19 +39,11 @@ export default function DetailView(props: DetailViewProps) {
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
+	const styles = getAccountStyles(theme.colors)
 
 	return (
 		// Main DetailView box.
-		<View
-			style={{
-				backgroundColor: theme.colors.primary,
-				paddingVertical: 16,
-				paddingHorizontal: 24,
-				marginBottom: 8,
-				borderRadius: 32,
-				gap: 8,
-			}}
-		>
+		<View style={styles.detailViewContainer}>
 			{/* Header and pressable hint (if any, else shows information icon with tooltip) */}
 			<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
 				<Text style={[GlobalStyles.subtext, { textAlign: "left" }]}>{header}</Text>
@@ -73,7 +65,7 @@ export default function DetailView(props: DetailViewProps) {
 					style={[
 						{
 							flexDirection: "row",
-							alignContent: "center",
+							alignItems: "center",
 							gap: 8,
 						},
 						style,

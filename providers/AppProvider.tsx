@@ -8,13 +8,16 @@ import { ReactNode } from "react"
 import { ThemeProvider } from "../contexts/ThemeContext"
 import { SortProvider } from "../contexts/SortContext"
 import { NotebookProvider } from "../contexts/NotebookContext"
+import { SettingsProvider } from "../contexts/SettingsContext"
 
 export function AppProvider({ children }: { children: ReactNode }) {
 	return (
 		<ThemeProvider>
-			<NotebookProvider>
-				<SortProvider>{children}</SortProvider>
-			</NotebookProvider>
+			<SettingsProvider>
+				<NotebookProvider>
+					<SortProvider>{children}</SortProvider>
+				</NotebookProvider>
+			</SettingsProvider>
 		</ThemeProvider>
 	)
 }

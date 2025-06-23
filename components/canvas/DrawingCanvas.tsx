@@ -15,6 +15,7 @@ import { useToolContext } from "../../contexts/ToolContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { useNotebookContext } from "../../contexts/NotebookContext"
 import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
+import { useSettings } from "../../contexts/SettingsContext"
 
 interface DrawingCanvasProps {
 	canvasId: string
@@ -27,6 +28,7 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 	const { chapter } = useNotebookContext()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
+	const { showPageNumber } = useSettings()
 
 	// Get the current canvas id from CanvasScreen.
 	const canvas = chapter?.canvases.find((c) => c.id === canvasId)
@@ -55,14 +57,16 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 						height={layout.height}
 						backgroundColor={theme.colors.background}
 					/>
-					{/* Render page number on the top right */}
-					<SkiaText
-						text={`${(chapter?.canvases.findIndex((c) => c.id === canvas?.id) ?? -1) + 1}`}
-						x={CANVAS_WIDTH - 32}
-						y={36}
-						font={Roboto}
-						color={theme.colors.textPrimary}
-					/>
+					{/* Render page number on the top right if the show page number setting is enabled */}
+					{showPageNumber && (
+						<SkiaText
+							text={`${(chapter?.canvases.findIndex((c) => c.id === canvas?.id) ?? -1) + 1}`}
+							x={CANVAS_WIDTH - 32}
+							y={36}
+							font={Roboto}
+							color={theme.colors.textPrimary}
+						/>
+					)}
 					{/* Render completed paths */}
 					{canvasPaths.map((p: PathType, i: number) => (
 						<Path

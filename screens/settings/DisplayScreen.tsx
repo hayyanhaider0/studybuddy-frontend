@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import Settings from "../../components/settings/Settings"
 import { SettingsType } from "../../types/global"
 import { ModalType, useModal } from "../../contexts/ModalContext"
+import { useSettings } from "../../contexts/SettingsContext"
 
 export default function DisplayScreen() {
 	const { openModal } = useModal() // Get the openModal function from context.
@@ -25,6 +26,9 @@ export default function DisplayScreen() {
 		GlobalStyles,
 	} = useThemeContext()
 	const insets = useSafeAreaInsets()
+
+	// Settings context
+	const { showPageNumber, setShowPageNumber } = useSettings()
 
 	// Opens a multiple choice modal to allow the user to select a theme.
 	const handleSelectTheme = () => {
@@ -108,8 +112,8 @@ export default function DisplayScreen() {
 				{
 					name: "Show Canvas Number",
 					description: "Set whether you want the canvas to have a page number on it.",
-					onPress: () => console.log("Include new property in canvas state context"),
-					switch: true,
+					onPress: () => setShowPageNumber((prev) => !prev),
+					switch: showPageNumber,
 				},
 				{
 					name: "Show Canvas Date Template",
