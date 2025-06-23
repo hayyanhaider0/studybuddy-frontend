@@ -60,6 +60,7 @@ export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 			borderRadius: 999,
 			paddingVertical: 8,
 			paddingHorizontal: 16,
+			fontSize: fontSizes.md * fontScale,
 			backgroundColor: colors.secondary,
 			color: colors.textPrimary,
 		},

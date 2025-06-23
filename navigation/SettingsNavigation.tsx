@@ -1,3 +1,9 @@
+/**
+ * Settings Navigation
+ *
+ * Sets up stack navigation for all settings categories.
+ */
+
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import DisplayScreen from "../screens/settings/DisplayScreen"
 import SettingsScreen from "../screens/SettingsScreen"
@@ -8,10 +14,11 @@ export type SettingsParamList = {
 	display: undefined
 }
 
-const Stack = createNativeStackNavigator<SettingsParamList>()
+const Stack = createNativeStackNavigator<SettingsParamList>() // Create the navigation stack.
 
 export default function SettingsNavigation() {
 	return (
+		// Starts off with the main Settings screen.
 		<Stack.Navigator
 			initialRouteName='settings'
 			screenOptions={{

@@ -7,7 +7,7 @@
 
 import { createContext, ReactNode, useContext, useState } from "react"
 import { PathType } from "../types/global"
-import { Skia, SkPath } from "@shopify/react-native-skia"
+import { SkPath } from "@shopify/react-native-skia"
 
 // Types
 type LayoutType = {

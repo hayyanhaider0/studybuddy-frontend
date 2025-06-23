@@ -1,3 +1,9 @@
+/**
+ * account Styles
+ *
+ * Contains styles for the Account screen.
+ */
+
 import { StyleSheet } from "react-native"
 import { ThemeColors } from "../types/global"
 

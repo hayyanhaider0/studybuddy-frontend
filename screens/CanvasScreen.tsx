@@ -7,7 +7,6 @@
 import { useThemeContext } from "../contexts/ThemeContext"
 import { Text, Pressable, View } from "react-native"
 import Toolbar from "../components/canvas/toolbar/Toolbar"
-import { getGlobalStyles } from "../styles/global"
 import ChapterTab from "../components/chapterTab/ChapterTab"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import useNotebookActions from "../hooks/useNotebookActions"
@@ -36,7 +35,9 @@ export default function CanvasScreen() {
 			) : (
 				<Pressable onPress={handleCreateNotebook} style={styles.addNotebookButton}>
 					<Material name='plus-circle-outline' size={64} color={theme.colors.onPrimary} />
-					<Text style={GlobalStyles.paragraph}>Add a new notebook, and start studying now!</Text>
+					<Text style={[GlobalStyles.paragraph, { paddingHorizontal: 64 }]}>
+						Add a new notebook, and start studying now!
+					</Text>
 				</Pressable>
 			)}
 		</View>

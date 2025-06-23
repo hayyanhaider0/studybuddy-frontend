@@ -1,15 +1,20 @@
-import { View, Text, Switch, Pressable, ScrollView } from "react-native"
+/**
+ * DisplayScreen Component
+ *
+ * Contains the UI for the Settings > Display screen.
+ */
+
+import { ScrollView } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { getGlobalStyles } from "../../styles/global"
-import { getSettingsStyles } from "../../styles/settings"
-import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useNavigation } from "@react-navigation/native"
 import Settings from "../../components/settings/Settings"
 import { SettingsType } from "../../types/global"
 import { ModalType, useModal } from "../../contexts/ModalContext"
 
 export default function DisplayScreen() {
+	const { openModal } = useModal() // Get the openModal function from context.
+
+	// Theming, and values for changing display settings.
 	const {
 		theme,
 		setTheme,
@@ -19,8 +24,9 @@ export default function DisplayScreen() {
 		setFontScale,
 		GlobalStyles,
 	} = useThemeContext()
+	const insets = useSafeAreaInsets()
 
-	const { openModal } = useModal()
+	// Opens a multiple choice modal to allow the user to select a theme.
 	const handleSelectTheme = () => {
 		openModal({
 			type: ModalType.CHOICE,
@@ -48,6 +54,7 @@ export default function DisplayScreen() {
 		})
 	}
 
+	// Open a multiple choice modal that allows the user to select a font size.
 	const handleFontScale = () => {
 		openModal({
 			type: ModalType.CHOICE,
@@ -78,8 +85,7 @@ export default function DisplayScreen() {
 		})
 	}
 
-	const insets = useSafeAreaInsets()
-
+	// List of categories and subcategories of Display Settings.
 	const settings: SettingsType = [
 		{
 			name: "Theme & Appearance",
@@ -92,7 +98,6 @@ export default function DisplayScreen() {
 				{
 					name: "Font Size",
 					description: "Change your font size.",
-					// onPress: () => navigation.navigate("fontSize"),
 					onPress: handleFontScale,
 				},
 			],

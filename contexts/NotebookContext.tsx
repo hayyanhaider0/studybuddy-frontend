@@ -5,7 +5,7 @@
  * selection.
  */
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import React, { createContext, ReactNode, useContext, useState } from "react"
 import { Canvas, Chapter, Notebook } from "../types/notebook"
 
 // Types for the notebook context.

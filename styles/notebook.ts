@@ -7,7 +7,7 @@
 import { StyleSheet } from "react-native"
 import { ThemeColors } from "../types/global"
 
-export const getNotebookStyles = (colors: ThemeColors) =>
+export const getNotebookStyles = (_colors: ThemeColors) =>
 	StyleSheet.create({
 		listContainer: {
 			flexDirection: "row",

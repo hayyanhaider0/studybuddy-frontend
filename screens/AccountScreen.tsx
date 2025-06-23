@@ -7,7 +7,6 @@
 
 import { ScrollView, View, Text } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { getGlobalStyles } from "../styles/global"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import DetailView from "../components/account/DetailView"
 

@@ -7,7 +7,6 @@
  */
 
 import { Pressable, Text, View } from "react-native"
-import { getGlobalStyles } from "../styles/global"
 import { useThemeContext } from "../contexts/ThemeContext"
 import useNotebookActions from "../hooks/useNotebookActions"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"

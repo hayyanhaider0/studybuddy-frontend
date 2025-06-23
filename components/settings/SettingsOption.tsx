@@ -1,6 +1,5 @@
 import { Switch, View, Text } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { getGlobalStyles } from "../../styles/global"
 import { SettingsOptionsType } from "../../types/global"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 

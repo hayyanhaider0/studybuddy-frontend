@@ -15,8 +15,10 @@ import tinycolor from "tinycolor2"
 
 export default function LoginScreen() {
 	const [form, setForm] = useState(false) // Toggle between Login and SignUp components
-	const { theme, GlobalStyles } = useThemeContext()
-	const styles = getLoginStyles(theme.colors)
+
+	// Theming
+	const { theme, fontScale, GlobalStyles } = useThemeContext()
+	const styles = getLoginStyles(theme.colors, fontScale)
 
 	return (
 		<View style={GlobalStyles.container}>

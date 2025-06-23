@@ -1,6 +1,11 @@
-import { Pressable, Text, View } from "react-native"
+/**
+ * SettingsScreen Component
+ *
+ * Contains the UI for the Settings screen.
+ */
+
+import { Text, View } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { getGlobalStyles } from "../styles/global"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { ScrollView } from "react-native-gesture-handler"
@@ -14,13 +19,13 @@ import Settings from "../components/settings/Settings"
 export default function SettingsScreen() {
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
-
 	const styles = getSettingsStyles(theme.colors)
-
 	const insets = useSafeAreaInsets() // Inset to get a safe area view.
+
+	// Variable to allow navigation on the settings stack.
 	const navigation = useNavigation<NativeStackNavigationProp<SettingsParamList>>()
 
-	// All the settings options.
+	// List of categories and subcategories of Main Settings.
 	const settings: SettingsType = [
 		{
 			name: "General Settings",

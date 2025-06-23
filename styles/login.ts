@@ -6,8 +6,9 @@
 
 import { StyleSheet } from "react-native"
 import { ThemeColors } from "../types/global"
+import { fontSizes } from "./scales"
 
-export const getLoginStyles = (colors: ThemeColors) =>
+export const getLoginStyles = (colors: ThemeColors, fontScale: number) =>
 	StyleSheet.create({
 		screen: {
 			flexGrow: 1,
@@ -34,7 +35,7 @@ export const getLoginStyles = (colors: ThemeColors) =>
 			paddingHorizontal: 4,
 			top: -12,
 			left: 16,
-			fontSize: 16,
+			fontSize: fontSizes.md * fontScale,
 		},
 		input: {
 			textAlign: "left",

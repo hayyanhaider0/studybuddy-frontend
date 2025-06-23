@@ -22,8 +22,8 @@ type SignUpProps = {
 
 export default function SignUp({ setForm }: SignUpProps) {
 	// Theming
-	const { theme, GlobalStyles } = useThemeContext()
-	const styles = getLoginStyles(theme.colors)
+	const { theme, fontScale, GlobalStyles } = useThemeContext()
+	const styles = getLoginStyles(theme.colors, fontScale)
 
 	/**
 	 * Get form variables

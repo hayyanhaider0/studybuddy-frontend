@@ -32,8 +32,8 @@ export default function LoginInput({
 	error,
 }: LoginInputProps) {
 	// Theming
-	const { theme, GlobalStyles } = useThemeContext()
-	const styles = getLoginStyles(theme.colors)
+	const { theme, fontScale, GlobalStyles } = useThemeContext()
+	const styles = getLoginStyles(theme.colors, fontScale)
 
 	return (
 		// The container around the input -- turns red upon error

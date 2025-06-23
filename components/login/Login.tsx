@@ -8,7 +8,6 @@
 import { View, Text, TouchableOpacity } from "react-native"
 import LoginInput from "./LoginInput"
 import { useForm } from "react-hook-form"
-import CustomTouchableOpacity from "../common/CustomTouchableOpacity"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../types/global"
 import ThirdPartyLogin from "./ThirdPartyLogin"
@@ -27,8 +26,8 @@ export default function Login({ setForm }: LoginProps) {
 	const nav = useNavigation<NavProp<"main">>() // Navigation controller
 
 	// Theming
-	const { theme, GlobalStyles } = useThemeContext()
-	const styles = getLoginStyles(theme.colors)
+	const { theme, fontScale, GlobalStyles } = useThemeContext()
+	const styles = getLoginStyles(theme.colors, fontScale)
 
 	const {
 		control,

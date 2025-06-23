@@ -5,7 +5,6 @@
  * Also contains helper functions that open a modal when required.
  */
 
-import { Alert } from "react-native"
 import { useModal, ModalType } from "../contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Notebook } from "../types/notebook"
