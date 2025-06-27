@@ -27,7 +27,7 @@ export default function NotebookList() {
 	const { openMenu } = useContextMenu()
 
 	// Theming
-	const { theme, fontScale } = useThemeContext()
+	const { theme, GlobalStyles } = useThemeContext()
 
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
