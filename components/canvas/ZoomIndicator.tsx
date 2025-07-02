@@ -11,7 +11,6 @@ import { useEffect, useState } from "react"
 import { runOnJS, useAnimatedReaction } from "react-native-reanimated"
 import { AnimatePresence, MotiView } from "moti"
 import { getCanvasStyles } from "../../styles/canvas"
-import { getGlobalStyles } from "../../styles/global"
 
 export default function ZoomIndicator() {
 	// Get values from context.

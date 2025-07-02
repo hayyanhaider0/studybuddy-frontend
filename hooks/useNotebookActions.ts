@@ -94,7 +94,7 @@ export default function useNotebookActions() {
 			title: "Add New Notebook",
 			description: "Give your notebook a title to start organizing your study materials.",
 			placeholder: "Enter notebook name...",
-			buttonText: "Create Notebook",
+			buttonText: "Create",
 			onSubmit: (input: string) => addNotebook(input),
 		})
 	}
@@ -108,7 +108,7 @@ export default function useNotebookActions() {
 			description: "Change your notebook's name and cover icon color.",
 			setInput: notebook.title,
 			placeholder: "Enter notebook name...",
-			buttonText: "Apply Changes",
+			buttonText: "Apply",
 			onSubmit: (input: string) => editNotebook(notebook, input),
 		})
 	}
@@ -119,7 +119,7 @@ export default function useNotebookActions() {
 			title: `Delete ${notebook.title}?`,
 			description:
 				"Are you sure you want to delete this notebook? This action can not be undone, and all of your progress will be lost.",
-			buttonText: "Delete Notebook",
+			buttonText: "Delete",
 			onConfirm: () => deleteNotebook(notebook),
 		})
 	}
@@ -131,7 +131,7 @@ export default function useNotebookActions() {
 			title: "Create New Chapter",
 			description: "Organize your content by adding a new chapter to this notebook.",
 			placeholder: "Enter chapter name...",
-			buttonText: "Create Chapter",
+			buttonText: "Create",
 			onSubmit: (input) => addChapterToCurrentNotebook(input),
 		})
 	}

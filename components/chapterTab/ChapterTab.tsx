@@ -13,9 +13,8 @@ import { getChapterTabStyles } from "../../styles/chapterTab"
 import ChapterList from "./ChapterList"
 import AddPageButton from "./AddPageButton"
 import { useNotebookContext } from "../../contexts/NotebookContext"
-import { getGlobalStyles } from "../../styles/global"
 import { useState } from "react"
-import { MotiView } from "moti"
+import { AnimatePresence, MotiView } from "moti"
 
 export default function ChapterTab() {
 	const [extended, setExtended] = useState<boolean>(true) // Extended state for ChapterTab component.
@@ -26,16 +25,10 @@ export default function ChapterTab() {
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
-
 	const styles = getChapterTabStyles(theme.colors)
 
 	return (
-		<MotiView
-			// Increase the height of the container to reveal the chapter tab upon extension.
-			animate={{ height: extended ? (notebook ? 133 : 96) : 96 }}
-			transition={{ type: "timing", duration: 200 }}
-			style={styles.container}
-		>
+		<View style={styles.container}>
 			<View
 				style={{
 					flexDirection: "row",
@@ -51,18 +44,7 @@ export default function ChapterTab() {
 				{notebook && (
 					<>
 						{/* The whole title is a button which extends the top bar to reveal the ChapterList */}
-						<Pressable
-							onPress={() => setExtended(!extended)}
-							style={{
-								flex: 1,
-								width: "50%",
-								flexDirection: "row",
-								alignItems: "center",
-								flexWrap: "nowrap",
-								paddingRight: 32,
-								paddingBottom: 1,
-							}}
-						>
+						<Pressable onPress={() => setExtended(!extended)} style={styles.titleButton}>
 							{/* Notebook title */}
 							<Text
 								style={[GlobalStyles.subheading, { textAlign: "left", padding: 8 }]}
@@ -84,7 +66,19 @@ export default function ChapterTab() {
 				)}
 			</View>
 			{/* Renders all the chapters in the active notebook and allows navigation through them */}
-			{notebook && <ChapterList />}
-		</MotiView>
+			<AnimatePresence>
+				{extended && (
+					<MotiView
+						from={{ height: 0 }}
+						animate={{ height: 44 }}
+						exit={{ height: 0 }}
+						style={{ overflow: "hidden", transformOrigin: "top" }}
+						transition={{ type: "timing", duration: 200 }}
+					>
+						{notebook && <ChapterList />}
+					</MotiView>
+				)}
+			</AnimatePresence>
+		</View>
 	)
 }

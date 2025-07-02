@@ -25,18 +25,28 @@ export const getChapterTabStyles = (colors: ThemeColors) =>
 			paddingVertical: 8,
 			paddingHorizontal: 16,
 		},
+		// Button styles
 		addChapterButton: {
-			borderRadius: 999,
-			padding: 2,
+			alignItems: "center",
+			padding: 3,
+			justifyContent: "center",
 			aspectRatio: 1 / 1,
 			marginLeft: 4,
 		},
-		// AddPageButton styles
 		addPageButton: {
 			padding: 4,
 			aspectRatio: 1 / 1,
 			borderRadius: 999,
 			marginLeft: 8,
 			alignItems: "center",
+		},
+		titleButton: {
+			flex: 1,
+			width: "50%",
+			flexDirection: "row",
+			alignItems: "center",
+			flexWrap: "nowrap",
+			paddingRight: 32,
+			paddingBottom: 1,
 		},
 	})

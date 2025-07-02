@@ -9,11 +9,11 @@ import { FlatList, Pressable, View, Text } from "react-native"
 import { useNotebookContext } from "../../contexts/NotebookContext"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getChapterTabStyles } from "../../styles/chapterTab"
-import { getGlobalStyles } from "../../styles/global"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import useNotebookActions from "../../hooks/useNotebookActions"
 import { useEffect } from "react"
 import CustomPressable from "../common/CustomPressable"
+import { fontSizes } from "../../styles/scales"
 
 export default function ChapterList() {
 	// Get context values
@@ -94,20 +94,17 @@ export default function ChapterList() {
 			ListFooterComponent={
 				notebooks.length > 0
 					? () => (
-							<Pressable
+							<CustomPressable
+								type='secondary'
 								onPress={handleNewChapter}
-								style={({ pressed }) => [
-									styles.addChapterButton,
-									{
-										backgroundColor: pressed ? theme.colors.tertiary : theme.colors.secondary,
-									},
-								]}
+								style={styles.addChapterButton}
 							>
-								<MaterialC name='plus' size={32} color={theme.colors.onPrimary} />
-							</Pressable>
+								<MaterialC name='plus' size={fontSizes.xl} color={theme.colors.onPrimary} />
+							</CustomPressable>
 					  )
 					: null
 			}
+			contentContainerStyle={{ alignItems: "center" }}
 		/>
 	)
 }

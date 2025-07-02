@@ -7,7 +7,7 @@
 
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { ToolName, ToolSwatches } from "../types/global"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import { getStoredJSON } from "../utils/storage"
 
 /////////////////////////////////////////
 // TYPES
@@ -102,7 +102,7 @@ const DEFAULT_SWATCH_MAP = {
 	pen: DEFAULT_SWATCHES,
 	eraser: [],
 	pencil: DEFAULT_SWATCHES,
-	highlighter: DEFAULT_SWATCHES,
+	highlighter: DEFAULT_SWATCHES.map((s) => s + "4D"),
 	text: DEFAULT_SWATCHES,
 	pointer: [],
 }
@@ -142,13 +142,8 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 			const result: Partial<ToolSwatches> = {}
 
 			for (const t of tools) {
-				try {
-					const swatchStr = await AsyncStorage.getItem(`${t}_swatches`)
-					result[tool as ToolName] = swatchStr ? JSON.parse(swatchStr) : DEFAULT_SWATCHES
-				} catch (e) {
-					console.error(`Failed to load swatches for ${t}:`, e)
-					result[tool as ToolName] = DEFAULT_SWATCHES
-				}
+				const swatches = await getStoredJSON(`${t}_swatches`, DEFAULT_SWATCHES)
+				result[tool] = swatches
 			}
 
 			setSwatches((prev) => ({ ...prev, ...result }))

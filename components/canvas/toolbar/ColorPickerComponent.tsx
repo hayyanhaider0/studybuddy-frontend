@@ -15,8 +15,7 @@ import ColorPicker, {
 import { useToolContext } from "../../../contexts/ToolContext"
 import { getCanvasStyles } from "../../../styles/canvas"
 import { useThemeContext } from "../../../contexts/ThemeContext"
-import { ToolName, ToolSwatches } from "../../../types/global"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import { saveItemToStorage } from "../../../utils/storage"
 
 export default function ColorPickerComponent() {
 	const { tool, toolSettings, setSwatches, swatchEditInfo, colorPicker, activeMenu } =
@@ -26,19 +25,6 @@ export default function ColorPickerComponent() {
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
 
-	/**
-	 * Saves swatches to local storage keyed with the tool they're selected for.
-	 *
-	 * @param t - Tool to save the swatches to.
-	 * @param swatches - Swatches to save with the tool.
-	 */
-	const saveSwatchesToStorage = async (t: ToolName, swatches: ToolSwatches) => {
-		try {
-			await AsyncStorage.setItem(`${t}_swatches`, JSON.stringify(swatches))
-		} catch (e) {
-			console.error("Failed to save swatches:", e)
-		}
-	}
 	return (
 		<AnimatePresence>
 			{/* Only shows when colorPicker is true, and pen menu is active */}
@@ -66,7 +52,7 @@ export default function ColorPickerComponent() {
 										updated[index] = e.hex
 										const newSwatches = { ...prev, [tool]: updated }
 										// Save the swatches to local storage.
-										saveSwatchesToStorage(tool, newSwatches)
+										saveItemToStorage(tool, JSON.stringify(newSwatches))
 										return newSwatches
 									})
 								}
