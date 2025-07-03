@@ -71,11 +71,7 @@ export default function NotebookList() {
 		<Grid
 			data={sortedNotebooks.map((n) => (
 				// Clickable icon that navigates to the canvas after selecting the notebook.
-				<Pressable
-					key={n.id}
-					onPress={() => selectNotebook(n)}
-					// style={{ width: "28%", justifyContent: "center", alignItems: "center" }}
-				>
+				<Pressable key={n.id} onPress={() => selectNotebook(n)}>
 					<View style={{ flexDirection: "row" }}>
 						{/* Notebook icon with editable color */}
 						<NotebookIcon fill={n.fill} width={80} height={96} />

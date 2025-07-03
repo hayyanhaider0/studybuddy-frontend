@@ -18,12 +18,12 @@ import CustomPressable from "../common/CustomPressable"
 import useNotebookActions from "../../hooks/useNotebookActions"
 
 export default function ChapterTab() {
-	const [extended, setExtended] = useState<boolean>(true) // Extended state for ChapterTab component.
-
 	// Get context values.
 	const { notebook, chapter } = useNotebookContext()
 	const { addCanvasToCurrentChapter } = useNotebookActions()
 	const { toggleMenu } = useCanvasActions()
+
+	const [extended, setExtended] = useState<boolean>(chapter ? true : false) // Extended state for ChapterTab component.
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
