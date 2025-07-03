@@ -71,7 +71,6 @@ export default function ChapterList() {
 							title={item.title}
 							onPress={() => null}
 							onLongPress={handleLongPress}
-							style={GlobalStyles.button}
 						/>
 					)
 				}
@@ -97,7 +96,8 @@ export default function ChapterList() {
 							<CustomPressable
 								type='secondary'
 								onPress={handleNewChapter}
-								style={styles.addChapterButton}
+								circle
+								style={{ marginLeft: 8 }}
 							>
 								<MaterialC name='plus' size={fontSizes.xl} color={theme.colors.onPrimary} />
 							</CustomPressable>

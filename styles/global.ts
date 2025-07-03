@@ -43,12 +43,10 @@ export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 			alignItems: "center",
 		},
 		secondaryButton: {
-			paddingVertical: 8,
-			paddingHorizontal: 16,
-			borderRadius: 999,
 			borderWidth: 1,
 			borderColor: colors.secondary,
 			alignItems: "center",
+			justifyContent: "center",
 		},
 		buttonText: {
 			color: colors.onPrimary,
@@ -65,6 +63,7 @@ export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 			color: colors.textPrimary,
 		},
 		link: {
+			fontSize: fontSizes.md * fontScale,
 			color: colors.link,
 			textDecorationLine: "underline",
 		},

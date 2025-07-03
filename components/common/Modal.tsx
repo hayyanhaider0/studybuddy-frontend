@@ -6,7 +6,6 @@
 
 import { View, Text, BackHandler } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { getGlobalStyles } from "../../styles/global"
 import { Pressable, TextInput } from "react-native-gesture-handler"
 import { ModalType, useModal } from "../../contexts/ModalContext"
 import CustomPressable from "./CustomPressable"
@@ -125,17 +124,12 @@ export default function Modal() {
 								style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}
 							>
 								{/* Close modal button */}
-								<CustomPressable
-									title='Close'
-									onPress={closeModal}
-									style={GlobalStyles.secondaryButton}
-								/>
+								<CustomPressable type='secondary' title='Close' onPress={closeModal} />
 								{/* Confirm button */}
 								<CustomPressable
 									type={modalData.type === ModalType.CONFIRM ? "delete" : "primary"}
 									title={modalData.buttonText || "ERROR LOL"}
-									onPress={handleSubmit}
-									style={GlobalStyles.button}
+									onPress={() => handleSubmit()}
 								/>
 							</View>
 						</MotiView>

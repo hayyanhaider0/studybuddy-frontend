@@ -10,24 +10,22 @@ import { useState } from "react"
 import Login from "../components/login/Login"
 import SignUp from "../components/login/SignUp"
 import { useThemeContext } from "../contexts/ThemeContext"
-import { getLoginStyles } from "../styles/login"
 import tinycolor from "tinycolor2"
 
 export default function LoginScreen() {
 	const [form, setForm] = useState(false) // Toggle between Login and SignUp components
 
 	// Theming
-	const { theme, fontScale, GlobalStyles } = useThemeContext()
-	const styles = getLoginStyles(theme.colors, fontScale)
+	const { theme, GlobalStyles } = useThemeContext()
 
 	return (
-		<View style={GlobalStyles.container}>
+		<View style={[GlobalStyles.container, { paddingHorizontal: 32 }]}>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
-				style={[styles.screen, { maxWidth: 1024, alignSelf: "center" }]}
+				contentContainerStyle={{ gap: 32, paddingVertical: 32 }}
 			>
 				{/* Introduction to Study Buddy: Contains the logo and small description */}
-				<View style={{ paddingBottom: 32 }}>
+				<View>
 					<Image
 						source={require("../assets/study-buddy-logo.png")}
 						style={{ width: 180, height: 180, alignSelf: "center" }}
@@ -40,7 +38,7 @@ export default function LoginScreen() {
 				</View>
 
 				{/* Login and SignUp forms depending on state */}
-				<View style={{ gap: 32, marginBottom: 96 }}>
+				<View style={{ gap: 32 }}>
 					{form ? <SignUp setForm={setForm} /> : <Login setForm={setForm} />}
 				</View>
 			</ScrollView>

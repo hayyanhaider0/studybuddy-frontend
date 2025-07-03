@@ -5,7 +5,7 @@
  * Allows the user to toggle to the Login component if needed
  */
 
-import { View, Text, TouchableOpacity } from "react-native"
+import { View, Text } from "react-native"
 import LoginInput from "./LoginInput"
 import { useForm } from "react-hook-form"
 import { useNavigation } from "@react-navigation/native"
@@ -115,24 +115,26 @@ export default function Login({ setForm }: LoginProps) {
 			</View>
 
 			{/* Forgot Password link */}
-			<TouchableOpacity style={{ alignItems: "center" }} onPress={handleForgotPassword}>
-				<Text style={[GlobalStyles.link, { fontSize: 16 }]}>Forgot Password?</Text>
-			</TouchableOpacity>
+			<CustomPressable type='link' title='Forgot Password?' onPress={handleForgotPassword} />
 
 			{/* Login Button: Form submission button */}
-			<CustomPressable
-				type='primary'
-				title='Login'
-				onPress={handleSubmit(handleLogin)}
-				style={[GlobalStyles.button, { paddingVertical: 12 }]}
-			/>
+			<CustomPressable type='primary' title='Login' onPress={handleSubmit(handleLogin)} />
 
 			{/* Switch Form Button: Allows user to switch to the sign up component */}
-			<View style={{ flexDirection: "row", justifyContent: "center" }}>
+			<View
+				style={{
+					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
+					flexWrap: "wrap",
+				}}
+			>
 				<Text style={GlobalStyles.paragraph}>Don't have an account? </Text>
-				<TouchableOpacity onPress={() => setForm((prev: boolean) => !prev)}>
-					<Text style={GlobalStyles.link}>Register Now</Text>
-				</TouchableOpacity>
+				<CustomPressable
+					type='link'
+					title='Register Now'
+					onPress={() => setForm((prev) => !prev)}
+				/>
 			</View>
 
 			{/* Login using third party -- Google, Facebook, Apple */}

@@ -16,6 +16,7 @@ export enum ModalType {
 type Choice = {
 	label: string
 	onPress: () => void
+	selected: boolean
 }
 
 type ModalData = {

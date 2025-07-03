@@ -5,7 +5,7 @@
  * NOTE: USE SAVED IMAGES INSTEAD OF LINKS -- REMOVE THIS COMMENT WHEN DONE
  */
 
-import { TouchableOpacity, View, Image } from "react-native"
+import { View, Image } from "react-native"
 import { Text } from "react-native-gesture-handler"
 import HorizontalRule from "../common/HorizontalRule"
 import { useThemeContext } from "../../contexts/ThemeContext"
@@ -23,11 +23,9 @@ export default function ThirdPartyLogin() {
 
 			{/* Google login */}
 			<CustomPressable
+				type='secondary'
 				onPress={() => null}
-				style={[
-					GlobalStyles.secondaryButton,
-					{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 },
-				]}
+				style={{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 }}
 			>
 				<Image
 					source={{ uri: "https://developers.google.com/identity/images/g-logo.png" }}
@@ -38,11 +36,9 @@ export default function ThirdPartyLogin() {
 
 			{/* Facebook login */}
 			<CustomPressable
+				type='secondary'
 				onPress={() => null}
-				style={[
-					GlobalStyles.secondaryButton,
-					{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 },
-				]}
+				style={{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 }}
 			>
 				<Image
 					source={{
@@ -55,11 +51,9 @@ export default function ThirdPartyLogin() {
 
 			{/* Apple login */}
 			<CustomPressable
+				type='secondary'
 				onPress={() => null}
-				style={[
-					GlobalStyles.secondaryButton,
-					{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 },
-				]}
+				style={{ flexDirection: "row", justifyContent: "center", paddingVertical: 16 }}
 			>
 				<Image
 					source={{

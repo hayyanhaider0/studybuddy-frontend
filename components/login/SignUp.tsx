@@ -156,12 +156,7 @@ export default function SignUp({ setForm }: SignUpProps) {
 			</View>
 
 			{/* Sign Up Button: Form submission button */}
-			<CustomPressable
-				type='primary'
-				title='Sign Up'
-				onPress={handleSubmit(handleSignUp)}
-				style={[GlobalStyles.button, { paddingVertical: 12 }]}
-			/>
+			<CustomPressable type='primary' title='Sign Up' onPress={handleSubmit(handleSignUp)} />
 
 			{/* Switch Form Button: Allows user to switch to the login component */}
 			<View style={{ flexDirection: "row", justifyContent: "center" }}>

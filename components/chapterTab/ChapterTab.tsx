@@ -11,16 +11,18 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useCanvasActions } from "../../hooks/useCanvasActions"
 import { getChapterTabStyles } from "../../styles/chapterTab"
 import ChapterList from "./ChapterList"
-import AddPageButton from "./AddPageButton"
 import { useNotebookContext } from "../../contexts/NotebookContext"
 import { useState } from "react"
 import { AnimatePresence, MotiView } from "moti"
+import CustomPressable from "../common/CustomPressable"
+import useNotebookActions from "../../hooks/useNotebookActions"
 
 export default function ChapterTab() {
 	const [extended, setExtended] = useState<boolean>(true) // Extended state for ChapterTab component.
 
 	// Get context values.
-	const { notebook } = useNotebookContext()
+	const { notebook, chapter } = useNotebookContext()
+	const { addCanvasToCurrentChapter } = useNotebookActions()
 	const { toggleMenu } = useCanvasActions()
 
 	// Theming
@@ -61,7 +63,11 @@ export default function ChapterTab() {
 							/>
 						</Pressable>
 						{/* Add a new canvas/page */}
-						<AddPageButton />
+						{chapter && (
+							<CustomPressable type='primary' onPress={addCanvasToCurrentChapter} circle>
+								<MaterialC name='plus' size={28} color={theme.accent.onAccent} />
+							</CustomPressable>
+						)}
 					</>
 				)}
 			</View>

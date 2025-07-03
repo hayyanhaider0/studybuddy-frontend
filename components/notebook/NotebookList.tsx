@@ -17,6 +17,7 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useSort } from "../../contexts/SortContext"
 import { useContextMenu } from "../../contexts/ContextMenuContext"
 import useNotebookActions from "../../hooks/useNotebookActions"
+import Grid from "../common/Grid"
 
 export default function NotebookList() {
 	// Get context values.
@@ -67,13 +68,13 @@ export default function NotebookList() {
 	const sortedNotebooks = [...notebooks].sort(getSortMethod())
 
 	return (
-		<>
-			{sortedNotebooks.map((n) => (
+		<Grid
+			data={sortedNotebooks.map((n) => (
 				// Clickable icon that navigates to the canvas after selecting the notebook.
 				<Pressable
 					key={n.id}
 					onPress={() => selectNotebook(n)}
-					style={{ width: "28%", justifyContent: "center", alignItems: "center" }}
+					// style={{ width: "28%", justifyContent: "center", alignItems: "center" }}
 				>
 					<View style={{ flexDirection: "row" }}>
 						{/* Notebook icon with editable color */}
@@ -91,7 +92,7 @@ export default function NotebookList() {
 									})
 								})
 							}}
-							style={{ position: "absolute", top: 4, right: -16 }}
+							style={{ position: "absolute", top: 4, right: 0 }}
 						>
 							<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
 						</Pressable>
@@ -108,6 +109,7 @@ export default function NotebookList() {
 					<Text style={GlobalStyles.subtext}>{`Created ${formatDate(n.createdAt)}`}</Text>
 				</Pressable>
 			))}
-		</>
+			cols={3}
+		/>
 	)
 }
