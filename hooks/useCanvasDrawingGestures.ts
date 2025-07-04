@@ -4,11 +4,13 @@ import { runOnJS } from "react-native-reanimated"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useToolContext } from "../contexts/ToolContext"
 import { useCanvasActions } from "./useCanvasActions"
+import useNotebookActions from "./useNotebookActions"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
-	const { current, setCurrent, setPaths, layout } = useCanvasContext()
+	const { current, setCurrent, layout } = useCanvasContext()
 	const { tool, toolSettings, setEraserPos } = useToolContext()
+	const { addPathToCanvas } = useNotebookActions()
 
 	// Current path.
 	let skPath = current[canvasId] ?? Skia.Path.Make()
@@ -80,18 +82,14 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 				if (tool === "eraser") return
 				// Insert new path into the paths array and reset the current path string.
 				if (skPath) {
-					setPaths((prev) => ({
-						...prev,
-						[canvasId]: [
-							...(prev[canvasId] || []),
-							{
-								path: skPath.copy(),
-								color: toolSettings[tool].color,
-								size: toolSettings[tool].size,
-								strokeLinecap: toolSettings[tool].strokeLinecap || "round",
-							},
-						],
-					}))
+					const newPathObject = {
+						path: skPath.copy(),
+						color: toolSettings[tool].color,
+						size: toolSettings[tool].size,
+						strokeLinecap: toolSettings[tool].strokeLinecap || "round",
+					}
+
+					addPathToCanvas(newPathObject) // Sync paths with the actual object
 
 					setCurrent((prev) => ({
 						...prev,
@@ -117,19 +115,14 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			// Create a very small line -- resembling a dot.
 			skPath.lineTo(x + 0.1, y + 0.1)
 
-			// Update the paths array.
-			setPaths((prev) => ({
-				...prev,
-				[canvasId]: [
-					...(prev[canvasId] || []),
-					{
-						path: skPath.copy(),
-						color: toolSettings[tool].color,
-						size: toolSettings[tool].size,
-						strokeLinecap: toolSettings[tool].strokeLinecap || "round",
-					},
-				],
-			}))
+			const newPathObject = {
+				path: skPath.copy(),
+				color: toolSettings[tool].color,
+				size: toolSettings[tool].size,
+				strokeLinecap: toolSettings[tool].strokeLinecap || "round",
+			}
+
+			addPathToCanvas(newPathObject) // Sync paths with the actual object
 		})
 		.runOnJS(true)
 

@@ -24,17 +24,18 @@ interface DrawingCanvasProps {
 
 export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps) {
 	// Get values from context.
-	const { paths, current, layout } = useCanvasContext()
-	const { chapter } = useNotebookContext()
+	const { current, layout } = useCanvasContext()
+	const { notebook, chapter } = useNotebookContext()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
 
+	const activeChapter = notebook?.chapters.find((c) => c.id === chapter?.id)
 	// Get the current canvas id from CanvasScreen.
-	const canvas = chapter?.canvases.find((c) => c.id === canvasId)
+	const canvas = activeChapter?.canvases.find((c) => c.id === canvasId)
 
 	// Get the current canvas's paths and current path if any.
-	const canvasPaths = paths[canvasId] || []
+	const canvasPaths = canvas?.paths || []
 	const currentPath = current[canvasId] || ""
 
 	// Set canvas dimensions.

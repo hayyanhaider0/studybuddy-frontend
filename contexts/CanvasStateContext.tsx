@@ -6,7 +6,6 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
-import { PathType } from "../types/global"
 import { SkPath } from "@shopify/react-native-skia"
 
 // Types
@@ -21,19 +20,11 @@ type LayoutType = {
 	height: number
 }
 
-type CanvasPathMap = {
-	[id: string]: PathType[]
-}
-
 type CurrentPathMap = {
 	[id: string]: SkPath
 }
 
 export type CanvasContextType = {
-	// Array of drawing paths captured on the canvas.
-	paths: CanvasPathMap
-	// Setter for updating the paths array.
-	setPaths: React.Dispatch<React.SetStateAction<CanvasPathMap>>
 	// Current path being drawn.
 	current: CurrentPathMap
 	// Setter for the current path being drawn.
@@ -55,17 +46,13 @@ export const CanvasStateContext = createContext<CanvasContextType | null>(null)
  * @param children - Components that require access to canvas state values.
  */
 export function CanvasStateProvider({ children }: { children: ReactNode }) {
-	// Stored drawing paths on the canvas.
-	const [paths, setPaths] = useState<CanvasPathMap>({})
 	// Path currently being drawn.
 	const [current, setCurrent] = useState<CurrentPathMap>({})
 	// Canvas coordinates and layout dimensions.
 	const [layout, setLayout] = useState<LayoutType>({ x: 0, y: 0, width: 0, height: 0 })
 
 	return (
-		<CanvasStateContext.Provider
-			value={{ paths, setPaths, current, setCurrent, layout, setLayout }}
-		>
+		<CanvasStateContext.Provider value={{ current, setCurrent, layout, setLayout }}>
 			{children}
 		</CanvasStateContext.Provider>
 	)

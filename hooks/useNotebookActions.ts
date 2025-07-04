@@ -7,13 +7,22 @@
 
 import { useModal, ModalType } from "../contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
+import { PathType } from "../types/global"
 import { Notebook } from "../types/notebook"
 import { addCanvas, addChapter, createNotebook } from "../utils/notebook"
 
 export default function useNotebookActions() {
 	// Get context values.
-	const { notebooks, setNotebooks, notebook, setNotebook, chapter, setChapter, setCanvas } =
-		useNotebookContext()
+	const {
+		notebooks,
+		setNotebooks,
+		notebook,
+		setNotebook,
+		chapter,
+		setChapter,
+		setCanvas,
+		activeCanvasId,
+	} = useNotebookContext()
 	const { openModal, setInput } = useModal()
 
 	/////////////////////////////////////////
@@ -136,11 +145,49 @@ export default function useNotebookActions() {
 		})
 	}
 
+	/**
+	 * Helper function that adds a new path to the canvas.
+	 * @param newPathObject - The new path drawn by the user.
+	 */
+	const addPathToCanvas = (newPathObject: PathType) => {
+		// Update notebook.
+		setNotebook((prev) => {
+			if (!prev) return prev
+
+			// Update chapter.
+			const updatedChapters = prev.chapters.map((ch) =>
+				ch.id === chapter?.id
+					? {
+							...ch,
+							// Update canvas.
+							canvases: ch.canvases.map((c) =>
+								c.id === activeCanvasId
+									? {
+											...c,
+											paths: [...(c.paths || []), newPathObject],
+											updatedAt: Date.now(),
+									  }
+									: c
+							),
+							updatedAt: Date.now(),
+					  }
+					: ch
+			)
+
+			return {
+				...prev,
+				chapters: updatedChapters,
+				updatedAt: Date.now(),
+			}
+		})
+	}
+
 	return {
 		handleCreateNotebook,
 		handleEditNotebook,
 		handleDeleteNotebook,
 		handleNewChapter,
 		addCanvasToCurrentChapter,
+		addPathToCanvas,
 	}
 }
