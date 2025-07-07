@@ -1,9 +1,7 @@
 import { Skia } from "@shopify/react-native-skia"
 import { Gesture } from "react-native-gesture-handler"
-import { runOnJS } from "react-native-reanimated"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useToolContext } from "../contexts/ToolContext"
-import { useCanvasActions } from "./useCanvasActions"
 import useNotebookActions from "./useNotebookActions"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
@@ -14,9 +12,6 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 
 	// Current path.
 	let skPath = current[canvasId] ?? Skia.Path.Make()
-
-	// Handle erase logic from useCanvasActions hook.
-	const { handleErase } = useCanvasActions()
 
 	/**
 	 * screenToCanvasCoords Helper Function
@@ -66,7 +61,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			// Handle erase if the currently selected tool is the eraser.
 			if (tool === "eraser") {
 				setEraserPos({ x: x, y: y })
-				runOnJS(handleErase)(canvasId, x, y)
+				// runOnJS(handleErase)(canvasId, x, y)
 				return
 			}
 

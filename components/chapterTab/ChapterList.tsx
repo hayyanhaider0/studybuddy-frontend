@@ -14,54 +14,57 @@ import useNotebookActions from "../../hooks/useNotebookActions"
 import { useEffect } from "react"
 import CustomPressable from "../common/CustomPressable"
 import { fontSizes } from "../../styles/scales"
+import { getChapter, getNotebook } from "../../utils/notebook"
 
 export default function ChapterList() {
 	// Get context values
-	const { notebooks, notebook, chapter, setChapter, setActiveCanvasId } = useNotebookContext()
+	const {
+		notebooks,
+		selectedNotebookId,
+		selectedChapterId,
+		setSelectedChapterId,
+		setSelectedCanvasId,
+	} = useNotebookContext()
 	const { handleNewChapter } = useNotebookActions()
 
-	// Available chapters in the current notebook.
-	const chapters = notebook?.chapters || []
+	// Currently selected notebook
+	if (!selectedNotebookId) return
+	const notebook = getNotebook(notebooks, selectedNotebookId)
+
+	// Currently selected chapter
+	if (!selectedChapterId) return
+	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
 
 	const styles = getChapterTabStyles(theme.colors)
 
-	/**
-	 * Allows the user to select a chapter from the chapter tab to navigate to it.
-	 *
-	 * @param i - Index of the selected chapter.
-	 */
-	const selectChapter = (i: number) => {
-		if (!notebook) return // Exit if notebook doesn't exist.
-		const newChapter = notebook.chapters[i]
-		setChapter(newChapter)
-	}
-
 	const openChapterMenu = (i: number) => {
-		console.log(`Open menu for chapter with ID: ${chapters[i].id}`)
+		console.log(`Open menu for chapter with ID: ${notebook.chapters[i].id}`)
 	}
 
 	// Sets the active canvas to the first canvas in a chapter upon chapter change.
 	useEffect(() => {
 		if (chapter && chapter.canvases.length > 0) {
-			setActiveCanvasId(chapter?.canvases[0].id)
+			setSelectedCanvasId(chapter.canvases[0].id)
 		}
 	}, [chapter])
 
 	return (
 		<FlatList
 			// Core config.
-			data={notebook?.chapters}
+			data={notebook.chapters}
 			keyExtractor={(item) => item.id}
 			horizontal
 			showsHorizontalScrollIndicator={false}
 			// Item renderer.
 			renderItem={({ item, index }) => {
-				if (!notebook || !chapter) return null
 				const focused = chapter.id === item.id
-				const handlePress = () => selectChapter(index)
+				const handlePress = () => {
+					setSelectedChapterId(notebook.chapters[index].id)
+					setSelectedCanvasId(notebook.chapters[index].canvases[0].id)
+				}
 				const handleLongPress = () => openChapterMenu(index)
 
 				if (focused) {

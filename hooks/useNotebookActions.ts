@@ -16,12 +16,12 @@ export default function useNotebookActions() {
 	const {
 		notebooks,
 		setNotebooks,
-		notebook,
-		setNotebook,
-		chapter,
-		setChapter,
-		setCanvas,
-		activeCanvasId,
+		selectedNotebookId,
+		setSelectedNotebookId,
+		selectedChapterId,
+		setSelectedChapterId,
+		selectedCanvasId,
+		setSelectedCanvasId,
 	} = useNotebookContext()
 	const { openModal, setInput } = useModal()
 
@@ -36,9 +36,11 @@ export default function useNotebookActions() {
 	const addNotebook = (title: string) => {
 		const notebook = createNotebook(title)
 		setNotebooks((prev) => [...prev, notebook])
-		setNotebook(notebook)
-		setChapter(notebook.chapters[0])
-		setCanvas(notebook.chapters[0].canvases[0])
+		setSelectedNotebookId(notebook.id)
+
+		const chapter = notebook.chapters[0]
+		setSelectedChapterId(chapter.id)
+		setSelectedCanvasId(chapter.canvases[0].id)
 	}
 
 	/**
@@ -48,9 +50,9 @@ export default function useNotebookActions() {
 	 * @param title - New chapter title, if any.
 	 * @param fill - New cover icon color, if any.
 	 */
-	const editNotebook = (notebook: Notebook, title?: string, fill?: string) => {
+	const editNotebook = (notebookId: string, title?: string, fill?: string) => {
 		const updated = notebooks.map((n) =>
-			n.id === notebook.id
+			n.id === notebookId
 				? { ...n, title: title ?? n.title, fill: fill ?? n.fill, updatedAt: Date.now() }
 				: n
 		)
@@ -61,36 +63,9 @@ export default function useNotebookActions() {
 	 * Deletes a notebook from the user's account.
 	 * @param notebook - Notebook to be deleted
 	 */
-	const deleteNotebook = (notebook: Notebook) => {
-		const updated = notebooks.filter((n) => n.id !== notebook.id)
+	const deleteNotebook = (notebookId: string) => {
+		const updated = notebooks.filter((n) => n.id !== notebookId)
 		setNotebooks(updated)
-	}
-
-	/**
-	 * Adds a chapter to the active notebook.
-	 *
-	 * @param title - Name of the new chapter.
-	 */
-	const addChapterToCurrentNotebook = (title: string) => {
-		if (!notebook) return // Exit if there's no active notebook.
-		const updatedNotebook = addChapter(notebook, title)
-		setNotebook(updatedNotebook)
-	}
-
-	// Adds a canvas/page to the active chapter.
-	const addCanvasToCurrentChapter = () => {
-		if (!notebook || !chapter) return // Exit if there's no active notebook or chapter.
-		const updatedChapter = addCanvas(chapter)
-
-		// Update the notebook after adding a canvas to the chapter.
-		const updatedNotebook = {
-			...notebook,
-			chapters: notebook.chapters.map((c) => (c.id === chapter.id ? updatedChapter : c)),
-			updatedAt: Date.now(),
-		}
-
-		setChapter(updatedChapter)
-		setNotebook(updatedNotebook)
 	}
 
 	/////////////////////////////////////////
@@ -118,7 +93,7 @@ export default function useNotebookActions() {
 			setInput: notebook.title,
 			placeholder: "Enter notebook name...",
 			buttonText: "Apply",
-			onSubmit: (input: string) => editNotebook(notebook, input),
+			onSubmit: (input: string) => editNotebook(notebook.id, input),
 		})
 	}
 
@@ -129,20 +104,32 @@ export default function useNotebookActions() {
 			description:
 				"Are you sure you want to delete this notebook? This action can not be undone, and all of your progress will be lost.",
 			buttonText: "Delete",
-			onConfirm: () => deleteNotebook(notebook),
+			onConfirm: () => deleteNotebook(notebook.id),
 		})
 	}
 
 	// Helper function to create a new chapter with a title.
 	const handleNewChapter = () => {
+		if (!selectedNotebookId) return
+
 		openModal({
 			type: ModalType.INPUT,
 			title: "Create New Chapter",
 			description: "Organize your content by adding a new chapter to this notebook.",
 			placeholder: "Enter chapter name...",
 			buttonText: "Create",
-			onSubmit: (input) => addChapterToCurrentNotebook(input),
+			onSubmit: (input) => {
+				const updated = addChapter(notebooks, selectedNotebookId, input)
+				setNotebooks(updated)
+			},
 		})
+	}
+
+	// Helper function to create a new canvas
+	const handleNewCanvas = () => {
+		if (!selectedNotebookId || !selectedChapterId) return
+		const updatedNotebook = addCanvas(notebooks, selectedNotebookId, selectedChapterId)
+		setNotebooks(updatedNotebook)
 	}
 
 	/**
@@ -150,36 +137,41 @@ export default function useNotebookActions() {
 	 * @param newPathObject - The new path drawn by the user.
 	 */
 	const addPathToCanvas = (newPathObject: PathType) => {
-		// Update notebook.
-		setNotebook((prev) => {
-			if (!prev) return prev
+		if (!selectedNotebookId || !selectedChapterId || !selectedCanvasId) return
 
-			// Update chapter.
-			const updatedChapters = prev.chapters.map((ch) =>
-				ch.id === chapter?.id
-					? {
-							...ch,
-							// Update canvas.
-							canvases: ch.canvases.map((c) =>
-								c.id === activeCanvasId
-									? {
-											...c,
-											paths: [...(c.paths || []), newPathObject],
-											updatedAt: Date.now(),
-									  }
-									: c
-							),
-							updatedAt: Date.now(),
-					  }
-					: ch
-			)
+		// Deep copy notebooks
+		const updatedNotebooks = [...notebooks]
 
-			return {
-				...prev,
-				chapters: updatedChapters,
-				updatedAt: Date.now(),
-			}
-		})
+		// Find notebook, chapter, and canvas indexes
+		const notebookIndex = updatedNotebooks.findIndex((n) => n.id === selectedNotebookId)
+		if (notebookIndex === -1) return
+
+		const chapterIndex = updatedNotebooks[notebookIndex].chapters.findIndex(
+			(ch) => ch.id === selectedChapterId
+		)
+		if (chapterIndex === -1) return
+
+		const canvasIndex = updatedNotebooks[notebookIndex].chapters[chapterIndex].canvases.findIndex(
+			(cv) => cv.id === selectedCanvasId
+		)
+		if (canvasIndex === -1) return
+
+		// Clone and modify the canvas.
+		const currentCanvas =
+			updatedNotebooks[notebookIndex].chapters[chapterIndex].canvases[canvasIndex]
+		const updatedCanvas = {
+			...currentCanvas,
+			paths: [...currentCanvas.paths, newPathObject],
+			updatedAt: Date.now(),
+		}
+
+		// Apply the updates
+		updatedNotebooks[notebookIndex].chapters[chapterIndex].canvases[canvasIndex] = updatedCanvas
+		updatedNotebooks[notebookIndex].chapters[chapterIndex].updatedAt = Date.now()
+		updatedNotebooks[notebookIndex].updatedAt = Date.now()
+
+		// Set the new notebooks array state.
+		setNotebooks(updatedNotebooks)
 	}
 
 	return {
@@ -187,7 +179,7 @@ export default function useNotebookActions() {
 		handleEditNotebook,
 		handleDeleteNotebook,
 		handleNewChapter,
-		addCanvasToCurrentChapter,
+		handleNewCanvas,
 		addPathToCanvas,
 	}
 }

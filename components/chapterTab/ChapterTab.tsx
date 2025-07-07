@@ -8,7 +8,6 @@
 import { Pressable, Text, TouchableOpacity, View } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import { useCanvasActions } from "../../hooks/useCanvasActions"
 import { getChapterTabStyles } from "../../styles/chapterTab"
 import ChapterList from "./ChapterList"
 import { useNotebookContext } from "../../contexts/NotebookContext"
@@ -16,12 +15,22 @@ import { useState } from "react"
 import { AnimatePresence, MotiView } from "moti"
 import CustomPressable from "../common/CustomPressable"
 import useNotebookActions from "../../hooks/useNotebookActions"
+import { getChapter, getNotebook } from "../../utils/notebook"
+import { useNavigation } from "@react-navigation/native"
+import { DrawerParamList } from "../../navigation/DrawerNavigation"
+import { DrawerNavigationProp } from "@react-navigation/drawer"
 
 export default function ChapterTab() {
 	// Get context values.
-	const { notebook, chapter } = useNotebookContext()
-	const { addCanvasToCurrentChapter } = useNotebookActions()
-	const { toggleMenu } = useCanvasActions()
+	const { notebooks, selectedNotebookId, selectedChapterId } = useNotebookContext()
+	const { handleNewCanvas } = useNotebookActions()
+	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
+
+	const notebook = selectedNotebookId ? getNotebook(notebooks, selectedNotebookId) : null
+	const chapter =
+		selectedNotebookId && selectedChapterId
+			? getChapter(notebooks, selectedNotebookId, selectedChapterId)
+			: null
 
 	const [extended, setExtended] = useState<boolean>(chapter ? true : false) // Extended state for ChapterTab component.
 
@@ -39,7 +48,7 @@ export default function ChapterTab() {
 				}}
 			>
 				{/* Opens the sidebar drawer */}
-				<TouchableOpacity onPress={toggleMenu} style={{ padding: 8 }}>
+				<TouchableOpacity onPress={() => nav.toggleDrawer()} style={{ padding: 8 }}>
 					<MaterialC name='chevron-right' size={24} color={theme.colors.onPrimary} />
 				</TouchableOpacity>
 				{/* Renders only when there's an active notebook */}
@@ -63,8 +72,8 @@ export default function ChapterTab() {
 							/>
 						</Pressable>
 						{/* Add a new canvas/page */}
-						{chapter && (
-							<CustomPressable type='primary' onPress={addCanvasToCurrentChapter} circle>
+						{chapter && selectedNotebookId && selectedChapterId && (
+							<CustomPressable type='primary' onPress={handleNewCanvas} circle>
 								<MaterialC name='plus' size={28} color={theme.accent.onAccent} />
 							</CustomPressable>
 						)}

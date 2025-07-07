@@ -15,14 +15,19 @@ import { useNotebookContext } from "../../contexts/NotebookContext"
 import { useTransformContext } from "../../contexts/TransformContext"
 import { useCanvasTranslateGestures } from "../../hooks/useCanvasTranslateGestures"
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
+import { getChapter } from "../../utils/notebook"
 
 export default function CanvasList() {
 	const flatListRef = useRef<FlatList>(null)
 	const { width: screenWidth } = useWindowDimensions()
 	const { setLayout } = useCanvasContext()
-	const { chapter, setActiveCanvasId } = useNotebookContext()
+	const { notebooks, selectedNotebookId, selectedChapterId, setSelectedCanvasId } =
+		useNotebookContext()
 	const { scale, translateX, translateY } = useTransformContext()
 	const translateGestures = useCanvasTranslateGestures()
+
+	if (!selectedNotebookId || !selectedChapterId) return
+	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
 
 	const CANVAS_WIDTH = 360
 	const GAP = 4
@@ -77,7 +82,7 @@ export default function CanvasList() {
 		const clampedIndex = Math.max(0, Math.min(closestIndex, chapter.canvases.length - 1))
 
 		// Set the active canvas.
-		setActiveCanvasId(chapter.canvases[clampedIndex].id)
+		setSelectedCanvasId(chapter.canvases[clampedIndex].id)
 	}
 
 	return (

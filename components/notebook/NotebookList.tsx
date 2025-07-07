@@ -21,17 +21,7 @@ import Grid from "../common/Grid"
 
 export default function NotebookList() {
 	// Get context values.
-	const {
-		notebooks,
-		setNotebooks,
-		notebook,
-		setNotebook,
-		chapter,
-		setChapter,
-		canvas,
-		setCanvas,
-		setActiveCanvasId,
-	} = useNotebookContext()
+	const { notebooks, setSelectedNotebookId } = useNotebookContext()
 	const { handleEditNotebook, handleDeleteNotebook } = useNotebookActions()
 	const { sorts } = useSort()
 	const { openMenu } = useContextMenu()
@@ -42,25 +32,12 @@ export default function NotebookList() {
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 
-	const saveCurrentNotebook = () => {
-		setNotebooks((prev) => prev.map((n) => (n.id === notebook?.id ? notebook : n)))
-	}
-
 	/**
 	 * Select and open the notebook to it's first chapter and its first canvas.
 	 * @param notebook - Notebook to navigate to.
 	 */
-	const selectNotebook = (notebook: Notebook) => {
-		setNotebook(notebook)
-
-		// Set the active canvas to the notebook's first chapter's first canvas.
-		setChapter(notebook.chapters[0])
-		if (chapter) {
-			setCanvas(chapter.canvases[0])
-			if (canvas) {
-				setActiveCanvasId(canvas.id)
-			}
-		}
+	const selectNotebook = (notebookId: string) => {
+		setSelectedNotebookId(notebookId)
 		nav.navigate("canvas")
 	}
 
@@ -94,13 +71,7 @@ export default function NotebookList() {
 		<Grid
 			data={sortedNotebooks.map((n) => (
 				// Clickable icon that navigates to the canvas after selecting the notebook.
-				<Pressable
-					key={n.id}
-					onPress={() => {
-						saveCurrentNotebook()
-						selectNotebook(n)
-					}}
-				>
+				<Pressable key={n.id} onPress={() => selectNotebook(n.id)}>
 					<View style={{ flexDirection: "row" }}>
 						{/* Notebook icon with editable color */}
 						<NotebookIcon fill={n.fill} width={80} height={96} />

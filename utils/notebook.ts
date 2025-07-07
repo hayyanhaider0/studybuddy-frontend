@@ -15,6 +15,8 @@ import uuid from "react-native-uuid"
 const createCanvas = (): Canvas => ({
 	id: uuid.v4() as string,
 	paths: [],
+	undoStack: [],
+	redoStack: [],
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
 })
@@ -37,7 +39,7 @@ const createChapter = (title: string): Chapter => ({
  * Creates a new notebook.
  *
  * @param title - Name of the new notebook.
- * @returns A named notebook with a new chapter called "Chapter 1".
+ * @returns A named notebook with one chapter called "Chapter 1" and one canvas.
  */
 export const createNotebook = (title: string): Notebook => ({
 	id: uuid.v4() as string,
@@ -58,14 +60,84 @@ export const createNotebook = (title: string): Notebook => ({
  * @param title - Name of the new chapter.
  * @returns An empty chapter with an array of canvases inside the selected notebook.
  */
-export const addChapter = (notebook: Notebook, title: string): Notebook => ({
-	...notebook,
-	chapters: [...notebook.chapters, createChapter(title)],
-	updatedAt: Date.now(),
-})
+export const addChapter = (
+	notebooks: Notebook[],
+	notebookId: string,
+	title: string
+): Notebook[] => {
+	const updatedNotebooks = notebooks.map((n) =>
+		n.id === notebookId
+			? {
+					...n,
+					chapters: [...n.chapters, createChapter(title)],
+					updatedAt: Date.now(),
+			  }
+			: n
+	)
 
-export const addCanvas = (chapter: Chapter): Chapter => ({
-	...chapter,
-	canvases: [...chapter.canvases, createCanvas()],
-	updatedAt: Date.now(),
-})
+	return updatedNotebooks
+}
+
+/**
+ * Creates a new canvas and adds it to the specified chapter.
+ *
+ * @param chapter - The chapter the canvas will belong to.
+ * @returns An empty canvas inside the selected chapter.
+ */
+export const addCanvas = (
+	notebooks: Notebook[],
+	notebookId: string,
+	chapterId: string
+): Notebook[] => {
+	const updatedNotebooks = notebooks.map((n) => {
+		if (n.id !== notebookId) return n
+
+		return {
+			...n,
+			chapters: n.chapters.map((ch) =>
+				ch.id === chapterId
+					? {
+							...ch,
+							canvases: [...ch.canvases, createCanvas()],
+							updatedAt: Date.now(),
+					  }
+					: ch
+			),
+			updatedAt: Date.now(),
+		}
+	})
+
+	return updatedNotebooks
+}
+
+/////////////////////////////////////////
+// Getter Functions
+/////////////////////////////////////////
+export const getNotebook = (notebooks: Notebook[], notebookId: string): Notebook => {
+	const notebook = notebooks.find((n) => n.id === notebookId)
+	if (!notebook) throw new Error("Notebook not found!")
+	return notebook
+}
+
+export const getChapter = (
+	notebooks: Notebook[],
+	notebookId: string,
+	chapterId: string
+): Chapter => {
+	const notebook = getNotebook(notebooks, notebookId)
+	const chapter = notebook.chapters.find((c) => c.id === chapterId)
+	if (!chapter) throw new Error("Chapter not found!")
+	return chapter
+}
+
+export const getCanvas = (
+	notebooks: Notebook[],
+	notebookId: string,
+	chapterId: string,
+	canvasId: string
+): Canvas => {
+	const chapter = getChapter(notebooks, notebookId, chapterId)
+	const canvas = chapter.canvases.find((c) => c.id === canvasId)
+	if (!canvas) throw new Error("Canvas not found!")
+	return canvas
+}

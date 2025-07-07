@@ -16,6 +16,7 @@ import { useThemeContext } from "../../contexts/ThemeContext"
 import { useNotebookContext } from "../../contexts/NotebookContext"
 import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
 import { useSettings } from "../../contexts/SettingsContext"
+import { getChapter } from "../../utils/notebook"
 
 interface DrawingCanvasProps {
 	canvasId: string
@@ -25,17 +26,20 @@ interface DrawingCanvasProps {
 export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps) {
 	// Get values from context.
 	const { current, layout } = useCanvasContext()
-	const { notebook, chapter } = useNotebookContext()
+	const { notebooks, selectedNotebookId, selectedChapterId } = useNotebookContext()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
 
-	const activeChapter = notebook?.chapters.find((c) => c.id === chapter?.id)
-	// Get the current canvas id from CanvasScreen.
-	const canvas = activeChapter?.canvases.find((c) => c.id === canvasId)
+	// Get the currently selected chapter and canvas.
+	if (!selectedNotebookId || !selectedChapterId) return
+	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
+
+	const canvasIndex = chapter.canvases.findIndex((cv) => cv.id === canvasId)
+	const canvasNumber = canvasIndex !== -1 ? canvasIndex + 1 + "" : "?"
 
 	// Get the current canvas's paths and current path if any.
-	const canvasPaths = canvas?.paths || []
+	const canvasPaths = chapter.canvases[canvasIndex].paths
 	const currentPath = current[canvasId] || ""
 
 	// Set canvas dimensions.
@@ -61,7 +65,7 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 					{/* Render page number on the top right if the show page number setting is enabled */}
 					{showPageNumber && (
 						<SkiaText
-							text={`${(chapter?.canvases.findIndex((c) => c.id === canvas?.id) ?? -1) + 1}`}
+							text={canvasNumber}
 							x={CANVAS_WIDTH - 32}
 							y={36}
 							font={Roboto}
