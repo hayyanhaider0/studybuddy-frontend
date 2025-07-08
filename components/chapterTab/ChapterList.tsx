@@ -28,12 +28,9 @@ export default function ChapterList() {
 	const { handleNewChapter } = useNotebookActions()
 
 	// Currently selected notebook
-	if (!selectedNotebookId) return
-	const notebook = getNotebook(notebooks, selectedNotebookId)
-
+	const notebook = getNotebook(notebooks, selectedNotebookId)!
 	// Currently selected chapter
-	if (!selectedChapterId) return
-	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
+	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)!
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()

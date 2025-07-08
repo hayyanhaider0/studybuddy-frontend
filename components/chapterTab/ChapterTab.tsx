@@ -26,11 +26,8 @@ export default function ChapterTab() {
 	const { handleNewCanvas } = useNotebookActions()
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 
-	const notebook = selectedNotebookId ? getNotebook(notebooks, selectedNotebookId) : null
-	const chapter =
-		selectedNotebookId && selectedChapterId
-			? getChapter(notebooks, selectedNotebookId, selectedChapterId)
-			: null
+	const notebook = getNotebook(notebooks, selectedNotebookId)
+	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
 
 	const [extended, setExtended] = useState<boolean>(chapter ? true : false) // Extended state for ChapterTab component.
 
@@ -72,7 +69,7 @@ export default function ChapterTab() {
 							/>
 						</Pressable>
 						{/* Add a new canvas/page */}
-						{chapter && selectedNotebookId && selectedChapterId && (
+						{chapter && (
 							<CustomPressable type='primary' onPress={handleNewCanvas} circle>
 								<MaterialC name='plus' size={28} color={theme.accent.onAccent} />
 							</CustomPressable>

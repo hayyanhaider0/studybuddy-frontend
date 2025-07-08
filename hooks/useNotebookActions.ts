@@ -8,22 +8,28 @@
 import { useModal, ModalType } from "../contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { PathType } from "../types/global"
-import { Notebook } from "../types/notebook"
-import { addCanvas, addChapter, createNotebook } from "../utils/notebook"
+import { Canvas, Notebook } from "../types/notebook"
+import {
+	addCanvas,
+	addChapter,
+	createNotebook,
+	getCanvas,
+	getChapter,
+	getNotebook,
+} from "../utils/notebook"
 
 export default function useNotebookActions() {
 	// Get context values.
-	const {
-		notebooks,
-		setNotebooks,
-		selectedNotebookId,
-		setSelectedNotebookId,
-		selectedChapterId,
-		setSelectedChapterId,
-		selectedCanvasId,
-		setSelectedCanvasId,
-	} = useNotebookContext()
+	const { notebooks, setNotebooks, selectedNotebookId, selectedChapterId, selectedCanvasId } =
+		useNotebookContext()
 	const { openModal, setInput } = useModal()
+
+	const activeNotebook = getNotebook(notebooks, selectedNotebookId)
+	const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
+	const activeCanvas = getCanvas(notebooks, selectedNotebookId, selectedChapterId, selectedCanvasId)
+
+	const MAX_UNDO_HISTORY = 100
+	const MAX_REDO_HISTORY = 100
 
 	/////////////////////////////////////////
 	// Updater Functions
@@ -35,12 +41,8 @@ export default function useNotebookActions() {
 	 */
 	const addNotebook = (title: string) => {
 		const notebook = createNotebook(title)
-		setNotebooks((prev) => [...prev, notebook])
-		setSelectedNotebookId(notebook.id)
-
-		const chapter = notebook.chapters[0]
-		setSelectedChapterId(chapter.id)
-		setSelectedCanvasId(chapter.canvases[0].id)
+		const updatedNotebooks = [...notebooks, notebook]
+		setNotebooks(updatedNotebooks)
 	}
 
 	/**
@@ -110,8 +112,6 @@ export default function useNotebookActions() {
 
 	// Helper function to create a new chapter with a title.
 	const handleNewChapter = () => {
-		if (!selectedNotebookId) return
-
 		openModal({
 			type: ModalType.INPUT,
 			title: "Create New Chapter",
@@ -127,9 +127,20 @@ export default function useNotebookActions() {
 
 	// Helper function to create a new canvas
 	const handleNewCanvas = () => {
-		if (!selectedNotebookId || !selectedChapterId) return
 		const updatedNotebook = addCanvas(notebooks, selectedNotebookId, selectedChapterId)
 		setNotebooks(updatedNotebook)
+	}
+
+	/////////////////////////////////////////
+	// Canvas State Management
+	/////////////////////////////////////////
+	// Create a snapshot of the canvas.
+	const createSnapshot = () => {
+		if (!activeCanvas) return
+
+		return {
+			paths: [...activeCanvas.paths],
+		}
 	}
 
 	/**
@@ -137,42 +148,126 @@ export default function useNotebookActions() {
 	 * @param newPathObject - The new path drawn by the user.
 	 */
 	const addPathToCanvas = (newPathObject: PathType) => {
-		if (!selectedNotebookId || !selectedChapterId || !selectedCanvasId) return
+		if (!activeCanvas) return
 
-		// Deep copy notebooks
-		const updatedNotebooks = [...notebooks]
+		const snapshot = createSnapshot()
 
-		// Find notebook, chapter, and canvas indexes
-		const notebookIndex = updatedNotebooks.findIndex((n) => n.id === selectedNotebookId)
-		if (notebookIndex === -1) return
-
-		const chapterIndex = updatedNotebooks[notebookIndex].chapters.findIndex(
-			(ch) => ch.id === selectedChapterId
-		)
-		if (chapterIndex === -1) return
-
-		const canvasIndex = updatedNotebooks[notebookIndex].chapters[chapterIndex].canvases.findIndex(
-			(cv) => cv.id === selectedCanvasId
-		)
-		if (canvasIndex === -1) return
-
-		// Clone and modify the canvas.
-		const currentCanvas =
-			updatedNotebooks[notebookIndex].chapters[chapterIndex].canvases[canvasIndex]
 		const updatedCanvas = {
-			...currentCanvas,
-			paths: [...currentCanvas.paths, newPathObject],
+			...activeCanvas,
+			paths: [...activeCanvas.paths, newPathObject],
+			undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
+			redoStack: [],
 			updatedAt: Date.now(),
 		}
 
-		// Apply the updates
-		updatedNotebooks[notebookIndex].chapters[chapterIndex].canvases[canvasIndex] = updatedCanvas
-		updatedNotebooks[notebookIndex].chapters[chapterIndex].updatedAt = Date.now()
-		updatedNotebooks[notebookIndex].updatedAt = Date.now()
+		updateCanvas(updatedCanvas)
+	}
 
-		// Set the new notebooks array state.
+	// Undo the last action by the user.
+	const undo = () => {
+		if (!activeCanvas) return
+
+		const lastItem = activeCanvas.undoStack.at(-1)
+		if (!lastItem) return
+
+		const prevSnapshot = activeCanvas.undoStack.slice(0, -1)
+
+		const updatedCanvas = {
+			...activeCanvas,
+			paths: [...lastItem.paths],
+			undoStack: prevSnapshot,
+			redoStack: limitStackSize(
+				pushToStack(activeCanvas.redoStack, activeCanvas),
+				MAX_REDO_HISTORY
+			),
+			updatedAt: Date.now(),
+		}
+
+		updateCanvas(updatedCanvas)
+	}
+
+	// Redo the last undone action.
+	const redo = () => {
+		if (!activeCanvas) return
+
+		const lastItem = activeCanvas.redoStack.at(-1)
+		if (!lastItem) return
+
+		const prevSnapshot = activeCanvas.redoStack.slice(0, -1)
+
+		const updatedCanvas = {
+			...activeCanvas,
+			paths: [...lastItem.paths],
+			undoStack: limitStackSize(
+				pushToStack(activeCanvas.undoStack, activeCanvas),
+				MAX_UNDO_HISTORY
+			),
+			redoStack: prevSnapshot,
+			updatedAt: Date.now(),
+		}
+
+		updateCanvas(updatedCanvas)
+	}
+
+	// Clears the current canvas.
+	const clearCanvas = () => {
+		if (!activeCanvas) return
+
+		const snapshot = createSnapshot()
+
+		const updatedCanvas = {
+			...activeCanvas,
+			paths: [],
+			undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
+			redoStack: [],
+			updatedAt: Date.now(),
+		}
+
+		updateCanvas(updatedCanvas)
+	}
+
+	/**
+	 * Helper function to update the canvas from the notebooks array.
+	 * @param newCanvas - The new canvas state
+	 */
+	const updateCanvas = (newCanvas: Canvas) => {
+		if (!activeNotebook || !activeChapter || !activeCanvas) return
+
+		// Update the chapter
+		const updatedChapter = {
+			...activeChapter,
+			canvases: activeChapter.canvases.map((cv) => (cv.id === newCanvas.id ? newCanvas : cv)),
+			updatedAt: Date.now(),
+		}
+
+		// Update the notebook
+		const updatedNotebook = {
+			...activeNotebook,
+			chapters: activeNotebook.chapters.map((ch) =>
+				ch.id === updatedChapter.id ? updatedChapter : ch
+			),
+			updatedAt: Date.now(),
+		}
+
+		// Update the notebooks array
+		const updatedNotebooks = notebooks.map((n) =>
+			n.id === updatedNotebook.id ? updatedNotebook : n
+		)
+
+		// Set the notebooks array
 		setNotebooks(updatedNotebooks)
 	}
+
+	// Helper to push items onto both undo and redo stacks.
+	const pushToStack = (stack: any[], canvas: Canvas) => [...stack, { paths: [...canvas.paths] }]
+
+	// Helper to limit stack sizes for better memory usage.
+	const limitStackSize = (stack: any[], max: number) =>
+		stack.length >= max ? stack.slice(stack.length - max + 1) : stack
+
+	// Helpers to allow for checking if undo and redo are enabled
+	const canUndo = () => activeCanvas && activeCanvas.undoStack.length > 0
+	const canRedo = () => activeCanvas && activeCanvas.redoStack.length > 0
 
 	return {
 		handleCreateNotebook,
@@ -181,5 +276,10 @@ export default function useNotebookActions() {
 		handleNewChapter,
 		handleNewCanvas,
 		addPathToCanvas,
+		undo,
+		canUndo,
+		redo,
+		canRedo,
+		clearCanvas,
 	}
 }

@@ -31,9 +31,8 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
 
-	// Get the currently selected chapter and canvas.
-	if (!selectedNotebookId || !selectedChapterId) return
-	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
+	// Get the currently selected chapter.
+	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)!
 
 	const canvasIndex = chapter.canvases.findIndex((cv) => cv.id === canvasId)
 	const canvasNumber = canvasIndex !== -1 ? canvasIndex + 1 + "" : "?"

@@ -113,9 +113,8 @@ export const addCanvas = (
 /////////////////////////////////////////
 // Getter Functions
 /////////////////////////////////////////
-export const getNotebook = (notebooks: Notebook[], notebookId: string): Notebook => {
+export const getNotebook = (notebooks: Notebook[], notebookId: string): Notebook | undefined => {
 	const notebook = notebooks.find((n) => n.id === notebookId)
-	if (!notebook) throw new Error("Notebook not found!")
 	return notebook
 }
 
@@ -123,10 +122,9 @@ export const getChapter = (
 	notebooks: Notebook[],
 	notebookId: string,
 	chapterId: string
-): Chapter => {
+): Chapter | undefined => {
 	const notebook = getNotebook(notebooks, notebookId)
-	const chapter = notebook.chapters.find((c) => c.id === chapterId)
-	if (!chapter) throw new Error("Chapter not found!")
+	const chapter = notebook?.chapters.find((c) => c.id === chapterId)
 	return chapter
 }
 
@@ -135,9 +133,8 @@ export const getCanvas = (
 	notebookId: string,
 	chapterId: string,
 	canvasId: string
-): Canvas => {
+): Canvas | undefined => {
 	const chapter = getChapter(notebooks, notebookId, chapterId)
-	const canvas = chapter.canvases.find((c) => c.id === canvasId)
-	if (!canvas) throw new Error("Canvas not found!")
+	const canvas = chapter?.canvases.find((c) => c.id === canvasId)
 	return canvas
 }

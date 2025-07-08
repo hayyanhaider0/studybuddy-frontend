@@ -29,9 +29,12 @@ export default function CanvasScreen() {
 		<View style={styles.surface}>
 			<ChapterTab />
 			<ZoomIndicator />
-			<Toolbar />
+
 			{notebooks.length > 0 ? (
-				<CanvasList />
+				<>
+					<Toolbar />
+					<CanvasList />
+				</>
 			) : (
 				<Pressable onPress={handleCreateNotebook} style={styles.addNotebookButton}>
 					<Material name='plus-circle-outline' size={64} color={theme.colors.onPrimary} />

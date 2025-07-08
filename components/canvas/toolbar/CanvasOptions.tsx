@@ -36,13 +36,17 @@ export default function CanvasOptions() {
 				if (collapsed && o.name !== "collapse") return null
 
 				return (
-					<Pressable key={i} onPress={o.action}>
+					<Pressable key={i} onPress={o.action} disabled={o.disabled}>
 						<MotiView
 							from={{ scale: 0 }}
 							animate={{ scale: 1 }}
 							transition={{ type: "timing", delay: 200 }}
 						>
-							<Icon name={o.icon} size={30} color={theme.colors.textPrimary} />
+							<Icon
+								name={o.icon}
+								size={30}
+								color={o.disabled ? theme.colors.textSecondary : theme.colors.textPrimary}
+							/>
 						</MotiView>
 					</Pressable>
 				)

@@ -18,6 +18,7 @@ import { useCanvasContext } from "../../contexts/CanvasStateContext"
 import { getChapter } from "../../utils/notebook"
 
 export default function CanvasList() {
+	// Get context values.
 	const flatListRef = useRef<FlatList>(null)
 	const { width: screenWidth } = useWindowDimensions()
 	const { setLayout } = useCanvasContext()
@@ -26,9 +27,10 @@ export default function CanvasList() {
 	const { scale, translateX, translateY } = useTransformContext()
 	const translateGestures = useCanvasTranslateGestures()
 
-	if (!selectedNotebookId || !selectedChapterId) return
+	// Get the currently selected chapter.
 	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
 
+	// DEFAULT VALUES.
 	const CANVAS_WIDTH = 360
 	const GAP = 4
 

@@ -13,19 +13,19 @@ type NotebookContextType = {
 	// Global list of all of the user's notebooks.
 	notebooks: Notebook[]
 	// Setter for the user's list of notebooks.
-	setNotebooks: React.Dispatch<React.SetStateAction<Notebook[]>>
+	setNotebooks: (newNotebooks: Notebook[]) => void
 	// Id of the currently selected notebook, or null if no notebook is selected.
-	selectedNotebookId: string | null
+	selectedNotebookId: string
 	// Setter for the id of the currently selected notebook.
-	setSelectedNotebookId: React.Dispatch<React.SetStateAction<string | null>>
+	setSelectedNotebookId: React.Dispatch<React.SetStateAction<string>>
 	// Id of the currently selected chapter.
-	selectedChapterId: string | null
+	selectedChapterId: string
 	// Setter for the id of the currently selected notebook.
-	setSelectedChapterId: React.Dispatch<React.SetStateAction<string | null>>
+	setSelectedChapterId: React.Dispatch<React.SetStateAction<string>>
 	// Id of the currently selected canvas.
-	selectedCanvasId: string | null
+	selectedCanvasId: string
 	// Setter for the id of the currently selected notebook.
-	setSelectedCanvasId: React.Dispatch<React.SetStateAction<string | null>>
+	setSelectedCanvasId: React.Dispatch<React.SetStateAction<string>>
 }
 
 // React context for pagination, chapter and notebook selection.
@@ -40,10 +40,24 @@ const NotebookContext = createContext<NotebookContextType | null>(null)
  */
 export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	// Pagination, chapter and notebook state values.
-	const [notebooks, setNotebooks] = useState<Notebook[]>([])
-	const [selectedNotebookId, setSelectedNotebookId] = useState<string | null>(null)
-	const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null)
-	const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(null)
+	const [notebooks, setNotebooksState] = useState<Notebook[]>([])
+	const [selectedNotebookId, setSelectedNotebookId] = useState<string>("")
+	const [selectedChapterId, setSelectedChapterId] = useState<string>("")
+	const [selectedCanvasId, setSelectedCanvasId] = useState<string>("")
+
+	const setNotebooks = (newNotebooks: Notebook[]) => {
+		setNotebooksState(newNotebooks)
+
+		if (newNotebooks.length > 0) {
+			const firstNotebook = newNotebooks[0]
+			const firstChapter = firstNotebook.chapters[0]
+			const firstCanvas = firstChapter.canvases[0]
+
+			setSelectedNotebookId(firstNotebook.id)
+			setSelectedChapterId(firstChapter.id)
+			setSelectedCanvasId(firstCanvas.id)
+		}
+	}
 
 	return (
 		<NotebookContext.Provider
