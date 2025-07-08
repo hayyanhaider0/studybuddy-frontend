@@ -64,7 +64,7 @@ export default function CanvasList() {
 	 *
 	 * @param e - The native scroll event from the FlatList.
 	 */
-	const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+	const onMomentumScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
 		if (!chapter) return // Exit if there's no active chapter.
 
 		// Find the current horizontal scroll offset.
@@ -110,7 +110,7 @@ export default function CanvasList() {
 						</View>
 					)}
 					// Scrolling behaviour
-					onScroll={onScroll}
+					onMomentumScrollEnd={onMomentumScrollEnd}
 					scrollEventThrottle={16}
 					decelerationRate='fast'
 					snapToInterval={CANVAS_WIDTH + GAP}

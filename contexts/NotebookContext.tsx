@@ -48,14 +48,18 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	const setNotebooks = (newNotebooks: Notebook[]) => {
 		setNotebooksState(newNotebooks)
 
-		if (newNotebooks.length > 0) {
-			const firstNotebook = newNotebooks[0]
-			const firstChapter = firstNotebook.chapters[0]
-			const firstCanvas = firstChapter.canvases[0]
+		const currentNotebook = newNotebooks.find((n) => n.id === selectedNotebookId)
+		const currentChapter = currentNotebook?.chapters.find((ch) => ch.id === selectedChapterId)
+		const currentCanvas = currentChapter?.canvases.find((cv) => cv.id === selectedCanvasId)
 
-			setSelectedNotebookId(firstNotebook.id)
-			setSelectedChapterId(firstChapter.id)
-			setSelectedCanvasId(firstCanvas.id)
+		if (!currentNotebook || !currentChapter || !currentCanvas) {
+			const firstNotebook = newNotebooks[0]
+			const firstChapter = firstNotebook?.chapters[0]
+			const firstCanvas = firstChapter?.canvases[0]
+
+			setSelectedNotebookId(firstNotebook?.id || "")
+			setSelectedChapterId(firstChapter?.id || "")
+			setSelectedCanvasId(firstCanvas?.id || "")
 		}
 	}
 
