@@ -7,7 +7,7 @@
 
 import { Canvas, Circle, Path, Text as SkiaText, useFont } from "@shopify/react-native-skia"
 import { PathType } from "../../types/global"
-import { LayoutChangeEvent, View } from "react-native"
+import { View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import Background1 from "./Background1"
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
@@ -18,12 +18,7 @@ import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
 import { useSettings } from "../../contexts/SettingsContext"
 import { getChapter } from "../../utils/notebook"
 
-interface DrawingCanvasProps {
-	canvasId: string
-	onLayout: (e: LayoutChangeEvent) => void
-}
-
-export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps) {
+export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
 	const { current, layout } = useCanvasContext()
 	const { notebooks, selectedNotebookId, selectedChapterId } = useNotebookContext()
@@ -41,12 +36,8 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 	const canvasPaths = chapter.canvases[canvasIndex].paths
 	const currentPath = current[canvasId] || ""
 
-	// Set canvas dimensions.
-	const CANVAS_WIDTH = 360
-	const CANVAS_HEIGHT = CANVAS_WIDTH * (16 / 9)
-
 	// Font import for Skia -- used for page number.
-	const Roboto = useFont(require("../../assets/fonts/Roboto-Bold.ttf"), 16)
+	const Roboto = useFont(require("../../assets/fonts/Roboto-Bold.ttf"), layout.height * 0.025)
 
 	// Gesture.
 	const drawingGestures = useCanvasDrawingGestures(canvasId)
@@ -55,7 +46,7 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 		<View style={{ flex: 1 }}>
 			{/* This View allows for gestures outside the canvas like pan and pinch */}
 			<GestureDetector gesture={drawingGestures}>
-				<Canvas style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH }} onLayout={onLayout}>
+				<Canvas style={{ height: layout.height, width: layout.width }}>
 					<Background1
 						width={layout.width}
 						height={layout.height}
@@ -65,8 +56,8 @@ export default function DrawingCanvas({ canvasId, onLayout }: DrawingCanvasProps
 					{showPageNumber && (
 						<SkiaText
 							text={canvasNumber}
-							x={CANVAS_WIDTH - 32}
-							y={36}
+							x={layout.width - layout.height * 0.05}
+							y={layout.width * 0.1}
 							font={Roboto}
 							color={theme.colors.textPrimary}
 						/>

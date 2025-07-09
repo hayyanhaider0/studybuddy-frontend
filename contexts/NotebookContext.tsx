@@ -45,6 +45,11 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	const [selectedChapterId, setSelectedChapterId] = useState<string>("")
 	const [selectedCanvasId, setSelectedCanvasId] = useState<string>("")
 
+	/**
+	 * Sets the notebooks array to a new state. Also initializes selected notebook, chapter, and canvas
+	 * in case they don't exist -- this should only happen when the user opens the app for the first time.
+	 * @param newNotebooks - New notebooks array state.
+	 */
 	const setNotebooks = (newNotebooks: Notebook[]) => {
 		setNotebooksState(newNotebooks)
 

@@ -15,7 +15,7 @@ export function useCanvasTranslateGestures() {
 		.onUpdate((e) => {
 			const nextScale = savedScale.value * e.scale // Determine the next scale.
 			// Set the scale value if it is 0.7x or 4x the original scale.
-			scale.value = Math.min(Math.max(nextScale, 0.8), 5)
+			scale.value = Math.min(Math.max(nextScale, 0.3), 5)
 		})
 		.onEnd(() => {
 			savedScale.value = scale.value

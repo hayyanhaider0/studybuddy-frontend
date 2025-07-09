@@ -14,11 +14,14 @@ import ZoomIndicator from "../components/canvas/ZoomIndicator"
 import CanvasList from "../components/canvas/CanvasList"
 import { getCanvasStyles } from "../styles/canvas"
 import { useNotebookContext } from "../contexts/NotebookContext"
+import { GestureDetector } from "react-native-gesture-handler"
+import { useCanvasTranslateGestures } from "../hooks/useCanvasTranslateGestures"
 
 export default function CanvasScreen() {
 	// Context Imports
 	const { notebooks } = useNotebookContext()
 	const { handleCreateNotebook } = useNotebookActions()
+	const translateGesture = useCanvasTranslateGestures()
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
@@ -33,7 +36,11 @@ export default function CanvasScreen() {
 			{notebooks.length > 0 ? (
 				<>
 					<Toolbar />
-					<CanvasList />
+					<GestureDetector gesture={translateGesture}>
+						<View style={{ flex: 1, position: "relative" }}>
+							<CanvasList />
+						</View>
+					</GestureDetector>
 				</>
 			) : (
 				<Pressable onPress={handleCreateNotebook} style={styles.addNotebookButton}>

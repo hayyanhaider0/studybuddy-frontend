@@ -5,8 +5,9 @@
  * the current drawing tool identifier, and layout dimensions.
  */
 
-import { createContext, ReactNode, useContext, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { SkPath } from "@shopify/react-native-skia"
+import { ScaledSize, useWindowDimensions } from "react-native"
 
 // Types
 type LayoutType = {
@@ -39,6 +40,25 @@ export type CanvasContextType = {
 export const CanvasStateContext = createContext<CanvasContextType | null>(null)
 
 /**
+ * Computes canvas layout according to window width.
+ * @param window - Size of the window.
+ * @returns A layout object.
+ */
+function computeCanvasLayout(window: ScaledSize): LayoutType {
+	const aspectRatio = 16 / 9
+
+	const width = window.width
+	const height = width * aspectRatio
+
+	return {
+		x: 0,
+		y: 0,
+		width,
+		height,
+	}
+}
+
+/**
  * CanvasStateProvider Component
  *
  * Wraps children components, providing canvas state values via context.
@@ -46,10 +66,15 @@ export const CanvasStateContext = createContext<CanvasContextType | null>(null)
  * @param children - Components that require access to canvas state values.
  */
 export function CanvasStateProvider({ children }: { children: ReactNode }) {
+	const window = useWindowDimensions()
 	// Path currently being drawn.
 	const [current, setCurrent] = useState<CurrentPathMap>({})
 	// Canvas coordinates and layout dimensions.
-	const [layout, setLayout] = useState<LayoutType>({ x: 0, y: 0, width: 0, height: 0 })
+	const [layout, setLayout] = useState<LayoutType>(() => computeCanvasLayout(window))
+
+	useEffect(() => {
+		setLayout(computeCanvasLayout(window))
+	}, [window])
 
 	return (
 		<CanvasStateContext.Provider value={{ current, setCurrent, layout, setLayout }}>
