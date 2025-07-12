@@ -9,6 +9,8 @@ import { PathType } from "./global"
 export type Canvas = {
 	id: string
 	paths: PathType[]
+	undoStack: any[]
+	redoStack: any[]
 	createdAt: number
 	updatedAt: number
 }
