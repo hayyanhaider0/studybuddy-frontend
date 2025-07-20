@@ -11,16 +11,4 @@ const apiClient = axios.create({
 	},
 })
 
-export const getHello = async () => {
-	console.log("API_BASE_URL:", API_BASE_URL)
-	try {
-		const response = await apiClient.get("/hello")
-		console.log(response.data)
-		return response.data
-	} catch (e) {
-		console.error("Error in getHello()", e)
-		throw e
-	}
-}
-
 export default apiClient

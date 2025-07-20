@@ -11,6 +11,26 @@ import { SkPath } from "@shopify/react-native-skia"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "../navigation/DrawerNavigation"
 
+// Api
+export interface ApiResponse<T> {
+	status: boolean
+	message: string
+	data: T | null
+}
+
+// Auth
+export type LoginRequest = {
+	login: string
+	password: string
+}
+
+export type SignUpRequest = {
+	email: string
+	username: string
+	password: string
+	confirmPassword: string
+}
+
 // Navigation
 export type NavProp<Screen extends keyof RootStackParamList> = NativeStackNavigationProp<
 	RootStackParamList,

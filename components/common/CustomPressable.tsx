@@ -25,6 +25,7 @@ type BaseProps = {
 	circle?: boolean
 	style?: StyleProp<ViewProps>
 	floatPos?: { top?: number; bottom?: number; left?: number; right?: number }
+	disabled?: boolean
 } & PressableProps
 
 type WithTitle = {
@@ -46,6 +47,7 @@ export default function CustomPressable({
 	style,
 	circle,
 	floatPos,
+	disabled,
 	...props
 }: CustomPressableProps) {
 	// Theming
@@ -54,6 +56,7 @@ export default function CustomPressable({
 	const gradientColors = {
 		primary: theme.accent.gradient.colors,
 		delete: ["#D31027", "#EA384D"] as [ColorValue, ColorValue, ...ColorValue[]],
+		disabled: ["#A9A9A9", "#A9A9A9"] as [ColorValue, ColorValue, ...ColorValue[]],
 	}
 
 	const isGradient = type === "primary" || type === "delete"
@@ -91,11 +94,12 @@ export default function CustomPressable({
 			{title && <Text style={textStyle}>{title}</Text>}
 		</View>
 	)
+
 	return (
 		<Pressable {...props} style={floatStyle}>
 			{isGradient ? (
 				<LinearGradient
-					colors={gradientColors[type]}
+					colors={disabled ? gradientColors.disabled : gradientColors[type]}
 					start={theme.accent.gradient.start}
 					end={theme.accent.gradient.end}
 					style={baseButtonStyle}

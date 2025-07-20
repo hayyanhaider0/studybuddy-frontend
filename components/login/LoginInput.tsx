@@ -4,10 +4,12 @@
  * Contains the user input box, label, and logic for the login UI
  */
 
-import { View, Text, TextInput } from "react-native"
+import { View, Text, TextInput, Pressable } from "react-native"
 import { Controller } from "react-hook-form"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
+import { useState } from "react"
+import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 
 /**
  * Sets the types of component props
@@ -31,6 +33,8 @@ export default function LoginInput({
 	secure,
 	error,
 }: LoginInputProps) {
+	const [showPassword, setShowPassword] = useState(false)
+
 	// Theming
 	const { theme, fontScale, GlobalStyles } = useThemeContext()
 	const styles = getLoginStyles(theme.colors, fontScale)
@@ -47,16 +51,27 @@ export default function LoginInput({
 				name={name}
 				rules={rules} // Rules for validation
 				render={({ field: { value, onChange } }) => (
-					<TextInput
-						value={value}
-						onChangeText={(text) => {
-							if (/^\S*$/.test(text)) onChange(text)
-						}}
-						placeholder={placeholder}
-						placeholderTextColor={theme.colors.placeholder}
-						secureTextEntry={secure}
-						style={[GlobalStyles.paragraph, styles.input]}
-					/>
+					<View style={{ flexDirection: "row", alignItems: "center" }}>
+						<TextInput
+							value={value}
+							onChangeText={(text) => {
+								if (/^\S*$/.test(text)) onChange(text)
+							}}
+							placeholder={placeholder}
+							placeholderTextColor={theme.colors.placeholder}
+							secureTextEntry={secure && !showPassword}
+							style={[GlobalStyles.paragraph, styles.input, { flex: 1 }]}
+						/>
+						{secure && (
+							<Pressable onPress={() => setShowPassword((prev) => !prev)}>
+								<MaterialC
+									name={showPassword ? "eye-off-outline" : "eye-outline"}
+									size={20}
+									color={theme.colors.textSecondary}
+								/>
+							</Pressable>
+						)}
+					</View>
 				)}
 			/>
 		</View>

@@ -9,11 +9,12 @@ import { View, Text } from "react-native"
 import LoginInput from "./LoginInput"
 import { useForm } from "react-hook-form"
 import { useNavigation } from "@react-navigation/native"
-import { NavProp } from "../../types/global"
+import { LoginRequest, NavProp } from "../../types/global"
 import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
 import CustomPressable from "../common/CustomPressable"
+import useApi from "../../hooks/useApi"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -33,8 +34,10 @@ export default function Login({ setForm }: LoginProps) {
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm() // Form handling
+		setError,
+	} = useForm<LoginRequest>() // Form handling
 
+	const { loading, request } = useApi()
 	/**
 	 * Handles login operation.
 	 *
@@ -42,10 +45,18 @@ export default function Login({ setForm }: LoginProps) {
 	 *
 	 * @param data - Data from the form
 	 */
-	const handleLogin = (data: any) => {
-		console.log(data)
+	const handleLogin = async (loginRequest: LoginRequest) => {
+		const { data, error } = await request({
+			method: "POST",
+			url: "/auth/login",
+			data: loginRequest,
+		})
 
-		nav.navigate("main")
+		if (data) nav.navigate("main") // Proceed to Study Buddy.
+
+		if (error) {
+			setError("root", { type: "server", message: error })
+		}
 	}
 
 	/**
@@ -67,22 +78,22 @@ export default function Login({ setForm }: LoginProps) {
 				<View style={{ gap: 4 }}>
 					<LoginInput
 						control={control}
-						name='email'
+						name='login'
 						rules={{
-							required: "Please enter your email.",
+							required: "Please enter your username.",
 							validate: {
-								minLength: (v: string) => v.length >= 4 || "Please enter a valid email address.",
+								minLength: (v: string) => v.length >= 4 || "Please enter a valid username.",
 							},
 						}}
-						label='Email'
-						placeholder='email@example.com'
-						error={errors.email}
+						label='Username'
+						placeholder='Username'
+						error={errors.login}
 					/>
 
-					{/* Email error */}
-					{errors.email && (
+					{/* Email/Username error */}
+					{errors.login && (
 						<Text style={[GlobalStyles.error, { paddingLeft: 16 }]}>
-							{errors.email.message?.toString()}
+							{errors.login.message?.toString()}
 						</Text>
 					)}
 				</View>
@@ -118,7 +129,17 @@ export default function Login({ setForm }: LoginProps) {
 			<CustomPressable type='link' title='Forgot Password?' onPress={handleForgotPassword} />
 
 			{/* Login Button: Form submission button */}
-			<CustomPressable type='primary' title='Login' onPress={handleSubmit(handleLogin)} />
+			<CustomPressable
+				type='primary'
+				title={loading ? "Logging in..." : "Login"}
+				disabled={loading}
+				onPress={handleSubmit(handleLogin)}
+			/>
+
+			{/* Other backend errors */}
+			{errors.root && (
+				<Text style={[GlobalStyles.error, { textAlign: "center" }]}>{errors.root.message}</Text>
+			)}
 
 			{/* Switch Form Button: Allows user to switch to the sign up component */}
 			<View

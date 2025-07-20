@@ -12,6 +12,8 @@ import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
 import CustomPressable from "../common/CustomPressable"
+import { SignUpRequest } from "../../types/global"
+import useApi from "../../hooks/useApi"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -33,15 +35,34 @@ export default function SignUp({ setForm }: SignUpProps) {
 		handleSubmit,
 		getValues,
 		formState: { errors },
-	} = useForm({ criteriaMode: "all" })
+		setError,
+	} = useForm<SignUpRequest>({ criteriaMode: "all" })
+
+	const { loading, request } = useApi()
 
 	/**
 	 * Handles sign up button press, sends form data to the backend.
 	 *
 	 * @param data - Data from the form
 	 */
-	const handleSignUp = (data: any) => {
-		console.log(data)
+	const handleSignUp = async (signupData: SignUpRequest) => {
+		const { data, error } = await request({
+			method: "POST",
+			url: "/auth/signup",
+			data: signupData,
+		})
+
+		if (error) {
+			if (error.toLowerCase().includes("email")) {
+				setError("email", { type: "server", message: error })
+			} else if (error.toLowerCase().includes("username")) {
+				setError("username", { type: "server", message: error })
+			} else {
+				setError("root", { type: "server", message: error })
+			}
+		}
+
+		if (data) setForm((prev) => !prev)
 	}
 
 	return (
@@ -156,12 +177,22 @@ export default function SignUp({ setForm }: SignUpProps) {
 			</View>
 
 			{/* Sign Up Button: Form submission button */}
-			<CustomPressable type='primary' title='Sign Up' onPress={handleSubmit(handleSignUp)} />
+			<CustomPressable
+				type='primary'
+				title={loading ? "Signing Up..." : "Sign Up"}
+				disabled={loading}
+				onPress={handleSubmit(handleSignUp)}
+			/>
+
+			{/* Other backend errors */}
+			{errors.root && (
+				<Text style={[GlobalStyles.error, { textAlign: "center" }]}>{errors.root.message}</Text>
+			)}
 
 			{/* Switch Form Button: Allows user to switch to the login component */}
 			<View style={{ flexDirection: "row", justifyContent: "center" }}>
 				<Text style={GlobalStyles.paragraph}>Already Registered? </Text>
-				<TouchableOpacity onPress={() => setForm((prev: boolean) => !prev)}>
+				<TouchableOpacity onPress={() => setForm((prev) => !prev)}>
 					<Text style={GlobalStyles.link}>Login</Text>
 				</TouchableOpacity>
 			</View>
