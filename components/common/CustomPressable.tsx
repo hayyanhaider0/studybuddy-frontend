@@ -74,7 +74,7 @@ export default function CustomPressable({
 		  }
 		: {}
 
-	const textStyle = isLink ? GlobalStyles.link : GlobalStyles.buttonText
+	const textStyle = isLink && !disabled ? GlobalStyles.link : GlobalStyles.buttonText
 
 	const baseButtonStyle: StyleProp<ViewStyle> = [
 		GlobalStyles.button,

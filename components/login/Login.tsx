@@ -14,17 +14,25 @@ import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
 import CustomPressable from "../common/CustomPressable"
-import useApi from "../../hooks/useApi"
+import { useEffect } from "react"
+import { saveToken } from "../../utils/keychain"
+import { useAuthContext } from "../../contexts/AuthContext"
+import useAuthApi from "../../hooks/useAuthApi"
 
 /**
  * Sets the type for setForm to boolean in component props
  */
 type LoginProps = {
 	setForm: React.Dispatch<React.SetStateAction<boolean>>
+	prefillEmail?: string
 }
 
-export default function Login({ setForm }: LoginProps) {
+export default function Login({ setForm, prefillEmail }: LoginProps) {
 	const nav = useNavigation<NavProp<"main">>() // Navigation controller
+
+	// Context values
+	const { login, loading } = useAuthApi()
+	const { setIsLoggedIn } = useAuthContext()
 
 	// Theming
 	const { theme, fontScale, GlobalStyles } = useThemeContext()
@@ -34,10 +42,15 @@ export default function Login({ setForm }: LoginProps) {
 		control,
 		handleSubmit,
 		formState: { errors },
+		setValue,
 		setError,
-	} = useForm<LoginRequest>() // Form handling
+	} = useForm<LoginRequest>({
+		defaultValues: {
+			login: prefillEmail || "", // prefill the login field.
+			password: "",
+		},
+	}) // Form handling
 
-	const { loading, request } = useApi()
 	/**
 	 * Handles login operation.
 	 *
@@ -45,17 +58,21 @@ export default function Login({ setForm }: LoginProps) {
 	 *
 	 * @param data - Data from the form
 	 */
-	const handleLogin = async (loginRequest: LoginRequest) => {
-		const { data, error } = await request({
-			method: "POST",
-			url: "/auth/login",
-			data: loginRequest,
-		})
+	const handleLogin = async (req: LoginRequest) => {
+		const res = await login(req) // Call login from the useAuthApi hook.
 
-		if (data) nav.navigate("main") // Proceed to Study Buddy.
-
-		if (error) {
-			setError("root", { type: "server", message: error })
+		if (res.success) {
+			if (res.data.accessToken) {
+				// If successful and user is verified.
+				saveToken(res.data.accessToken)
+				setIsLoggedIn(true)
+			} else {
+				// If successful but user is NOT verified.
+				nav.navigate("verify", res.data)
+			}
+		} else if (res.error) {
+			// If unsuccessful.
+			setError("root", { type: "server", message: res.error })
 		}
 	}
 
@@ -69,6 +86,12 @@ export default function Login({ setForm }: LoginProps) {
 
 		nav.navigate("main") // REMOVE THIS LINE
 	}
+
+	useEffect(() => {
+		if (prefillEmail) {
+			setValue("login", prefillEmail)
+		}
+	}, [prefillEmail])
 
 	return (
 		<>
@@ -131,8 +154,8 @@ export default function Login({ setForm }: LoginProps) {
 			{/* Login Button: Form submission button */}
 			<CustomPressable
 				type='primary'
-				title={loading ? "Logging in..." : "Login"}
-				disabled={loading}
+				title={loading.login ? "Logging in..." : "Login"}
+				disabled={loading.login}
 				onPress={handleSubmit(handleLogin)}
 			/>
 

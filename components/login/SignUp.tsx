@@ -12,8 +12,9 @@ import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
 import CustomPressable from "../common/CustomPressable"
-import { SignUpRequest } from "../../types/global"
-import useApi from "../../hooks/useApi"
+import { NavProp, SignUpRequest } from "../../types/global"
+import { useNavigation } from "@react-navigation/native"
+import useAuthApi from "../../hooks/useAuthApi"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -23,6 +24,9 @@ type SignUpProps = {
 }
 
 export default function SignUp({ setForm }: SignUpProps) {
+	const nav = useNavigation<NavProp<"verify">>() // Navigation
+	const { signUp, loading } = useAuthApi()
+
 	// Theming
 	const { theme, fontScale, GlobalStyles } = useThemeContext()
 	const styles = getLoginStyles(theme.colors, fontScale)
@@ -38,31 +42,29 @@ export default function SignUp({ setForm }: SignUpProps) {
 		setError,
 	} = useForm<SignUpRequest>({ criteriaMode: "all" })
 
-	const { loading, request } = useApi()
-
 	/**
 	 * Handles sign up button press, sends form data to the backend.
 	 *
 	 * @param data - Data from the form
 	 */
 	const handleSignUp = async (signupData: SignUpRequest) => {
-		const { data, error } = await request({
-			method: "POST",
-			url: "/auth/signup",
-			data: signupData,
-		})
+		const res = await signUp(signupData)
 
-		if (error) {
-			if (error.toLowerCase().includes("email")) {
-				setError("email", { type: "server", message: error })
-			} else if (error.toLowerCase().includes("username")) {
-				setError("username", { type: "server", message: error })
-			} else {
-				setError("root", { type: "server", message: error })
+		if (res.success) {
+			// If successful, go to the verification screen.
+			nav.navigate("verify", { email: res.data.email })
+		} else {
+			if (res.error) {
+				// If unsuccessful, show errors accordingly.
+				if (res.error.toLowerCase().includes("email")) {
+					setError("email", { type: "server", message: res.error })
+				} else if (res.error.toLowerCase().includes("username")) {
+					setError("username", { type: "server", message: res.error })
+				} else {
+					setError("root", { type: "server", message: res.error })
+				}
 			}
 		}
-
-		if (data) setForm((prev) => !prev)
 	}
 
 	return (
@@ -179,8 +181,8 @@ export default function SignUp({ setForm }: SignUpProps) {
 			{/* Sign Up Button: Form submission button */}
 			<CustomPressable
 				type='primary'
-				title={loading ? "Signing Up..." : "Sign Up"}
-				disabled={loading}
+				title={loading.signUp ? "Signing Up..." : "Sign Up"}
+				disabled={loading.signUp}
 				onPress={handleSubmit(handleSignUp)}
 			/>
 

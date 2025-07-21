@@ -11,8 +11,13 @@ import Login from "../components/login/Login"
 import SignUp from "../components/login/SignUp"
 import { useThemeContext } from "../contexts/ThemeContext"
 import tinycolor from "tinycolor2"
+import { RouteProp, useRoute } from "@react-navigation/native"
+import { RootStackParamList } from "../navigation/Navigation"
 
 export default function LoginScreen() {
+	const route = useRoute<RouteProp<RootStackParamList, "login">>()
+	const prefillEmail = route.params?.email ?? ""
+
 	const [form, setForm] = useState(false) // Toggle between Login and SignUp components
 
 	// Theming
@@ -39,7 +44,11 @@ export default function LoginScreen() {
 
 				{/* Login and SignUp forms depending on state */}
 				<View style={{ gap: 32 }}>
-					{form ? <SignUp setForm={setForm} /> : <Login setForm={setForm} />}
+					{form ? (
+						<SignUp setForm={setForm} />
+					) : (
+						<Login setForm={setForm} prefillEmail={prefillEmail} />
+					)}
 				</View>
 			</ScrollView>
 		</View>

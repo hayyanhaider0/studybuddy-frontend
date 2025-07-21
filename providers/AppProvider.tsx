@@ -9,15 +9,18 @@ import { ThemeProvider } from "../contexts/ThemeContext"
 import { SortProvider } from "../contexts/SortContext"
 import { NotebookProvider } from "../contexts/NotebookContext"
 import { SettingsProvider } from "../contexts/SettingsContext"
+import { AuthProvider } from "../contexts/AuthContext"
 
 export function AppProvider({ children }: { children: ReactNode }) {
 	return (
-		<ThemeProvider>
-			<SettingsProvider>
-				<NotebookProvider>
-					<SortProvider>{children}</SortProvider>
-				</NotebookProvider>
-			</SettingsProvider>
-		</ThemeProvider>
+		<AuthProvider>
+			<ThemeProvider>
+				<SettingsProvider>
+					<NotebookProvider>
+						<SortProvider>{children}</SortProvider>
+					</NotebookProvider>
+				</SettingsProvider>
+			</ThemeProvider>
+		</AuthProvider>
 	)
 }

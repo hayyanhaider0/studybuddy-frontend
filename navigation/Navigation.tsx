@@ -12,10 +12,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import DrawerNavigation from "./DrawerNavigation"
 import Modal from "../components/common/Modal"
 import ContextMenu from "../components/common/ContextMenu"
+import VerificationScreen from "../screens/VerificationScreen"
+import { getToken } from "../utils/keychain"
+import { useEffect } from "react"
+import { useAuthContext } from "../contexts/AuthContext"
 
 export type RootStackParamList = {
 	// All available screens.
-	login: undefined
+	login: { email?: string | undefined }
+	verify: { email: string }
 	main: undefined
 }
 
@@ -23,8 +28,20 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export default function Navigation() {
+	const { isLoggedIn, setIsLoggedIn } = useAuthContext()
+
 	// Theming
 	const { theme } = useThemeContext()
+
+	useEffect(() => {
+		const checkToken = async () => {
+			console.log("checking")
+			const token = await getToken()
+			console.log("Token:", token)
+			setIsLoggedIn(!!token)
+		}
+		checkToken()
+	}, [])
 
 	return (
 		<>
@@ -33,10 +50,15 @@ export default function Navigation() {
 
 			{/* Actual navigation logic */}
 			<NavigationContainer>
-				{/* THIS NEEDS TO BE CHANGED WITH USER AUTHENTICATION */}
-				<Stack.Navigator initialRouteName='login' screenOptions={{ headerShown: false }}>
-					<Stack.Screen name='login' component={LoginScreen} />
-					<Stack.Screen name='main' component={DrawerNavigation} />
+				<Stack.Navigator screenOptions={{ headerShown: false }}>
+					{isLoggedIn ? (
+						<Stack.Screen name='main' component={DrawerNavigation} />
+					) : (
+						<>
+							<Stack.Screen name='login' component={LoginScreen} />
+							<Stack.Screen name='verify' component={VerificationScreen} />
+						</>
+					)}
 				</Stack.Navigator>
 				<ContextMenu />
 				<Modal />

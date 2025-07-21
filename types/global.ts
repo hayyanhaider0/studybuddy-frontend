@@ -13,7 +13,7 @@ import { DrawerParamList } from "../navigation/DrawerNavigation"
 
 // Api
 export interface ApiResponse<T> {
-	status: boolean
+	success: boolean
 	message: string
 	data: T | null
 }

@@ -38,3 +38,19 @@ export const timeAgo = (timestamp: number): string => {
 	if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
 	return formatDate(timestamp)
 }
+
+/**
+ * Converts milliseconds to a MM:SS format.
+ *
+ * @param ms - Milliseconds to convert.
+ * @returns A formatted MM:SS string.
+ */
+export const msToMinutesSeconds = (ms: number): string => {
+	const minutes = Math.floor(ms / 60000)
+	const seconds = Math.floor((ms % 60000) / 1000)
+
+	const paddedMinutes = String(minutes).padStart(2, "0")
+	const paddedSeconds = String(seconds).padStart(2, "0")
+
+	return `${paddedMinutes}:${paddedSeconds}`
+}

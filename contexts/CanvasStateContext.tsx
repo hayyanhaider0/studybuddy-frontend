@@ -41,6 +41,7 @@ export const CanvasStateContext = createContext<CanvasContextType | null>(null)
 
 /**
  * Computes canvas layout according to window width.
+ *
  * @param window - Size of the window.
  * @returns A layout object.
  */
@@ -59,8 +60,6 @@ function computeCanvasLayout(window: ScaledSize): LayoutType {
 }
 
 /**
- * CanvasStateProvider Component
- *
  * Wraps children components, providing canvas state values via context.
  *
  * @param children - Components that require access to canvas state values.
@@ -84,10 +83,7 @@ export function CanvasStateProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * useCanvasContext hook
- *
  * Custom hook for accessing pan gesture shared values.
- * Must be used within a CanvasStateProvider.
  *
  * @throws Error if used outside of CanvasStateProvider.
  * @returns CanvasContext providing shared values.

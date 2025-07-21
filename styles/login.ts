@@ -41,4 +41,13 @@ export const getLoginStyles = (colors: ThemeColors, fontScale: number) =>
 			textAlign: "left",
 			outlineWidth: 0,
 		},
+		verificationCodeContainer: {
+			width: 32,
+			borderWidth: 2,
+			borderColor: colors.textPrimary,
+			borderRadius: 8,
+			fontSize: fontSizes.lg,
+			color: colors.textPrimary,
+			textAlign: "center",
+		},
 	})
