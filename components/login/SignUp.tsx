@@ -78,6 +78,7 @@ export default function SignUp({ setForm }: SignUpProps) {
 						name='email'
 						rules={{
 							required: "Email is required.",
+							maxLength: { value: 254, message: "Email can not be longer than 254 characters." },
 							pattern: {
 								value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 								message: "Please enter a valid email address.",
@@ -100,7 +101,10 @@ export default function SignUp({ setForm }: SignUpProps) {
 					<LoginInput
 						control={control}
 						name='username'
-						rules={{ required: "Username is required." }}
+						rules={{
+							required: "Username is required.",
+							maxLength: { value: 30, message: "Username can not be longer than 30 characters." },
+						}}
 						label='Username'
 						placeholder='Username'
 						error={errors.username}
@@ -120,10 +124,9 @@ export default function SignUp({ setForm }: SignUpProps) {
 						name='password'
 						rules={{
 							required: "Password is required.",
+							minLength: { value: 8, message: "Password must be at least 8 characters long." },
+							maxLength: { value: 64, message: "Password can not be longer than 64 characters." },
 							validate: {
-								// Mininmum length validation
-								minLength: (v: string) =>
-									v?.length >= 8 || "Password must be at least 8 characters long.",
 								// Uppercase letter validation
 								hasUppercase: (v: string) =>
 									/[A-Z]/.test(v) || "Password must contain at least one uppercase letter.",
@@ -160,9 +163,8 @@ export default function SignUp({ setForm }: SignUpProps) {
 						name='confirmPassword'
 						rules={{
 							required: "Please confirm your password.",
-							// Passwords must match validation
-							validate: (value: string) =>
-								value === getValues("password") || "Passwords do not match.",
+							maxLength: { value: 64, message: "Password can not be longer than 64 characters." },
+							validate: (v: string) => v === getValues("password") || "Passwords do not match",
 						}}
 						label='Confirm Password'
 						placeholder='••••••••'

@@ -104,8 +104,10 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 						name='login'
 						rules={{
 							required: "Please enter your username.",
-							validate: {
-								minLength: (v: string) => v.length >= 4 || "Please enter a valid username.",
+							minLength: { value: 4, message: "Username must be at least 4 characters long." },
+							maxLength: {
+								value: 254,
+								message: "Email/Username can not be longer than 254 characters.",
 							},
 						}}
 						label='Username'
@@ -128,10 +130,8 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 						name='password'
 						rules={{
 							required: "Please enter your password.",
-							validate: {
-								minLength: (v: string) =>
-									v.length >= 8 || "Password must be at least 8 characters long.",
-							},
+							minLength: { value: 8, message: "Password must be at least 8 characters long." },
+							maxLength: { value: 64, message: "Password can not be longer than 64 characters." },
 						}}
 						label='Password'
 						placeholder='••••••••'
