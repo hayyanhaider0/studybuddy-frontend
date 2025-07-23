@@ -16,11 +16,15 @@ import VerificationScreen from "../screens/VerificationScreen"
 import { getToken } from "../utils/keychain"
 import { useEffect } from "react"
 import { useAuthContext } from "../contexts/AuthContext"
+import ForgotPasswordScreen from "../screens/ForgotPasswordScreen"
+import ResetPasswordScreen from "../screens/ResetPasswordScreen"
 
 export type RootStackParamList = {
 	// All available screens.
 	login: { email?: string | undefined }
 	verify: { email: string }
+	forgot: { login?: string | undefined }
+	reset: { email?: string }
 	main: undefined
 }
 
@@ -35,9 +39,7 @@ export default function Navigation() {
 
 	useEffect(() => {
 		const checkToken = async () => {
-			console.log("checking")
 			const token = await getToken()
-			console.log("Token:", token)
 			setIsLoggedIn(!!token)
 		}
 		checkToken()
@@ -57,6 +59,8 @@ export default function Navigation() {
 						<>
 							<Stack.Screen name='login' component={LoginScreen} />
 							<Stack.Screen name='verify' component={VerificationScreen} />
+							<Stack.Screen name='forgot' component={ForgotPasswordScreen} />
+							<Stack.Screen name='reset' component={ResetPasswordScreen} />
 						</>
 					)}
 				</Stack.Navigator>

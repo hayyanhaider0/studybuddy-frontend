@@ -43,6 +43,7 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 		handleSubmit,
 		formState: { errors },
 		setValue,
+		getValues,
 		setError,
 	} = useForm<LoginRequest>({
 		defaultValues: {
@@ -82,9 +83,8 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 	 * Takes user to a forgot password screen to allow them to change their password.
 	 */
 	const handleForgotPassword = () => {
-		console.log("forgot password")
-
-		nav.navigate("main") // REMOVE THIS LINE
+		const login = getValues("login")
+		nav.navigate("forgot", { login })
 	}
 
 	useEffect(() => {

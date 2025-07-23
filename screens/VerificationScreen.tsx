@@ -5,7 +5,7 @@
  * to the user's email, and resending it.
  */
 
-import { Text, View, TextInput } from "react-native"
+import { Text, View, TextInput, Image } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { useEffect, useRef, useState } from "react"
 import CustomPressable from "../components/common/CustomPressable"
@@ -15,6 +15,8 @@ import { NavProp } from "../types/global"
 import { RootStackParamList } from "../navigation/Navigation"
 import { getLoginStyles } from "../styles/login"
 import useAuthApi from "../hooks/useAuthApi"
+import tinycolor from "tinycolor2"
+import { ScrollView } from "react-native-gesture-handler"
 
 type VerificationScreenProps = {
 	route: RouteProp<RootStackParamList, "verify">
@@ -45,6 +47,7 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 
 	/**
 	 * Verifies the code entered by the user with the database.
+	 *
 	 * @param code - Code entered by the user.
 	 */
 	const verifyCode = async (code: string) => {
@@ -100,7 +103,12 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 	}, [code])
 
 	return (
-		<View style={[GlobalStyles.container, { padding: 32, gap: 32, paddingTop: 64 }]}>
+		<ScrollView contentContainerStyle={[GlobalStyles.container, { padding: 32, gap: 16 }]}>
+			<Image
+				source={require("../assets/study-buddy-logo.png")}
+				style={{ width: 180, height: 180, alignSelf: "center" }}
+				tintColor={tinycolor(theme.colors.background).isDark() ? "#fff" : "#000"}
+			/>
 			<Text style={GlobalStyles.heading}>Enter Your Verification Code</Text>
 			<View style={{ flexDirection: "row", justifyContent: "space-around" }}>
 				{Array.from({ length: VERIFICATION_CODE_LENGTH }).map((_, i) => (
@@ -143,6 +151,6 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 				onPress={resendVerification}
 			/>
 			<Text style={GlobalStyles.paragraph}>Time Remaining: {msToMinutesSeconds(countdown)}</Text>
-		</View>
+		</ScrollView>
 	)
 }
