@@ -10,17 +10,25 @@ import { ModalProvider } from "../contexts/ModalContext"
 import Navigation from "../navigation/Navigation"
 import { AppProvider } from "../providers/AppProvider"
 import { ContextMenuProvider } from "../contexts/ContextMenuContext"
+import { Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback } from "react-native"
 
 export default function App() {
 	return (
-		<AppProvider>
-			<GestureHandlerRootView style={{ flex: 1 }}>
-				<ModalProvider>
-					<ContextMenuProvider>
-						<Navigation />
-					</ContextMenuProvider>
-				</ModalProvider>
-			</GestureHandlerRootView>
-		</AppProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+				<KeyboardAvoidingView
+					style={{ flex: 1 }}
+					behavior={Platform.OS === "ios" ? "padding" : undefined}
+				>
+					<AppProvider>
+						<ModalProvider>
+							<ContextMenuProvider>
+								<Navigation />
+							</ContextMenuProvider>
+						</ModalProvider>
+					</AppProvider>
+				</KeyboardAvoidingView>
+			</TouchableWithoutFeedback>
+		</GestureHandlerRootView>
 	)
 }

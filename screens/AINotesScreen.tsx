@@ -8,7 +8,7 @@ export default function AINotesScreen() {
 	const notes = [{ text: "Notes 1" }, { text: "Notes 2" }]
 
 	return (
-		<ScrollView style={GlobalStyles.container}>
+		<ScrollView style={GlobalStyles.container} keyboardShouldPersistTaps='handled'>
 			<Grid
 				data={notes.map((n, i) => (
 					<View key={i}>

@@ -8,7 +8,7 @@ export default function FlashcardsScreen() {
 	const notes = [{ text: "Flashcard 1" }, { text: "Flashcard 2" }]
 
 	return (
-		<ScrollView style={GlobalStyles.container}>
+		<ScrollView style={GlobalStyles.container} keyboardShouldPersistTaps='handled'>
 			<Grid
 				data={notes.map((n, i) => (
 					<View key={i}>

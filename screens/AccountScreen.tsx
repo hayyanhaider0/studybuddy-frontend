@@ -24,7 +24,10 @@ export default function AccountScreen() {
 	]
 
 	return (
-		<ScrollView style={[GlobalStyles.container, { padding: 8 }]}>
+		<ScrollView
+			style={[GlobalStyles.container, { padding: 8 }]}
+			keyboardShouldPersistTaps='handled'
+		>
 			<View style={{ flex: 1, marginBottom: 8 }}>
 				{/* Account details box */}
 				<DetailView

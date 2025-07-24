@@ -60,6 +60,7 @@ export default function LoginInput({
 							placeholder={placeholder}
 							placeholderTextColor={theme.colors.placeholder}
 							secureTextEntry={secure && !showPassword}
+							autoCapitalize='none'
 							style={[GlobalStyles.paragraph, styles.input, { flex: 1 }]}
 						/>
 						{secure && (

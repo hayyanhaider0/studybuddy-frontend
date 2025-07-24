@@ -26,7 +26,7 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 	// DEFAULTS
 	const VERIFICATION_CODE_LENGTH = 6
 	const COUNTDOWN_TIMER = 300000 // 5m
-	const ENABLE_RESEND_TIMER = 10000 // 10s
+	const ENABLE_RESEND_TIMER = 60000 // 1m
 
 	const nav = useNavigation<NavProp<"main">>() // Navigation
 	const { email } = route.params
@@ -103,7 +103,10 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 	}, [code])
 
 	return (
-		<ScrollView contentContainerStyle={[GlobalStyles.container, { padding: 32, gap: 16 }]}>
+		<ScrollView
+			contentContainerStyle={[GlobalStyles.container, { padding: 32, gap: 16 }]}
+			keyboardShouldPersistTaps='handled'
+		>
 			<Image
 				source={require("../assets/study-buddy-logo.png")}
 				style={{ width: 180, height: 180, alignSelf: "center" }}

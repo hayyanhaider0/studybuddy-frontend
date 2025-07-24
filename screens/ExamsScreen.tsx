@@ -8,7 +8,7 @@ export default function ExamsScreen() {
 	const notes = [{ text: "Exam 1" }, { text: "Exam 2" }]
 
 	return (
-		<ScrollView style={GlobalStyles.container}>
+		<ScrollView style={GlobalStyles.container} keyboardShouldPersistTaps='handled'>
 			<Grid
 				data={notes.map((n, i) => (
 					<View key={i}>

@@ -25,7 +25,7 @@ export default function NotebooksScreen() {
 
 	return (
 		<View style={GlobalStyles.container}>
-			<ScrollView style={{ flex: 1 }}>
+			<ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps='handled'>
 				<View style={styles.listContainer}>
 					{/* List of Notebooks */}
 					<NotebookList />

@@ -95,6 +95,7 @@ export default function SettingsScreen() {
 		<ScrollView
 			contentContainerStyle={{ flexGrow: 1 }}
 			style={[GlobalStyles.container, { padding: 8, paddingLeft: insets.left + 8 }]}
+			keyboardShouldPersistTaps='handled'
 		>
 			<View style={{ flex: 1, justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
 				<Settings settings={settings} />

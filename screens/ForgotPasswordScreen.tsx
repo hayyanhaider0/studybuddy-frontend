@@ -83,7 +83,10 @@ export default function ForgotPasswordScreen() {
 	}, [code])
 
 	return (
-		<ScrollView contentContainerStyle={[GlobalStyles.container, { padding: 32, gap: 32 }]}>
+		<ScrollView
+			contentContainerStyle={[GlobalStyles.container, { padding: 32, gap: 32 }]}
+			keyboardShouldPersistTaps='handled'
+		>
 			<Image
 				source={require("../assets/study-buddy-logo.png")}
 				style={{ width: 180, height: 180, alignSelf: "center" }}

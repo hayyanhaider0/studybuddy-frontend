@@ -28,6 +28,7 @@ export default function LoginScreen() {
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				contentContainerStyle={{ gap: 32, paddingVertical: 32 }}
+				keyboardShouldPersistTaps='handled'
 			>
 				{/* Introduction to Study Buddy: Contains the logo and small description */}
 				<View>
