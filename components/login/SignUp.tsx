@@ -12,9 +12,10 @@ import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
 import CustomPressable from "../common/CustomPressable"
-import { NavProp, SignUpRequest } from "../../types/global"
+import { NavProp } from "../../types/global"
 import { useNavigation } from "@react-navigation/native"
 import useAuthApi from "../../hooks/useAuthApi"
+import { SignUpRequest } from "../../types/auth"
 
 /**
  * Sets the type for setForm to boolean in component props

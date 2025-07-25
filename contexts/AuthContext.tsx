@@ -5,14 +5,34 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
+import { EducationLevelType, OccupationType } from "../types/auth"
+
+type AuthStateType = {
+	isLoggedIn: boolean
+	email: string | null
+	username: string | null
+	displayName: string | null
+	occupation: OccupationType | null
+	educationLevel: EducationLevelType | null
+}
 
 type AuthContextType = {
-	isLoggedIn: boolean
-	setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+	authState: AuthStateType
+	setAuthState: React.Dispatch<React.SetStateAction<AuthStateType>>
 }
 
 // React context for shared auth values.
 export const AuthContext = createContext<AuthContextType | null>(null)
+
+// DEFAULTS
+const DEFAULT_AUTH_STATE: AuthStateType = {
+	isLoggedIn: false,
+	email: null,
+	username: null,
+	displayName: null,
+	occupation: null,
+	educationLevel: null,
+}
 
 /**
  * Wraps the entire app to provide auth shared values.
@@ -20,11 +40,9 @@ export const AuthContext = createContext<AuthContextType | null>(null)
  * @param children - React components that can use auth shared values.
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-	const [isLoggedIn, setIsLoggedIn] = useState(false)
+	const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE)
 
-	return (
-		<AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>{children}</AuthContext.Provider>
-	)
+	return <AuthContext.Provider value={{ authState, setAuthState }}>{children}</AuthContext.Provider>
 }
 
 /**

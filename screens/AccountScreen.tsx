@@ -9,8 +9,12 @@ import { ScrollView, View, Text } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import DetailView from "../components/account/DetailView"
+import { useAuthContext } from "../contexts/AuthContext"
+import { formatEducation, formatOccupation } from "../utils/formatters"
 
 export default function AccountScreen() {
+	const { authState } = useAuthContext()
+
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
 
@@ -41,8 +45,14 @@ export default function AccountScreen() {
 					<MaterialC name='account-circle-outline' size={64} color={theme.colors.textPrimary} />
 					{/* Account details */}
 					<View style={{ gap: 4 }}>
-						<Text style={[GlobalStyles.subheading, { textAlign: "left" }]}>Hayyan Haider</Text>
-						<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>Student</Text>
+						<Text style={[GlobalStyles.subheading, { textAlign: "left" }]}>
+							{authState.displayName}
+						</Text>
+						<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>
+							{authState.occupation === "STUDENT"
+								? formatEducation(authState.educationLevel)
+								: formatOccupation(authState.occupation)}
+						</Text>
 					</View>
 				</DetailView>
 				{/* Study Streak box */}

@@ -4,7 +4,7 @@
  * Custom hook that calls the backend -- for authorization related api calls.
  */
 
-import { LoginRequest, SignUpRequest } from "../types/global"
+import { LoginRequest, SignUpRequest } from "../types/auth"
 import useApi from "./useApi"
 
 export default function useAuthApi() {

@@ -46,7 +46,7 @@ export default function ResetPasswordScreen() {
 				style={{ width: 180, height: 180, alignSelf: "center" }}
 				tintColor={tinycolor(theme.colors.background).isDark() ? "#fff" : "#000"}
 			/>
-			<Text style={GlobalStyles.subheading}>Enter Your Email Or Username</Text>
+			<Text style={GlobalStyles.subheading}>Enter Your New Password</Text>
 
 			{/* Password input */}
 			<View style={{ gap: 4 }}>
@@ -72,7 +72,7 @@ export default function ResetPasswordScreen() {
 								/[!@#$%^&*()]/.test(v) || "Password must contain a special character (!@#$%^&*()).",
 						},
 					}}
-					label='Password'
+					label='New Password'
 					placeholder='••••••••'
 					secure={true}
 					error={errors.password}
@@ -96,7 +96,7 @@ export default function ResetPasswordScreen() {
 						maxLength: { value: 64, message: "Password can not be longer than 64 characters." },
 						validate: (v: string) => v === getValues("password") || "Passwords do not match",
 					}}
-					label='Confirm Password'
+					label='Confirm New Password'
 					placeholder='••••••••'
 					secure={true}
 					error={errors.confirmPassword}

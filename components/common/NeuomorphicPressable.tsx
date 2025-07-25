@@ -1,7 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient"
 import { Text, Pressable } from "react-native"
 import { Shadow } from "react-native-shadow-2"
-import { useThemeContext } from "../../contexts/ThemeContext"
 
 type NeomorphicButtonProps = {
 	title: string

@@ -9,7 +9,7 @@ import { View, Text } from "react-native"
 import LoginInput from "./LoginInput"
 import { useForm } from "react-hook-form"
 import { useNavigation } from "@react-navigation/native"
-import { LoginRequest, NavProp } from "../../types/global"
+import { NavProp } from "../../types/global"
 import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
@@ -18,6 +18,7 @@ import { useEffect } from "react"
 import { saveToken } from "../../utils/keychain"
 import { useAuthContext } from "../../contexts/AuthContext"
 import useAuthApi from "../../hooks/useAuthApi"
+import { LoginRequest } from "../../types/auth"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -32,7 +33,7 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 
 	// Context values
 	const { login, loading } = useAuthApi()
-	const { setIsLoggedIn } = useAuthContext()
+	const { setAuthState } = useAuthContext()
 
 	// Theming
 	const { theme, fontScale, GlobalStyles } = useThemeContext()
@@ -66,7 +67,14 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 			if (res.data.accessToken) {
 				// If successful and user is verified.
 				saveToken(res.data.accessToken)
-				setIsLoggedIn(true)
+				setAuthState({
+					isLoggedIn: true,
+					email: res.data.email,
+					username: res.data.username,
+					displayName: res.data.displayName,
+					occupation: "STUDENT",
+					educationLevel: "UNDERGRAD_YEAR_THREE",
+				})
 			} else {
 				// If successful but user is NOT verified.
 				nav.navigate("verify", res.data)

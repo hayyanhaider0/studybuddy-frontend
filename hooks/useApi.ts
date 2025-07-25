@@ -66,7 +66,8 @@ export default function useApi<T = any>() {
 			}
 
 			const res = await apiClient.request<ApiResponse<T>>(config)
-			console.log("API Response:", res.data)
+			const prettyJson = JSON.stringify(res.data, null, 2)
+			console.log("API Response:", prettyJson)
 
 			setLoading(false)
 

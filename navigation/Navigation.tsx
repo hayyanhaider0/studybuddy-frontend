@@ -32,7 +32,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export default function Navigation() {
-	const { isLoggedIn, setIsLoggedIn } = useAuthContext()
+	const { authState, setAuthState } = useAuthContext()
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -40,7 +40,16 @@ export default function Navigation() {
 	useEffect(() => {
 		const checkToken = async () => {
 			const token = await getToken()
-			setIsLoggedIn(!!token)
+			if (!token) {
+				setAuthState({
+					isLoggedIn: false,
+					email: null,
+					username: null,
+					displayName: null,
+					occupation: null,
+					educationLevel: null,
+				})
+			}
 		}
 		checkToken()
 	}, [])
@@ -53,7 +62,7 @@ export default function Navigation() {
 			{/* Actual navigation logic */}
 			<NavigationContainer>
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
-					{isLoggedIn ? (
+					{authState.isLoggedIn ? (
 						<Stack.Screen name='main' component={DrawerNavigation} />
 					) : (
 						<>
