@@ -1,33 +1,33 @@
-import { EducationLevelType, OccupationType } from "../types/auth"
+import { Occupation, EducationLevel } from "../enums/global"
 
-const occupationLabels: Record<OccupationType, string> = {
-	STUDENT: "Student",
-	PROFESSOR: "Professor",
-	INSTRUCTOR: "Instructor",
-	EDUCATOR: "Educator",
-	TEACHING_ASSISTANT: "Teaching Assistant",
-	RESEARCHER: "Researcher",
-	PARENT: "Parent",
-	ALUMNI: "Alumni",
-	PROFESSIONAL: "Professional",
-	OTHER: "Other",
+export const occupationLabels: Record<Occupation, string> = {
+	[Occupation.STUDENT]: "Student",
+	[Occupation.PROFESSOR]: "Professor",
+	[Occupation.INSTRUCTOR]: "Instructor",
+	[Occupation.EDUCATOR]: "Educator",
+	[Occupation.TEACHING_ASSISTANT]: "Teaching Assistant",
+	[Occupation.RESEARCHER]: "Researcher",
+	[Occupation.PARENT]: "Parent",
+	[Occupation.ALUMNI]: "Alumni",
+	[Occupation.PROFESSIONAL]: "Professional",
+	[Occupation.OTHER]: "Other",
 }
 
-export const formatOccupation = (occ: OccupationType | null) => {
+export const formatOccupation = (occ: Occupation | null | undefined) => {
 	if (!occ) return "Unknown"
-	return occupationLabels[occ]
+	return occupationLabels[occ] ?? "Unknown"
 }
 
-const educationLabels: Record<EducationLevelType, string> = {
-	HIGH_SCHOOL: "High School",
-	UNDERGRAD_YEAR_ONE: "University 1st Year",
-	UNDERGRAD_YEAR_TWO: "University 2nd Year",
-	UNDERGRAD_YEAR_THREE: "University 3rd Year",
-	UNDERGRAD_YEAR_FOUR: "University 4th Year",
-	GRADUATE: "Graduate Student",
+export const educationLevelLabels: Record<EducationLevel, string> = {
+	[EducationLevel.HIGH_SCHOOL]: "High School",
+	[EducationLevel.UNDERGRAD_YEAR_ONE]: "University 1st Year",
+	[EducationLevel.UNDERGRAD_YEAR_TWO]: "University 2nd Year",
+	[EducationLevel.UNDERGRAD_YEAR_THREE]: "University 3rd Year",
+	[EducationLevel.UNDERGRAD_YEAR_FOUR]: "University 4th Year",
+	[EducationLevel.GRADUATE]: "Graduate Student",
 }
 
-export const formatEducation = (edu: EducationLevelType | null) => {
+export const formatEducationLevel = (edu: EducationLevel | null | undefined) => {
 	if (!edu) return "Unknown"
-	return educationLabels[edu]
+	return educationLevelLabels[edu] ?? "Unknown"
 }

@@ -18,19 +18,6 @@ export interface ApiResponse<T> {
 	data: T | null
 }
 
-// Auth
-export type LoginRequest = {
-	login: string
-	password: string
-}
-
-export type SignUpRequest = {
-	email: string
-	username: string
-	password: string
-	confirmPassword: string
-}
-
 // Navigation
 export type NavProp<Screen extends keyof RootStackParamList> = NativeStackNavigationProp<
 	RootStackParamList,

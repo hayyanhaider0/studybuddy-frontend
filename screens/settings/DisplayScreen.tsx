@@ -4,27 +4,22 @@
  * Contains the UI for the Settings > Display screen.
  */
 
-import { ScrollView } from "react-native"
+import { View } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import Settings from "../../components/settings/Settings"
 import { SettingsType } from "../../types/global"
 import { ModalType, useModal } from "../../contexts/ModalContext"
 import { useSettings } from "../../contexts/SettingsContext"
+import { FontScale, ThemeName } from "../../enums/global"
+import CustomScrollView from "../../components/common/CustomScrollView"
 
 export default function DisplayScreen() {
 	const { openModal } = useModal() // Get the openModal function from context.
 
 	// Theming, and values for changing display settings.
-	const {
-		theme,
-		setTheme,
-		useSystemTheme,
-		toggleSystemTheme,
-		fontScale,
-		setFontScale,
-		GlobalStyles,
-	} = useThemeContext()
+	const { theme, setTheme, useSystemTheme, toggleSystemTheme, fontScale, setFontScale } =
+		useThemeContext()
 	const insets = useSafeAreaInsets()
 
 	// Settings context
@@ -46,13 +41,13 @@ export default function DisplayScreen() {
 				},
 				{
 					label: "Light",
-					onPress: () => setTheme("light"),
-					selected: !useSystemTheme && theme.name === "light",
+					onPress: () => setTheme(ThemeName.LIGHT),
+					selected: !useSystemTheme && theme.name === ThemeName.LIGHT,
 				},
 				{
 					label: "Dark",
-					onPress: () => setTheme("dark"),
-					selected: !useSystemTheme && theme.name === "dark",
+					onPress: () => setTheme(ThemeName.DARK),
+					selected: !useSystemTheme && theme.name === ThemeName.DARK,
 				},
 			],
 		})
@@ -67,23 +62,23 @@ export default function DisplayScreen() {
 			choices: [
 				{
 					label: "Small",
-					onPress: () => setFontScale(1),
-					selected: fontScale === 1,
+					onPress: () => setFontScale(FontScale.SMALL),
+					selected: fontScale === FontScale.SMALL,
 				},
 				{
 					label: "Medium",
-					onPress: () => setFontScale(1.1),
-					selected: fontScale === 1.1,
+					onPress: () => setFontScale(FontScale.MEDIUM),
+					selected: fontScale === FontScale.MEDIUM,
 				},
 				{
 					label: "Large",
-					onPress: () => setFontScale(1.2),
-					selected: fontScale === 1.2,
+					onPress: () => setFontScale(FontScale.LARGE),
+					selected: fontScale === FontScale.LARGE,
 				},
 				{
 					label: "X-Large",
-					onPress: () => setFontScale(1.3),
-					selected: fontScale === 1.3,
+					onPress: () => setFontScale(FontScale.XLARGE),
+					selected: fontScale === FontScale.XLARGE,
 				},
 			],
 		})
@@ -127,11 +122,10 @@ export default function DisplayScreen() {
 	]
 
 	return (
-		<ScrollView
-			contentContainerStyle={{ flexGrow: 1, gap: 16 }}
-			style={[GlobalStyles.container, { padding: 8, paddingLeft: insets.left + 8 }]}
-		>
-			<Settings settings={settings} />
-		</ScrollView>
+		<CustomScrollView contentStyle={{ paddingLeft: insets.left + 8 }}>
+			<View style={{ flex: 1, justifyContent: "space-between", gap: 16 }}>
+				<Settings settings={settings} />
+			</View>
+		</CustomScrollView>
 	)
 }

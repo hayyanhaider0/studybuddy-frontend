@@ -1,5 +1,4 @@
-import { ScrollView, View, Text, Image } from "react-native"
-import tinycolor from "tinycolor2"
+import { View, Text } from "react-native"
 import CustomPressable from "../components/common/CustomPressable"
 import { useThemeContext } from "../contexts/ThemeContext"
 import LoginInput from "../components/login/LoginInput"
@@ -8,6 +7,7 @@ import { NavProp } from "../types/global"
 import useAuthApi from "../hooks/useAuthApi"
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
+import CustomScrollView from "../components/common/CustomScrollView"
 
 export default function ResetPasswordScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "reset">>()
@@ -37,16 +37,11 @@ export default function ResetPasswordScreen() {
 	}
 
 	return (
-		<ScrollView
-			contentContainerStyle={[GlobalStyles.container, { padding: 32, gap: 32 }]}
-			keyboardShouldPersistTaps='handled'
-		>
-			<Image
-				source={require("../assets/study-buddy-logo.png")}
-				style={{ width: 180, height: 180, alignSelf: "center" }}
-				tintColor={tinycolor(theme.colors.background).isDark() ? "#fff" : "#000"}
-			/>
-			<Text style={GlobalStyles.subheading}>Enter Your New Password</Text>
+		<CustomScrollView contentStyle={{ paddingTop: 64, padding: 32, gap: 32 }}>
+			<Text style={GlobalStyles.heading}>Enter Your New Password</Text>
+			<Text style={[GlobalStyles.paragraph, { color: theme.colors.textSecondary }]}>
+				Enter a new password for the account associated with the email: {email}
+			</Text>
 
 			{/* Password input */}
 			<View style={{ gap: 4 }}>
@@ -120,6 +115,6 @@ export default function ResetPasswordScreen() {
 				disabled={loading.resetPassword}
 				onPress={handleSubmit(handleResetPassword)}
 			/>
-		</ScrollView>
+		</CustomScrollView>
 	)
 }

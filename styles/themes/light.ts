@@ -5,9 +5,10 @@
  */
 
 import { ColorValue } from "react-native"
+import { ThemeName } from "../../enums/global"
 
 export const lightTheme = {
-	name: "light",
+	name: ThemeName.LIGHT,
 	barStyle: "dark-content",
 	colors: {
 		primary: "#E6E6E6",

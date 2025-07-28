@@ -55,12 +55,19 @@ export default function CustomDrawer({
 										>
 											{/* Focused icon + label */}
 											{drawerIcon?.({ color: theme.accent.onAccent, size: 28, focused: true })}
-											<Text style={[GlobalStyles.paragraph, { paddingVertical: 20 }]}>{label}</Text>
+											<Text
+												style={[
+													GlobalStyles.paragraph,
+													{ color: theme.accent.onAccent, paddingVertical: 20 },
+												]}
+											>
+												{label}
+											</Text>
 										</LinearGradient>
 									) : (
 										// Default unfocused item
 										<View style={GlobalStyles.sidebarUnfocused}>
-											{drawerIcon?.({ color: theme.colors.textPrimary, size: 20, focused: false })}
+											{drawerIcon?.({ color: theme.colors.textPrimary, size: 28, focused: false })}
 											<Text style={[GlobalStyles.paragraph, { paddingVertical: 20 }]}>{label}</Text>
 										</View>
 									)}

@@ -8,13 +8,13 @@ import { Text, View } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import { ScrollView } from "react-native-gesture-handler"
 import { getSettingsStyles } from "../styles/settings"
 import { useNavigation } from "@react-navigation/native"
 import { SettingsParamList } from "../navigation/SettingsNavigation"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { SettingsType } from "../types/global"
 import Settings from "../components/settings/Settings"
+import CustomScrollView from "../components/common/CustomScrollView"
 
 export default function SettingsScreen() {
 	// Theming
@@ -92,11 +92,7 @@ export default function SettingsScreen() {
 	const aboutLinks = ["Feedback", "Report a Bug", "Terms & Privacy"]
 
 	return (
-		<ScrollView
-			contentContainerStyle={{ flexGrow: 1 }}
-			style={[GlobalStyles.container, { padding: 8, paddingLeft: insets.left + 8 }]}
-			keyboardShouldPersistTaps='handled'
-		>
+		<CustomScrollView contentStyle={{ paddingLeft: insets.left + 8 }}>
 			<View style={{ flex: 1, justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
 				<Settings settings={settings} />
 				{/* About Section */}
@@ -120,6 +116,6 @@ export default function SettingsScreen() {
 					</View>
 				</View>
 			</View>
-		</ScrollView>
+		</CustomScrollView>
 	)
 }

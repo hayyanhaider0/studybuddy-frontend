@@ -16,7 +16,7 @@ import { RootStackParamList } from "../navigation/Navigation"
 import { getLoginStyles } from "../styles/login"
 import useAuthApi from "../hooks/useAuthApi"
 import tinycolor from "tinycolor2"
-import { ScrollView } from "react-native-gesture-handler"
+import CustomScrollView from "../components/common/CustomScrollView"
 
 type VerificationScreenProps = {
 	route: RouteProp<RootStackParamList, "verify">
@@ -103,10 +103,7 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 	}, [code])
 
 	return (
-		<ScrollView
-			contentContainerStyle={[GlobalStyles.container, { padding: 32, gap: 16 }]}
-			keyboardShouldPersistTaps='handled'
-		>
+		<CustomScrollView contentStyle={{ paddingTop: 64, gap: 16 }}>
 			<Image
 				source={require("../assets/study-buddy-logo.png")}
 				style={{ width: 180, height: 180, alignSelf: "center" }}
@@ -154,6 +151,6 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 				onPress={resendVerification}
 			/>
 			<Text style={GlobalStyles.paragraph}>Time Remaining: {msToMinutesSeconds(countdown)}</Text>
-		</ScrollView>
+		</CustomScrollView>
 	)
 }

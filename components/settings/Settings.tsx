@@ -1,6 +1,5 @@
 import { View, Pressable, Text } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
-import { getGlobalStyles } from "../../styles/global"
 import { getSettingsStyles } from "../../styles/settings"
 import { SettingsType } from "../../types/global"
 import SettingsOption from "./SettingsOption"

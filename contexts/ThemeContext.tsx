@@ -8,11 +8,7 @@ import { createContext, ReactNode, useContext, useState } from "react"
 import { themes } from "../styles/themes"
 import { getGlobalStyles } from "../styles/global"
 import { Appearance } from "react-native"
-
-// Types
-export type ThemeName = keyof typeof themes // All available themes.
-export const themeNames: ThemeName[] = Object.keys(themes) as ThemeName[]
-// Check out styles/themes for more information.
+import { FontScale, ThemeName } from "../enums/global"
 
 type ThemeContextType = {
 	// Current theme.
@@ -24,9 +20,9 @@ type ThemeContextType = {
 	// Toggles the use of system theme as the default.
 	toggleSystemTheme: () => void
 	// The current font scale set by the user.
-	fontScale: number
+	fontScale: FontScale
 	// Setter for the font scale.
-	setFontScale: React.Dispatch<React.SetStateAction<number>>
+	setFontScale: React.Dispatch<React.SetStateAction<FontScale>>
 	// Global styles -- check out styles/global.ts for more information.
 	GlobalStyles: ReturnType<typeof getGlobalStyles>
 }
@@ -43,15 +39,15 @@ export const ThemeContext = createContext<ThemeContextType | null>(null)
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
 	// Get the system theme.
-	const systemTheme = Appearance.getColorScheme() || "light"
+	const systemTheme = Appearance.getColorScheme() || ThemeName.LIGHT
 	// Theme based on the system theme.
 	const [useSystemTheme, setUseSystemTheme] = useState(true)
 	// Name of the current theme.
-	const [themeName, setThemeName] = useState<ThemeName>("light")
+	const [themeName, setThemeName] = useState<ThemeName>(ThemeName.LIGHT)
 	// Find the current theme from an array of all themes.
-	const theme = useSystemTheme ? themes[systemTheme] : themes[themeName]
+	const theme = useSystemTheme ? themes[systemTheme as ThemeName] : themes[themeName]
 	// Font Size scale multiplier for Study Buddy.
-	const [fontScale, setFontScale] = useState(1)
+	const [fontScale, setFontScale] = useState(FontScale.MEDIUM)
 	// Global styles -- styles/global.ts
 	const GlobalStyles = getGlobalStyles(theme.colors, fontScale)
 

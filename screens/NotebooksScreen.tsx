@@ -10,10 +10,10 @@ import { View } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import useNotebookActions from "../hooks/useNotebookActions"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import { ScrollView } from "react-native-gesture-handler"
 import NotebookList from "../components/notebook/NotebookList"
 import { getNotebookStyles } from "../styles/notebook"
 import CustomPressable from "../components/common/CustomPressable"
+import CustomScrollView from "../components/common/CustomScrollView"
 
 export default function NotebooksScreen() {
 	const { handleCreateNotebook } = useNotebookActions() // Get create notebook action.
@@ -25,13 +25,13 @@ export default function NotebooksScreen() {
 
 	return (
 		<View style={GlobalStyles.container}>
-			<ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps='handled'>
+			<CustomScrollView>
 				<View style={styles.listContainer}>
 					{/* List of Notebooks */}
 					<NotebookList />
 					{/* Add a new notebook button */}
 				</View>
-			</ScrollView>
+			</CustomScrollView>
 			<CustomPressable
 				type='primary'
 				onPress={handleCreateNotebook}

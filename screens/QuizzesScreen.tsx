@@ -1,6 +1,7 @@
-import { ScrollView, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import Grid from "../components/common/Grid"
 import { useThemeContext } from "../contexts/ThemeContext"
+import CustomScrollView from "../components/common/CustomScrollView"
 
 export default function QuizzesScreen() {
 	const { GlobalStyles } = useThemeContext()
@@ -8,7 +9,7 @@ export default function QuizzesScreen() {
 	const notes = [{ text: "Quiz 1" }, { text: "Quiz 2" }]
 
 	return (
-		<ScrollView style={GlobalStyles.container} keyboardShouldPersistTaps='handled'>
+		<CustomScrollView>
 			<Grid
 				data={notes.map((n, i) => (
 					<View key={i}>
@@ -17,6 +18,6 @@ export default function QuizzesScreen() {
 				))}
 				cols={3}
 			/>
-		</ScrollView>
+		</CustomScrollView>
 	)
 }

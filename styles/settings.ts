@@ -7,12 +7,11 @@ export const getSettingsStyles = (colors: ThemeColors) =>
 			backgroundColor: colors.primary,
 			borderRadius: 36,
 			paddingHorizontal: 16,
-			paddingVertical: 4,
 		},
 		subcategory: {
-			gap: 2,
 			borderColor: colors.secondary,
-			paddingVertical: 16,
+			paddingTop: 8,
+			paddingBottom: 24,
 		},
 		about: {
 			flexDirection: "row",
