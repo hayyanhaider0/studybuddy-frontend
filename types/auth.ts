@@ -1,3 +1,9 @@
+/**
+ * auth Types
+ *
+ * Holds user authentication types for Study Buddy.
+ */
+
 // Auth
 export type LoginRequest = {
 	login: string

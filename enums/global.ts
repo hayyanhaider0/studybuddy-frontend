@@ -1,3 +1,10 @@
+/**
+ * global Enums
+ *
+ * Holds enumerations for Study Buddy.
+ */
+
+// Theming
 export enum FontScale {
 	SMALL = 1,
 	MEDIUM = 1.1,
@@ -12,12 +19,12 @@ export enum ThemeName {
 
 export type ThemeNameWithSystem = ThemeName | "SYSTEM"
 
+// User preferences
 export enum Role {
 	USER = "user",
 	ADMIN = "admin",
 }
 
-// enums/global.ts
 export enum Occupation {
 	STUDENT = "STUDENT",
 	PROFESSOR = "PROFESSOR",

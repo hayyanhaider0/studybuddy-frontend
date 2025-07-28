@@ -5,15 +5,21 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
-import { EducationLevelType, OccupationType } from "../types/auth"
+import { EducationLevel, Occupation } from "../enums/global"
 
 type AuthStateType = {
+	// Checks access token to figure out whether user is authenticated.
 	isLoggedIn: boolean
+	// Email of the currently logged in user.
 	email: string | null
+	// Username of the currently logged in user.
 	username: string | null
+	// Display name of the currently logged in user.
 	displayName: string | null
-	occupation: OccupationType | null
-	educationLevel: EducationLevelType | null
+	// Occupation of the currently logged in user.
+	occupation: Occupation | null
+	// Education level of the currently logged in user.
+	educationLevel: EducationLevel | null
 }
 
 type AuthContextType = {

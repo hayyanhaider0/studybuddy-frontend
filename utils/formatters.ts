@@ -1,3 +1,9 @@
+/**
+ * formatters Util
+ *
+ * Holds formatting functions for Study Buddy.
+ */
+
 import { Occupation, EducationLevel } from "../enums/global"
 
 export const occupationLabels: Record<Occupation, string> = {

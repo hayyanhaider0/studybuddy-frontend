@@ -1,3 +1,7 @@
+/**
+ * Sets up an API client for efficient backend communication.
+ */
+
 import axios from "axios"
 import Constants from "expo-constants"
 
