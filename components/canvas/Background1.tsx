@@ -11,6 +11,7 @@ export default function Background1({
 }) {
 	const totalLines = 18
 	const spacing = height / (totalLines - 1)
+	const strokeWidth = Math.max(1, height * 0.003)
 
 	return (
 		<>
@@ -21,7 +22,7 @@ export default function Background1({
 					p1={{ x: width * 0.04, y: (i + 2) * spacing }}
 					p2={{ x: width - width * 0.04, y: (i + 2) * spacing }}
 					color='gray'
-					strokeWidth={2}
+					strokeWidth={strokeWidth}
 				/>
 			))}
 		</>

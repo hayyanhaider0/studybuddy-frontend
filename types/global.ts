@@ -7,9 +7,9 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "../navigation/Navigation"
 import { ImageSourcePropType } from "react-native"
-import { SkPath } from "@shopify/react-native-skia"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "../navigation/DrawerNavigation"
+import { BrushType } from "../enums/global"
 
 // Api
 export interface ApiResponse<T> {
@@ -48,18 +48,7 @@ export type ThemeColors = {
 /**
  * Canvas Types
  */
-
-// Path
-export type PathType = {
-	path: SkPath
-	color: string
-	size: number
-	strokeLinecap: "butt" | "round"
-}
-
 // Tool Types
-export type ToolName = "pen" | "eraser" | "pencil" | "highlighter" | "text" | "pointer"
-
 export type ToolType = {
 	name: string
 	icon: string
@@ -68,7 +57,7 @@ export type ToolType = {
 }
 
 export type ToolSwatches = {
-	[toolName in ToolName]: string[]
+	[toolName in BrushType]: string[]
 }
 
 // Options

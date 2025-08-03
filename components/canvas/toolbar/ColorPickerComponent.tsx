@@ -18,12 +18,26 @@ import { useThemeContext } from "../../../contexts/ThemeContext"
 import { saveItemToStorage } from "../../../utils/storage"
 
 export default function ColorPickerComponent() {
-	const { tool, toolSettings, setSwatches, swatchEditInfo, colorPicker, activeMenu } =
-		useToolContext() // Get tool context
+	const {
+		tool,
+		toolSettings,
+		setToolSettings,
+		setSwatches,
+		swatchEditInfo,
+		colorPicker,
+		activeMenu,
+	} = useToolContext() // Get tool context
 
 	// Theming
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
+
+	const colorWithOpacity = (color: string, opacity: number) => {
+		const r = parseInt(color.slice(1, 3), 16)
+		const g = parseInt(color.slice(3, 5), 16)
+		const b = parseInt(color.slice(5, 7), 16)
+		return `rgba(${r},${g},${b},${opacity})`
+	}
 
 	return (
 		<AnimatePresence>
@@ -40,22 +54,34 @@ export default function ColorPickerComponent() {
 					>
 						{/* Actual ColorPicker Component */}
 						<ColorPicker
-							value={toolSettings[tool].color} // Set the picked color
+							value={colorWithOpacity(toolSettings[tool].color, toolSettings[tool].opacity ?? 1)} // Set the picked color
 							style={{ gap: 16, width: 235 }}
 							onCompleteJS={(e) => {
+								const match = e.rgba.match(/rgba\(\d+,\s*\d+,\s*\d+,\s*([\d.]+)\)/)
+								const opacity = match ? parseFloat(match[1]) : 1 // default opacity 1 if no match
+								const color = e.hex
+
 								if (swatchEditInfo) {
 									// Get the tool and swatch index.
 									const { tool, index } = swatchEditInfo
 									// Set the swatches for the tool upon new color selection.
 									setSwatches((prev) => {
 										const updated = [...prev[tool]]
-										updated[index] = e.hex
+										updated[index] = color
 										const newSwatches = { ...prev, [tool]: updated }
 										// Save the swatches to local storage.
 										saveItemToStorage(tool, JSON.stringify(newSwatches))
 										return newSwatches
 									})
 								}
+
+								setToolSettings((prev) => ({
+									...prev,
+									[tool]: {
+										...prev[tool],
+										opacity,
+									},
+								}))
 							}}
 						>
 							{/* Hex value of the color */}

@@ -9,14 +9,6 @@ import { ThemeColors } from "../types/global"
 
 export const getNotebookStyles = (_colors: ThemeColors) =>
 	StyleSheet.create({
-		listContainer: {
-			flexDirection: "row",
-			flexWrap: "wrap",
-			padding: 32,
-			gap: 16,
-			justifyContent: "center",
-			alignItems: "center",
-		},
 		createNotebookButton: {
 			width: 72,
 			height: 96,

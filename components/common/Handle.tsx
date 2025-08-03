@@ -15,10 +15,8 @@ export default function Handle({ close }: { close: () => void }) {
 		<GestureDetector gesture={closeGesture}>
 			<View
 				style={{
-					position: "absolute",
-					top: -22,
-					width: 200,
-					height: 20,
+					width: 150,
+					paddingBottom: 16,
 					alignSelf: "center",
 					justifyContent: "center",
 				}}
@@ -26,9 +24,9 @@ export default function Handle({ close }: { close: () => void }) {
 				<View
 					style={{
 						width: "100%",
-						height: 8,
+						height: 6,
 						backgroundColor: theme.colors.textPrimary,
-						opacity: 0.8,
+						opacity: 0.5,
 						borderRadius: 999,
 					}}
 				/>

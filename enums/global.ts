@@ -46,3 +46,13 @@ export enum EducationLevel {
 	UNDERGRAD_YEAR_FOUR = "UNDERGRAD_YEAR_FOUR",
 	GRADUATE = "GRADUATE",
 }
+
+// Brush type enum
+export enum BrushType {
+	PEN = "pen",
+	PENCIL = "pencil",
+	HIGHLIGHTER = "highlighter",
+	ERASER = "eraser",
+	TEXT = "text",
+	POINTER = "pointer",
+}

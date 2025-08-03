@@ -19,6 +19,7 @@ import { saveToken } from "../../utils/keychain"
 import { useAuthContext } from "../../contexts/AuthContext"
 import useAuthApi from "../../hooks/useAuthApi"
 import { LoginRequest } from "../../types/auth"
+import { EducationLevel, Occupation } from "../../enums/global"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -72,8 +73,8 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 					email: res.data.email,
 					username: res.data.username,
 					displayName: res.data.displayName,
-					occupation: "STUDENT",
-					educationLevel: "UNDERGRAD_YEAR_THREE",
+					occupation: Occupation.STUDENT,
+					educationLevel: EducationLevel.UNDERGRAD_YEAR_THREE,
 				})
 			} else {
 				// If successful but user is NOT verified.

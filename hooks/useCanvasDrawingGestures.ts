@@ -1,125 +1,121 @@
-import { Skia } from "@shopify/react-native-skia"
 import { Gesture } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useToolContext } from "../contexts/ToolContext"
 import useNotebookActions from "./useNotebookActions"
+import { BrushType } from "../enums/global"
+import uuid from "react-native-uuid"
+import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
+import { PathType } from "../components/drawing/types/DrawingTypes"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
-	const { current, setCurrent, layout } = useCanvasContext()
+	const { current, setCurrentPath, updateCurrentPath, clearCurrentPath, layout } =
+		useCanvasContext()
 	const { tool, toolSettings, setEraserPos } = useToolContext()
 	const { addPathToCanvas } = useNotebookActions()
 
-	// Current path.
-	let skPath = current[canvasId] ?? Skia.Path.Make()
-
-	/**
-	 * screenToCanvasCoords Helper Function
-	 *
-	 * Converts screen coordinates to local canvas coordinates.
-	 *
-	 * This function accounts for the canvas's position on the screen
-	 * and returns the corresponding point relative to the canvas origin.
-	 *
-	 * @param screenX - The X coordinate from the touch event (screen space)
-	 * @param screenY - The Y coordinate from the touch event (screen space)
-	 * @returns An object containing the X and Y coordinates relative to the canvas
-	 */
-	const screenToCanvasCoords = (screenX: number, screenY: number) => {
-		return { x: screenX - layout.x, y: screenY - layout.y }
-	}
+	// Check whether the selected tool can draw.
+	const isDrawingTool = (t: BrushType) =>
+		t === BrushType.PEN ||
+		t === BrushType.PENCIL ||
+		t === BrushType.HIGHLIGHTER ||
+		t === BrushType.ERASER
 
 	// Draw gesture: Allows user to draw on the canvas.
 	const drawGesture = Gesture.Pan()
+		.enabled(isDrawingTool(tool))
 		.minPointers(1)
 		.maxPointers(1)
-		.enabled(tool !== "pointer")
 		.onBegin((e) => {
-			// Calculate local x and y values using canvas layout.
-			const { x, y } = screenToCanvasCoords(e.x, e.y)
+			if (!isDrawingTool(tool)) return
 
-			if (tool === "eraser") {
-				setEraserPos({ x: x, y: y })
-			}
-
-			// Check canvas bounds.
-			if (x < 0 || y < 0 || x > layout.width || y > layout.height) {
+			if (tool === BrushType.ERASER) {
+				setEraserPos({ x: e.x, y: e.y })
 				return
 			}
 
-			// Start creating a path object.
-			skPath = Skia.Path.Make()
-			skPath.moveTo(x, y)
-			setCurrent((prev) => ({
-				...prev,
-				[canvasId]: skPath,
-			}))
+			const normX = e.x / layout.width
+			const normY = e.y / layout.height
+			const pressure = e.stylusData?.pressure ?? 1
+
+			const settings = toolSettings[tool]
+			const normBaseWidth = settings.size / layout.width
+			const normMinWidth = settings.minWidth! / layout.width
+			const normMaxWidth = settings.maxWidth! / layout.width
+
+			const newPath: PathType = {
+				id: uuid.v4(),
+				points: [{ x: normX, y: normY, pressure }],
+				brush: {
+					type: tool,
+					color: settings.color,
+					baseWidth: normBaseWidth,
+					minWidth: normMinWidth,
+					maxWidth: normMaxWidth,
+					opacity: settings.opacity ?? 1,
+					strokeCap: settings.strokeCap ?? StrokeCap.Round,
+					strokeJoin: settings.strokeJoin ?? StrokeJoin.Round,
+				},
+			}
+
+			setCurrentPath(canvasId, newPath)
 		})
 		.onUpdate((e) => {
-			// Calculate local x and y values using canvas layout.
-			const { x, y } = screenToCanvasCoords(e.x, e.y)
-			// Handle erase if the currently selected tool is the eraser.
-			if (tool === "eraser") {
-				setEraserPos({ x: x, y: y })
-				// runOnJS(handleErase)(canvasId, x, y)
+			if (!isDrawingTool(tool)) return
+
+			if (tool === BrushType.ERASER) {
+				setEraserPos({ x: e.x, y: e.y })
 				return
 			}
 
-			// Set the current path on the local x and y coordinates.
-			skPath.lineTo(x, y)
-			setCurrent((prev) => ({
-				...prev,
-				[canvasId]: skPath,
-			}))
+			const normX = e.x / layout.width
+			const normY = e.y / layout.height
+			const pressure = e.stylusData?.pressure ?? 0.5
+
+			updateCurrentPath(canvasId, { x: normX, y: normY, pressure })
 		})
 		.onEnd(() => {
-			if (current) {
-				if (tool === "eraser") return
-				// Insert new path into the paths array and reset the current path string.
-				if (skPath) {
-					const newPathObject = {
-						path: skPath.copy(),
-						color: toolSettings[tool].color,
-						size: toolSettings[tool].size,
-						strokeLinecap: toolSettings[tool].strokeLinecap || "round",
-					}
+			if (!isDrawingTool(tool) || tool === BrushType.ERASER) return
 
-					addPathToCanvas(newPathObject) // Sync paths with the actual object
-
-					setCurrent((prev) => ({
-						...prev,
-						[canvasId]: Skia.Path.Make(),
-					}))
-				}
+			const finishedPath = current[canvasId]
+			if (finishedPath) {
+				addPathToCanvas(finishedPath)
 			}
+
+			clearCurrentPath(canvasId)
 		})
 		.runOnJS(true)
 
-	// Tap Gesture: Allows the user to tap and draw a dot.
 	const tapGesture = Gesture.Tap()
+		.maxDuration(200)
+		.enabled(isDrawingTool(tool))
 		.onEnd((e) => {
-			// Calculate local x and y values using canvas layout.
-			const { x, y } = screenToCanvasCoords(e.x, e.y)
+			if (!isDrawingTool(tool)) return
 
-			if (tool === "eraser" || tool === "pointer") return
+			const normX = e.x / layout.width
+			const normY = e.y / layout.height
+			const pressure = 1
 
-			// Start creating a path object.
-			skPath = Skia.Path.Make()
-			skPath.moveTo(x, y)
+			const settings = toolSettings[tool]
 
-			// Create a very small line -- resembling a dot.
-			skPath.lineTo(x + 0.1, y + 0.1)
-
-			const newPathObject = {
-				path: skPath.copy(),
-				color: toolSettings[tool].color,
-				size: toolSettings[tool].size,
-				strokeLinecap: toolSettings[tool].strokeLinecap || "round",
+			const dotPath: PathType = {
+				id: uuid.v4(),
+				points: [{ x: normX, y: normY, pressure }],
+				brush: {
+					type: tool,
+					color: settings.color,
+					baseWidth: settings.size,
+					minWidth: settings.minWidth!,
+					maxWidth: settings.maxWidth!,
+					opacity: settings.opacity ?? 1,
+					strokeCap: settings.strokeCap || StrokeCap.Butt,
+					strokeJoin: settings.strokeJoin || StrokeJoin.Miter,
+				},
 			}
 
-			addPathToCanvas(newPathObject) // Sync paths with the actual object
+			addPathToCanvas(dotPath)
 		})
 		.runOnJS(true)
 
-	return Gesture.Exclusive(drawGesture, tapGesture)
+	return Gesture.Race(drawGesture, tapGesture)
 }

@@ -11,7 +11,6 @@ import { useThemeContext } from "../contexts/ThemeContext"
 import useNotebookActions from "../hooks/useNotebookActions"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import NotebookList from "../components/notebook/NotebookList"
-import { getNotebookStyles } from "../styles/notebook"
 import CustomPressable from "../components/common/CustomPressable"
 import CustomScrollView from "../components/common/CustomScrollView"
 
@@ -21,17 +20,13 @@ export default function NotebooksScreen() {
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
 
-	const styles = getNotebookStyles(theme.colors)
-
 	return (
-		<View style={GlobalStyles.container}>
+		<View style={[GlobalStyles.container, { padding: 8 }]}>
 			<CustomScrollView>
-				<View style={styles.listContainer}>
-					{/* List of Notebooks */}
-					<NotebookList />
-					{/* Add a new notebook button */}
-				</View>
+				{/* List of Notebooks */}
+				<NotebookList />
 			</CustomScrollView>
+			{/* Add a new notebook button */}
 			<CustomPressable
 				type='primary'
 				onPress={handleCreateNotebook}

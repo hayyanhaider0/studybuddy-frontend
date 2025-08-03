@@ -4,7 +4,7 @@
  * Contains type information for Canvases, Chapters, and Notebooks.
  */
 
-import { PathType } from "./global"
+import { PathType } from "../components/drawing/types/DrawingTypes"
 
 export type Canvas = {
 	id: string
@@ -29,5 +29,5 @@ export type Notebook = {
 	chapters: Chapter[]
 	createdAt: number
 	updatedAt: number
-	fill: string
+	fillColor: string
 }

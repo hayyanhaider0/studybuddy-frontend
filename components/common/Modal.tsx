@@ -61,8 +61,8 @@ export default function Modal() {
 							transition={{ type: "spring", damping: 18 }}
 							style={GlobalStyles.choiceModalContainer}
 						>
-							{/* Modal components */}
 							<Handle close={closeModal} />
+							{/* Modal components */}
 							<Text style={[GlobalStyles.paragraph, { fontWeight: "bold" }]}>
 								{modalData.title}
 							</Text>

@@ -66,6 +66,8 @@ export default function SizeOptions() {
 						[tool]: {
 							...prev[tool],
 							size: v,
+							minWidth: v * 0.5,
+							maxWidth: v * 1.5,
 						},
 					}))
 				}}

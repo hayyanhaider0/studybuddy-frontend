@@ -5,6 +5,7 @@
  * Also contains helper functions that open a modal when required.
  */
 
+import { DrawingPath } from "../components/drawing/types/DrawingTypes"
 import { useModal, ModalType } from "../contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { PathType } from "../types/global"
@@ -145,9 +146,9 @@ export default function useNotebookActions() {
 
 	/**
 	 * Helper function that adds a new path to the canvas.
-	 * @param newPathObject - The new path drawn by the user.
+	 * @param newPath - The new path drawn by the user.
 	 */
-	const addPathToCanvas = (newPathObject: PathType) => {
+	const addPathToCanvas = (newPathObject: DrawingPath) => {
 		if (!activeCanvas) return
 
 		const snapshot = createSnapshot()

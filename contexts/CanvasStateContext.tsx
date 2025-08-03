@@ -6,8 +6,8 @@
  */
 
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { SkPath } from "@shopify/react-native-skia"
 import { ScaledSize, useWindowDimensions } from "react-native"
+import { PathPoint, PathType } from "../components/drawing/types/DrawingTypes"
 
 // Types
 type LayoutType = {
@@ -22,14 +22,18 @@ type LayoutType = {
 }
 
 type CurrentPathMap = {
-	[id: string]: SkPath
+	[id: string]: PathType | null
 }
 
 export type CanvasContextType = {
 	// Current path being drawn.
 	current: CurrentPathMap
 	// Setter for the current path being drawn.
-	setCurrent: React.Dispatch<React.SetStateAction<CurrentPathMap>>
+	setCurrentPath: (canvasId: string, path: PathType) => void
+	// Updates the current path for real time visualization.
+	updateCurrentPath: (canvasId: string, point: PathPoint) => void
+	// Clears the current path.
+	clearCurrentPath: (canvasId: string) => void
 	// Current layout rectangle of the canvas.
 	layout: LayoutType
 	// Setter for updating canvas dimensions.
@@ -71,12 +75,36 @@ export function CanvasStateProvider({ children }: { children: ReactNode }) {
 	// Canvas coordinates and layout dimensions.
 	const [layout, setLayout] = useState<LayoutType>(() => computeCanvasLayout(window))
 
+	// Setter for the path currently being drawn.
+	const setCurrentPath = (canvasId: string, path: PathType) => {
+		setCurrent((prev) => ({ ...prev, [canvasId]: path }))
+	}
+
+	// Updates the path currently being drawn.
+	const updateCurrentPath = (canvasId: string, point: PathPoint) => {
+		setCurrent((prev) => {
+			const existing = prev[canvasId]
+			if (!existing) return prev
+			return {
+				...prev,
+				[canvasId]: { ...existing, points: [...existing.points, point] },
+			}
+		})
+	}
+
+	// Clears the path currently being drawn.
+	const clearCurrentPath = (canvasId: string) => {
+		setCurrent((prev) => ({ ...prev, [canvasId]: null }))
+	}
+
 	useEffect(() => {
 		setLayout(computeCanvasLayout(window))
 	}, [window])
 
 	return (
-		<CanvasStateContext.Provider value={{ current, setCurrent, layout, setLayout }}>
+		<CanvasStateContext.Provider
+			value={{ current, setCurrentPath, updateCurrentPath, clearCurrentPath, layout, setLayout }}
+		>
 			{children}
 		</CanvasStateContext.Provider>
 	)

@@ -6,7 +6,8 @@
  */
 
 import { useToolContext } from "../contexts/ToolContext"
-import { ToolName, ToolType } from "../types/global"
+import { BrushType } from "../enums/global"
+import { ToolType } from "../types/global"
 
 export function useToolDefinitions() {
 	const { tool, setTool, setActiveMenu, setColorPicker } = useToolContext() // Get tool values.
@@ -18,14 +19,14 @@ export function useToolDefinitions() {
 	 * toggle menus of different tools.
 	 * @param selectedTool - Tool to be selected
 	 */
-	const handleToolSelection = (selectedTool: ToolName) => {
+	const handleToolSelection = (selectedTool: BrushType) => {
 		// If the tool selected next is the currently selected tool.
 		if (tool === selectedTool) {
 			setActiveMenu((prev) => {
 				// If the next selected tool is also the same, toggle its menu.
 				const next = prev === selectedTool ? null : selectedTool
 				// If the next tool is not the pen, close the color picker.
-				if (next !== "pen") {
+				if (next !== BrushType.PEN) {
 					setColorPicker(false)
 				}
 				return next
@@ -45,35 +46,35 @@ export function useToolDefinitions() {
 			name: "pen",
 			icon: "pen",
 			image: require("../assets/canvasImages/pen.png"),
-			action: () => handleToolSelection("pen"),
+			action: () => handleToolSelection(BrushType.PEN),
 		},
 		// Default eraser tool that allows the user to delete paths by drawing over them.
 		{
 			name: "eraser",
 			icon: "eraser",
 			image: require("../assets/canvasImages/eraser.png"),
-			action: () => handleToolSelection("eraser"),
+			action: () => handleToolSelection(BrushType.ERASER),
 		},
 		// Thicker pen tool with decreased opacity.
 		{
 			name: "highlighter",
 			icon: "format-color-highlight",
 			image: require("../assets/canvasImages/highlighter.png"),
-			action: () => handleToolSelection("highlighter"),
+			action: () => handleToolSelection(BrushType.HIGHLIGHTER),
 		},
 		// Text tool that allows the user to type ASCII characters on the canvas.
 		{
 			name: "text",
 			icon: "format-text",
 			image: require("../assets/canvasImages/text.png"),
-			action: () => handleToolSelection("text"),
+			action: () => handleToolSelection(BrushType.TEXT),
 		},
 		// Pointer tool to allow for gestures.
 		{
 			name: "pointer",
 			icon: "pointer",
 			image: require("../assets/canvasImages/pointer.png"),
-			action: () => handleToolSelection("pointer"),
+			action: () => handleToolSelection(BrushType.POINTER),
 		},
 	]
 

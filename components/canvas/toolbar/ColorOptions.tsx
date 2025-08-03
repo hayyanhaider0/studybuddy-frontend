@@ -8,11 +8,11 @@ import { TouchableOpacity, View } from "react-native"
 import { useToolContext } from "../../../contexts/ToolContext"
 import { getCanvasStyles } from "../../../styles/canvas"
 import { useThemeContext } from "../../../contexts/ThemeContext"
-import { ToolName } from "../../../types/global"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import tinycolor from "tinycolor2"
+import { BrushType } from "../../../enums/global"
 
-export default function ColorOptions({ tool }: { tool: ToolName }) {
+export default function ColorOptions({ tool }: { tool: BrushType }) {
 	const {
 		toolSettings,
 		setToolSettings,

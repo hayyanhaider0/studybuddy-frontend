@@ -6,8 +6,10 @@
  */
 
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { ToolName, ToolSwatches } from "../types/global"
+import { ToolSwatches } from "../types/global"
 import { getStoredJSON } from "../utils/storage"
+import { BrushType } from "../enums/global"
+import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
 
 /////////////////////////////////////////
 // TYPES
@@ -15,14 +17,15 @@ import { getStoredJSON } from "../utils/storage"
 type ToolSettings = {
 	color: string
 	size: number
+	minWidth?: number
+	maxWidth?: number
+	opacity?: number
 	activeSwatchIndex?: number
-	strokeLinecap?: "butt" | "round"
-	strokeLinejoin?: "bevel" | "round"
+	strokeCap?: StrokeCap
+	strokeJoin?: StrokeJoin
 }
 
-type ToolSettingsMap = {
-	[toolName in ToolName]: ToolSettings
-}
+type ToolSettingsMap = Record<BrushType, ToolSettings>
 
 type EraserPosType = {
 	x: number
@@ -31,9 +34,9 @@ type EraserPosType = {
 
 type ToolContextType = {
 	// Currently selected tool.
-	tool: ToolName
+	tool: BrushType
 	// Setter for tool.
-	setTool: React.Dispatch<React.SetStateAction<ToolName>>
+	setTool: React.Dispatch<React.SetStateAction<BrushType>>
 	// Tool settings: tool color and size.
 	toolSettings: ToolSettingsMap
 	// Setter for all tools settings.
@@ -53,14 +56,14 @@ type ToolContextType = {
 	// Setter for swatches for all tools.
 	setSwatches: React.Dispatch<React.SetStateAction<ToolSwatches>>
 	// Tracker for which swatch is being edited.
-	swatchEditInfo: { tool: ToolName; index: number } | null
+	swatchEditInfo: { tool: BrushType; index: number } | null
 	// Setter for swatch editing tracker.
-	setSwatchEditInfo: React.Dispatch<React.SetStateAction<{ tool: ToolName; index: number } | null>>
+	setSwatchEditInfo: React.Dispatch<React.SetStateAction<{ tool: BrushType; index: number } | null>>
 
 	// Currently active menu -- if any.
-	activeMenu: ToolName | null
+	activeMenu: BrushType | null
 	// Setter for active menu.
-	setActiveMenu: React.Dispatch<React.SetStateAction<ToolName | null>>
+	setActiveMenu: React.Dispatch<React.SetStateAction<BrushType | null>>
 
 	// Current state of the color picker.
 	colorPicker: boolean
@@ -72,32 +75,39 @@ type ToolContextType = {
 // DEFAULT VALUES
 /////////////////////////////////////////
 const DEFAULT_SWATCHES = ["#dc2626", "#fb923c", "#facc15", "#3b82f6", "#10b981", "#000000"]
-const DEFAULT_TOOL_SETTINGS = {
-	pen: {
+const DEFAULT_TOOL_SETTINGS: ToolSettingsMap = {
+	[BrushType.PEN]: {
 		color: "#dc2626",
 		size: 4,
-		activeSwatchIndex: 0,
-		strokeLinecap: "round",
-		strokeLinejoin: "round",
+		minWidth: 2,
+		maxWidth: 8,
+		opacity: 1,
+		strokeCap: StrokeCap.Round,
+		strokeJoin: StrokeJoin.Round,
 	},
-	eraser: { color: "transparent", size: 4 },
-	pencil: {
+	[BrushType.ERASER]: { color: "transparent", size: 4 },
+	[BrushType.PENCIL]: {
 		color: "black",
 		size: 1,
-		activeSwatchIndex: 0,
-		strokeLinecap: "round",
-		strokeLinejoin: "round",
+		minWidth: 0.5,
+		maxWidth: 3,
+		opacity: 0.8,
+		strokeCap: StrokeCap.Round,
+		strokeJoin: StrokeJoin.Round,
 	},
-	highlighter: {
-		color: "#FFFF004D",
+	[BrushType.HIGHLIGHTER]: {
+		color: "#FFFF00",
 		size: 32,
-		activeSwatchIndex: 0,
-		strokeLinecap: "butt",
-		strokeLinejoin: "bevel",
+		minWidth: 16,
+		maxWidth: 40,
+		opacity: 0.5,
+		strokeCap: StrokeCap.Round,
+		strokeJoin: StrokeJoin.Round,
 	},
-	text: { color: "black", size: 8 },
-	pointer: { color: "black", size: 8 },
-} as const
+	[BrushType.TEXT]: { color: "black", size: 8 },
+	[BrushType.POINTER]: { color: "black", size: 8 },
+}
+
 const DEFAULT_SWATCH_MAP = {
 	pen: DEFAULT_SWATCHES,
 	eraser: [],
@@ -122,23 +132,23 @@ export const ToolContext = createContext<ToolContextType | null>(null)
  */
 export function ToolProvider({ children }: { children: ReactNode }) {
 	// Tool and tool setting values.
-	const [tool, setTool] = useState<ToolName>("pen")
+	const [tool, setTool] = useState<BrushType>(BrushType.PEN)
 	const [toolSettings, setToolSettings] = useState<ToolSettingsMap>(DEFAULT_TOOL_SETTINGS)
 	const [eraserPos, setEraserPos] = useState<EraserPosType>({ x: 0, y: 0 })
 	// Toolbar collapsed values.
 	const [collapsed, setCollapsed] = useState(false)
 	// Swatch related state.
 	const [swatches, setSwatches] = useState<ToolSwatches>(DEFAULT_SWATCH_MAP)
-	const [swatchEditInfo, setSwatchEditInfo] = useState<{ tool: ToolName; index: number } | null>(
+	const [swatchEditInfo, setSwatchEditInfo] = useState<{ tool: BrushType; index: number } | null>(
 		null
 	)
 	const [colorPicker, setColorPicker] = useState<boolean>(false)
 	// Active tool menu.
-	const [activeMenu, setActiveMenu] = useState<ToolName | null>(null)
+	const [activeMenu, setActiveMenu] = useState<BrushType | null>(null)
 
 	useEffect(() => {
 		const loadSwatches = async () => {
-			const tools = ["pen", "pencil", "highlighter", "text", "pointer"]
+			const tools: BrushType[] = Object.values(BrushType) as BrushType[]
 			const result: Partial<ToolSwatches> = {}
 
 			for (const t of tools) {

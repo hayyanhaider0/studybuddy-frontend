@@ -5,8 +5,7 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import { Canvas, Circle, Path, Text as SkiaText, useFont } from "@shopify/react-native-skia"
-import { PathType } from "../../types/global"
+import { Canvas, Circle, Text as SkiaText, useFont } from "@shopify/react-native-skia"
 import { View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import Background1 from "./Background1"
@@ -17,6 +16,8 @@ import { useNotebookContext } from "../../contexts/NotebookContext"
 import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
 import { useSettings } from "../../contexts/SettingsContext"
 import { getChapter } from "../../utils/notebook"
+import PathRenderer from "../drawing/PathRenderer"
+import { PathType } from "../drawing/types/DrawingTypes"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
@@ -34,7 +35,6 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 
 	// Get the current canvas's paths and current path if any.
 	const canvasPaths = chapter.canvases[canvasIndex].paths
-	const currentPath = current[canvasId] || ""
 
 	// Font import for Skia -- used for page number.
 	const Roboto = useFont(require("../../assets/fonts/Roboto-Bold.ttf"), layout.height * 0.025)
@@ -62,27 +62,19 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							color={theme.colors.textPrimary}
 						/>
 					)}
-					{/* Render completed paths */}
-					{canvasPaths.map((p: PathType, i: number) => (
-						<Path
-							key={i}
-							path={p.path}
-							color={p.color}
-							style='stroke'
-							strokeWidth={p.size}
-							strokeCap={p.strokeLinecap}
-							strokeJoin='round'
-						/>
+					{canvasPaths.map((path: PathType) => (
+						<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
 					))}
-					{/* Render current path being drawn */}
-					<Path
-						path={currentPath}
-						color={toolSettings[tool].color}
-						style='stroke'
-						strokeWidth={toolSettings[tool].size}
-						strokeCap={toolSettings[tool].strokeLinecap}
-						strokeJoin='round'
-					/>
+
+					{current[canvasId] && current[canvasId]!.points.length > 0 && (
+						<PathRenderer
+							key={`current-${canvasId}`}
+							path={current[canvasId]!}
+							width={layout.width}
+							height={layout.height}
+						/>
+					)}
+
 					{tool === "eraser" && (
 						<Circle
 							cx={eraserPos.x}

@@ -103,7 +103,7 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 	}, [code])
 
 	return (
-		<CustomScrollView contentStyle={{ paddingTop: 64, gap: 16 }}>
+		<CustomScrollView contentStyle={{ paddingTop: 64, padding: 32, gap: 16 }}>
 			<Image
 				source={require("../assets/study-buddy-logo.png")}
 				style={{ width: 180, height: 180, alignSelf: "center" }}

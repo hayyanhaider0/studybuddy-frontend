@@ -13,21 +13,17 @@ import { useNavigation } from "@react-navigation/native"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "../../navigation/DrawerNavigation"
 import { Notebook } from "../../types/notebook"
-import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useSort } from "../../contexts/SortContext"
-import { useContextMenu } from "../../contexts/ContextMenuContext"
-import useNotebookActions from "../../hooks/useNotebookActions"
 import Grid from "../common/Grid"
+import MiniCanvas from "../common/MiniCanvas"
 
 export default function NotebookList() {
 	// Get context values.
 	const { notebooks, setSelectedNotebookId } = useNotebookContext()
-	const { handleEditNotebook, handleDeleteNotebook } = useNotebookActions()
 	const { sorts } = useSort()
-	const { openMenu } = useContextMenu()
 
 	// Theming
-	const { theme, GlobalStyles } = useThemeContext()
+	const { GlobalStyles } = useThemeContext()
 
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
@@ -71,38 +67,37 @@ export default function NotebookList() {
 		<Grid
 			data={sortedNotebooks.map((n) => (
 				// Clickable icon that navigates to the canvas after selecting the notebook.
-				<Pressable key={n.id} onPress={() => selectNotebook(n.id)}>
-					<View style={{ flexDirection: "row" }}>
-						{/* Notebook icon with editable color */}
-						<NotebookIcon fill={n.fill} width={80} height={96} />
-						{/* Clickable menu icon */}
-						<Pressable
-							onPress={(e) => {
-								e.currentTarget.measureInWindow((x, y) => {
-									openMenu({
-										options: [
-											{ label: "Edit", onPress: () => handleEditNotebook(n) },
-											{ label: "Delete", onPress: () => handleDeleteNotebook(n) },
-										],
-										position: { x, y },
-									})
-								})
-							}}
-							style={{ position: "absolute", top: 4, right: 0 }}
-						>
-							<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
-						</Pressable>
+				<Pressable
+					key={n.id}
+					onPress={() => selectNotebook(n.id)}
+					onLongPress={() => console.log("Editing Mode")}
+				>
+					<View style={{ alignItems: "center", justifyContent: "center", width: "100%" }}>
+						{/* Icon/Canvas container */}
+						<View style={{ aspectRatio: 9 / 16, width: "80%" }}>
+							{n.fillColor ? (
+								<NotebookIcon fill={n.fillColor || "green"} width='100%' height='100%' />
+							) : (
+								<MiniCanvas id={n.id} />
+							)}
+						</View>
+
+						<View style={{ paddingTop: 8 }}>
+							<Text
+								style={[GlobalStyles.paragraph, { paddingVertical: 4, textAlign: "center" }]}
+								ellipsizeMode='middle'
+								numberOfLines={1}
+							>
+								{n.title}
+							</Text>
+							<Text style={[GlobalStyles.subtext, { textAlign: "center" }]}>
+								{`${timeAgo(n.updatedAt)}`}
+							</Text>
+							<Text style={[GlobalStyles.subtext, { textAlign: "center" }]}>
+								{`Created ${formatDate(n.createdAt)}`}
+							</Text>
+						</View>
 					</View>
-					{/* Title and time data of the notebook */}
-					<Text
-						style={[GlobalStyles.paragraph, { paddingVertical: 4 }]}
-						ellipsizeMode='middle'
-						numberOfLines={1}
-					>
-						{n.title}
-					</Text>
-					<Text style={GlobalStyles.subtext}>{`Updated ${timeAgo(n.updatedAt)}`}</Text>
-					<Text style={GlobalStyles.subtext}>{`Created ${formatDate(n.createdAt)}`}</Text>
 				</Pressable>
 			))}
 			cols={3}

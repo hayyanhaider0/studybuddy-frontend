@@ -9,11 +9,10 @@ import { AnimatePresence, MotiView } from "moti"
 import { View, Text, BackHandler } from "react-native"
 import { TouchableOpacity } from "react-native"
 import { useContextMenu } from "../../contexts/ContextMenuContext"
-import { getGlobalStyles } from "../../styles/global"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
-import { useCallback, useEffect, useRef } from "react"
-import { useFocusEffect, useNavigationState } from "@react-navigation/native"
+import { useCallback } from "react"
+import { useFocusEffect } from "@react-navigation/native"
 
 export default function ContextMenu() {
 	// Get context values
