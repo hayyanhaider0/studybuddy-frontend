@@ -155,7 +155,7 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 				disabled={resendMutation.isPending || disableResend}
 				onPress={resendVerification}
 			/>
-			.{/* Show resend timer. */}
+			{/* Show resend timer. */}
 			<Text style={GlobalStyles.paragraph}>Time Remaining: {msToMinutesSeconds(countdown)}</Text>
 		</CustomScrollView>
 	)
