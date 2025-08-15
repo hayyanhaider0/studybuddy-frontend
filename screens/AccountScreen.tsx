@@ -13,9 +13,11 @@ import { useAuthContext } from "../contexts/AuthContext"
 import { formatEducationLevel, formatOccupation } from "../utils/formatters"
 import { useMemo } from "react"
 import CustomScrollView from "../components/common/CustomScrollView"
+import CustomPressable from "../components/common/CustomPressable"
+import { removeRefreshToken, removeToken } from "../utils/keychain"
 
 export default function AccountScreen() {
-	const { authState } = useAuthContext()
+	const { authState, resetAuthState } = useAuthContext()
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
@@ -43,6 +45,12 @@ export default function AccountScreen() {
 		}),
 		[authState.displayName, authState.occupation, authState.educationLevel]
 	)
+
+	const handleLogout = () => {
+		resetAuthState()
+		removeToken()
+		removeRefreshToken()
+	}
 
 	return (
 		<CustomScrollView contentStyle={{ gap: 4 }}>
@@ -155,6 +163,9 @@ export default function AccountScreen() {
 					</Text>
 				</View>
 			</DetailView>
+
+			{/* Logout button */}
+			<CustomPressable type='delete' title='Logout' onPress={handleLogout} />
 		</CustomScrollView>
 	)
 }

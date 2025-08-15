@@ -62,16 +62,16 @@ export default function Navigation() {
 			{/* Actual navigation logic */}
 			<NavigationContainer>
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
-					{/* {authState.isLoggedIn ? ( */}
-					<Stack.Screen name='main' component={DrawerNavigation} />
-					{/* ) : ( */}
-					<>
-						<Stack.Screen name='login' component={LoginScreen} />
-						<Stack.Screen name='verify' component={VerificationScreen} />
-						<Stack.Screen name='forgot' component={ForgotPasswordScreen} />
-						<Stack.Screen name='reset' component={ResetPasswordScreen} />
-					</>
-					{/* )} */}
+					{authState.isLoggedIn ? (
+						<Stack.Screen name='main' component={DrawerNavigation} />
+					) : (
+						<>
+							<Stack.Screen name='login' component={LoginScreen} />
+							<Stack.Screen name='verify' component={VerificationScreen} />
+							<Stack.Screen name='forgot' component={ForgotPasswordScreen} />
+							<Stack.Screen name='reset' component={ResetPasswordScreen} />
+						</>
+					)}
 				</Stack.Navigator>
 				<ContextMenu />
 				<Modal />

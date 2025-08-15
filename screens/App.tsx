@@ -11,6 +11,8 @@ import Navigation from "../navigation/Navigation"
 import { AppProvider } from "../providers/AppProvider"
 import { ContextMenuProvider } from "../contexts/ContextMenuContext"
 import { Keyboard, TouchableWithoutFeedback } from "react-native"
+import { queryClient } from "../api/queryClient"
+import { QueryClientProvider } from "@tanstack/react-query"
 
 export default function App() {
 	return (
@@ -19,7 +21,9 @@ export default function App() {
 				<AppProvider>
 					<ModalProvider>
 						<ContextMenuProvider>
-							<Navigation />
+							<QueryClientProvider client={queryClient}>
+								<Navigation />
+							</QueryClientProvider>
 						</ContextMenuProvider>
 					</ModalProvider>
 				</AppProvider>

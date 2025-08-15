@@ -12,61 +12,44 @@ import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
 import CustomPressable from "../common/CustomPressable"
-import { NavProp } from "../../types/global"
-import { useNavigation } from "@react-navigation/native"
-import useAuthApi from "../../hooks/useAuthApi"
-import { SignUpRequest } from "../../types/auth"
+import { SignupRequest } from "../../types/auth"
+import useSignup from "../../hooks/auth/useSignup"
 
 /**
  * Sets the type for setForm to boolean in component props
  */
-type SignUpProps = {
+type SignupProps = {
 	setForm: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function SignUp({ setForm }: SignUpProps) {
-	const nav = useNavigation<NavProp<"verify">>() // Navigation
-	const { signUp, loading } = useAuthApi()
-
-	// Theming
-	const { theme, fontScale, GlobalStyles } = useThemeContext()
-	const styles = getLoginStyles(theme.colors, fontScale)
-
-	/**
-	 * Get form variables
-	 */
+export default function Signup({ setForm }: SignupProps) {
+	// Get form variables.
 	const {
 		control,
 		handleSubmit,
 		getValues,
 		formState: { errors },
 		setError,
-	} = useForm<SignUpRequest>({ criteriaMode: "all" })
+	} = useForm<SignupRequest>({ criteriaMode: "all" })
+
+	// Get sign up mutation.
+	const signupMutation = useSignup(setError)
+	// Get loading state.
+	const loading = signupMutation.isPending
 
 	/**
 	 * Handles sign up button press, sends form data to the backend.
 	 *
-	 * @param data - Data from the form
+	 * @param data - Data from the form.
 	 */
-	const handleSignUp = async (signupData: SignUpRequest) => {
-		const res = await signUp(signupData)
-
-		if (res.success) {
-			// If successful, go to the verification screen.
-			nav.navigate("verify", { email: res.data.email })
-		} else {
-			if (res.error) {
-				// If unsuccessful, show errors accordingly.
-				if (res.error.toLowerCase().includes("email")) {
-					setError("email", { type: "server", message: res.error })
-				} else if (res.error.toLowerCase().includes("username")) {
-					setError("username", { type: "server", message: res.error })
-				} else {
-					setError("root", { type: "server", message: res.error })
-				}
-			}
-		}
+	const handleSignUp = async (signupData: SignupRequest) => {
+		setError("root", { type: "server", message: "" })
+		signupMutation.mutate(signupData)
 	}
+
+	// Theming
+	const { theme, fontScale, GlobalStyles } = useThemeContext()
+	const styles = getLoginStyles(theme.colors, fontScale)
 
 	return (
 		<>
@@ -184,8 +167,8 @@ export default function SignUp({ setForm }: SignUpProps) {
 			{/* Sign Up Button: Form submission button */}
 			<CustomPressable
 				type='primary'
-				title={loading.signUp ? "Signing Up..." : "Sign Up"}
-				disabled={loading.signUp}
+				title={loading ? "Signing Up..." : "Sign Up"}
+				disabled={loading}
 				onPress={handleSubmit(handleSignUp)}
 			/>
 

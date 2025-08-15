@@ -14,7 +14,6 @@ import {
 	StyleProp,
 	Text,
 	View,
-	ViewProps,
 	ViewStyle,
 } from "react-native"
 import { useThemeContext } from "../../contexts/ThemeContext"
@@ -23,7 +22,7 @@ import { LinearGradient } from "expo-linear-gradient"
 type BaseProps = {
 	type: "primary" | "secondary" | "link" | "delete"
 	circle?: boolean
-	style?: StyleProp<ViewProps>
+	style?: StyleProp<ViewStyle>
 	floatPos?: { top?: number; bottom?: number; left?: number; right?: number }
 	disabled?: boolean
 } & PressableProps
@@ -96,7 +95,7 @@ export default function CustomPressable({
 	)
 
 	return (
-		<Pressable {...props} style={floatStyle}>
+		<Pressable disabled={disabled} style={[floatStyle, style]} {...props}>
 			{isGradient ? (
 				<LinearGradient
 					colors={disabled ? gradientColors.disabled : gradientColors[type]}

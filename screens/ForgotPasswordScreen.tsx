@@ -3,20 +3,19 @@ import CustomPressable from "../components/common/CustomPressable"
 import { useThemeContext } from "../contexts/ThemeContext"
 import LoginInput from "../components/login/LoginInput"
 import { useForm } from "react-hook-form"
-import { NavProp } from "../types/global"
-import useAuthApi from "../hooks/useAuthApi"
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native"
+import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
 import { useEffect, useRef, useState } from "react"
 import { getLoginStyles } from "../styles/login"
 import CustomScrollView from "../components/common/CustomScrollView"
 import { LoginRequest } from "../types/auth"
+import useVerifyReset from "../hooks/auth/useVerifyReset"
+import useForgotPassword from "../hooks/auth/useForgotPassword"
 
 export default function ForgotPasswordScreen() {
 	const ENABLE_RESEND_TIMER = 60000 // 1m
 	const CODE_LENGTH = 6
 
-	const nav = useNavigation<NavProp<"reset">>()
 	const route = useRoute<RouteProp<RootStackParamList, "forgot">>()
 	const prefillLogin = route.params?.login ?? ""
 	const inputRefs = useRef<Array<TextInput | null>>([])
@@ -27,7 +26,6 @@ export default function ForgotPasswordScreen() {
 	// Theming
 	const { theme, fontScale, GlobalStyles } = useThemeContext()
 	const styles = getLoginStyles(theme.colors, fontScale)
-	const { reset, verifyReset, loading } = useAuthApi()
 
 	const {
 		control,
@@ -42,36 +40,34 @@ export default function ForgotPasswordScreen() {
 		},
 	}) // Form handling
 
+	// Get reset password mutation.
+	const resetPasswordMutation = useForgotPassword(setError)
+	// Get verify reset mutation.
+	const verifyResetMutation = useVerifyReset(setError)
+
+	// Handle the user pressing the send button.
 	const handleReset = async () => {
 		const login = getValues("login")
-		const res = await reset(login)
 
-		setDisableSend(true)
-
-		if (res.success) {
-			clearErrors("login")
-			setEmail(res.data.email)
-		} else {
-			setError("login", { message: res.error || "Reset failed. Try again." })
-		}
-
-		setTimeout(() => setDisableSend(true), ENABLE_RESEND_TIMER)
+		resetPasswordMutation.mutate(
+			{ login },
+			{
+				onSuccess: (data) => {
+					clearErrors("login")
+					setEmail(data.data.email)
+					setDisableSend(true)
+					setTimeout(() => setDisableSend(false), ENABLE_RESEND_TIMER)
+				},
+			}
+		)
 	}
 
-	const verifyCode = async (resetCode: string) => {
+	// Verify the code entered by the user.
+	const verifyCode = async (code: string) => {
 		if (!email) {
-			setError("root", { message: "Unexpected error occurred. Try again." })
-			return
-		}
-
-		const res = await verifyReset(email, resetCode)
-
-		if (res.success) {
-			clearErrors("login")
-			clearErrors("root")
-			nav.navigate("reset", { email })
+			setError("root", { message: "An unexpected error occured." })
 		} else {
-			setError("root", { message: res.error || "Invalid or expired reset code." })
+			verifyResetMutation.mutate({ email, code })
 		}
 	}
 
@@ -119,6 +115,12 @@ export default function ForgotPasswordScreen() {
 						A reset code has been sent to {email}. The code will expire in 1 hour. You can resend
 						the code after 1 minute.
 					</Text>
+					{/* Root error */}
+					{errors.root && (
+						<Text style={[GlobalStyles.error, { textAlign: "center" }]}>
+							{errors.root.message?.toString()}
+						</Text>
+					)}
 				</View>
 			) : (
 				<Text style={[GlobalStyles.paragraph, { color: theme.colors.textSecondary }]}>
@@ -155,12 +157,12 @@ export default function ForgotPasswordScreen() {
 
 			<CustomPressable
 				type='primary'
-				title={loading.reset ? "Sending reset code..." : "Send"}
-				disabled={loading.reset || disableSend}
+				title={resetPasswordMutation.isPending ? "Sending reset code..." : "Send"}
+				disabled={resetPasswordMutation.isPending || disableSend}
 				onPress={handleReset}
 			/>
 
-			{loading.verify && <Text style={GlobalStyles.paragraph}>Verifying...</Text>}
+			{verifyResetMutation.isPending && <Text style={GlobalStyles.paragraph}>Verifying...</Text>}
 		</CustomScrollView>
 	)
 }

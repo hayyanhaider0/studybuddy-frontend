@@ -1,22 +1,19 @@
 import { View, Text } from "react-native"
-import CustomPressable from "../components/common/CustomPressable"
 import { useThemeContext } from "../contexts/ThemeContext"
 import LoginInput from "../components/login/LoginInput"
 import { useForm } from "react-hook-form"
-import { NavProp } from "../types/global"
-import useAuthApi from "../hooks/useAuthApi"
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native"
+import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
 import CustomScrollView from "../components/common/CustomScrollView"
+import CustomPressable from "../components/common/CustomPressable"
+import useResetPassword from "../hooks/auth/useResetPassword"
 
 export default function ResetPasswordScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "reset">>()
 	const email = route.params?.email ?? ""
-	const nav = useNavigation<NavProp<"login">>()
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
-	const { resetPassword, loading } = useAuthApi()
 
 	const {
 		control,
@@ -26,14 +23,16 @@ export default function ResetPasswordScreen() {
 		setError,
 	} = useForm<{ password: string; confirmPassword: string }>({ criteriaMode: "all" })
 
-	const handleResetPassword = async () => {
-		const res = await resetPassword(email, getValues("password"), getValues("confirmPassword"))
+	// Get reset password mutation.
+	const resetPasswordMutation = useResetPassword(setError)
 
-		if (res.success) {
-			nav.navigate("login", { email })
-		} else {
-			setError("root", { message: res.error || "An unknown error has occurred" })
-		}
+	// Handle the user pressing the reset button.
+	const handleResetPassword = async () => {
+		resetPasswordMutation.mutate({
+			email,
+			password: getValues("password"),
+			confirmPassword: getValues("confirmPassword"),
+		})
 	}
 
 	return (
@@ -111,8 +110,8 @@ export default function ResetPasswordScreen() {
 
 			<CustomPressable
 				type='primary'
-				title={loading.resetPassword ? "Resetting Password..." : "Reset"}
-				disabled={loading.resetPassword}
+				title={resetPasswordMutation.isPending ? "Resetting Password..." : "Reset"}
+				disabled={resetPasswordMutation.isPending}
 				onPress={handleSubmit(handleResetPassword)}
 			/>
 		</CustomScrollView>

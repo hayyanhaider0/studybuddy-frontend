@@ -10,7 +10,7 @@ export type LoginRequest = {
 	password: string
 }
 
-export type SignUpRequest = {
+export type SignupRequest = {
 	email: string
 	username: string
 	password: string

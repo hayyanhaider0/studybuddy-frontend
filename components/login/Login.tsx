@@ -15,11 +15,8 @@ import { useThemeContext } from "../../contexts/ThemeContext"
 import { getLoginStyles } from "../../styles/login"
 import CustomPressable from "../common/CustomPressable"
 import { useEffect } from "react"
-import { saveToken } from "../../utils/keychain"
-import { useAuthContext } from "../../contexts/AuthContext"
-import useAuthApi from "../../hooks/useAuthApi"
 import { LoginRequest } from "../../types/auth"
-import { EducationLevel, Occupation } from "../../enums/global"
+import useLogin from "../../hooks/auth/useLogin"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -31,10 +28,6 @@ type LoginProps = {
 
 export default function Login({ setForm, prefillEmail }: LoginProps) {
 	const nav = useNavigation<NavProp<"main">>() // Navigation controller
-
-	// Context values
-	const { login, loading } = useAuthApi()
-	const { setAuthState } = useAuthContext()
 
 	// Theming
 	const { theme, fontScale, GlobalStyles } = useThemeContext()
@@ -54,36 +47,19 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 		},
 	}) // Form handling
 
-	/**
-	 * Handles login operation.
-	 *
-	 * Sends a backend request and authorizes user to enter their account.
-	 *
-	 * @param data - Data from the form
-	 */
-	const handleLogin = async (req: LoginRequest) => {
-		const res = await login(req) // Call login from the useAuthApi hook.
+	// Get login mutation.
+	const loginMutation = useLogin(setError)
+	// Get loading state.
+	const loading = loginMutation.isPending
 
-		if (res.success) {
-			if (res.data.accessToken) {
-				// If successful and user is verified.
-				saveToken(res.data.accessToken)
-				setAuthState({
-					isLoggedIn: true,
-					email: res.data.email,
-					username: res.data.username,
-					displayName: res.data.displayName,
-					occupation: Occupation.STUDENT,
-					educationLevel: EducationLevel.UNDERGRAD_YEAR_THREE,
-				})
-			} else {
-				// If successful but user is NOT verified.
-				nav.navigate("verify", res.data)
-			}
-		} else if (res.error) {
-			// If unsuccessful.
-			setError("root", { type: "server", message: res.error })
-		}
+	/**
+	 * Calls the login endpoint and processes user entry.
+	 *
+	 * @param loginData - Data entered by the user to login.
+	 */
+	const handleLogin = (loginData: LoginRequest) => {
+		setError("root", { type: "manual", message: "" })
+		loginMutation.mutate(loginData)
 	}
 
 	/**
@@ -163,8 +139,8 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 			{/* Login Button: Form submission button */}
 			<CustomPressable
 				type='primary'
-				title={loading.login ? "Logging in..." : "Login"}
-				disabled={loading.login}
+				title={loading ? "Logging in..." : "Login"}
+				disabled={loading}
 				onPress={handleSubmit(handleLogin)}
 			/>
 

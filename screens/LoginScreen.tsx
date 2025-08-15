@@ -8,7 +8,7 @@
 import { Text, View, Image } from "react-native"
 import { useState } from "react"
 import Login from "../components/login/Login"
-import SignUp from "../components/login/SignUp"
+import Signup from "../components/login/Signup"
 import { useThemeContext } from "../contexts/ThemeContext"
 import tinycolor from "tinycolor2"
 import { RouteProp, useRoute } from "@react-navigation/native"
@@ -42,7 +42,7 @@ export default function LoginScreen() {
 			{/* Login and SignUp forms depending on state */}
 			<View style={{ gap: 32 }}>
 				{form ? (
-					<SignUp setForm={setForm} />
+					<Signup setForm={setForm} />
 				) : (
 					<Login setForm={setForm} prefillEmail={prefillEmail} />
 				)}

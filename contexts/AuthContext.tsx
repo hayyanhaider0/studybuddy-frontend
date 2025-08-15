@@ -23,8 +23,12 @@ type AuthStateType = {
 }
 
 type AuthContextType = {
+	// Auth state -- holds user info if logged in.
 	authState: AuthStateType
+	// Setter for the auth state.
 	setAuthState: React.Dispatch<React.SetStateAction<AuthStateType>>
+	// Reset auth state -- log out.
+	resetAuthState: () => void
 }
 
 // React context for shared auth values.
@@ -48,7 +52,15 @@ const DEFAULT_AUTH_STATE: AuthStateType = {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE)
 
-	return <AuthContext.Provider value={{ authState, setAuthState }}>{children}</AuthContext.Provider>
+	const resetAuthState = () => {
+		setAuthState(() => DEFAULT_AUTH_STATE)
+	}
+
+	return (
+		<AuthContext.Provider value={{ authState, setAuthState, resetAuthState }}>
+			{children}
+		</AuthContext.Provider>
+	)
 }
 
 /**
