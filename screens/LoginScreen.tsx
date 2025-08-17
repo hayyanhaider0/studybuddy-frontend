@@ -8,12 +8,12 @@
 import { Text, View, Image } from "react-native"
 import { useState } from "react"
 import Login from "../components/login/Login"
-import Signup from "../components/login/Signup"
 import { useThemeContext } from "../contexts/ThemeContext"
 import tinycolor from "tinycolor2"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
 import CustomScrollView from "../components/common/CustomScrollView"
+import Signup from "../components/login/SignUp"
 
 export default function LoginScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "login">>()

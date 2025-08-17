@@ -5,8 +5,7 @@
 import axios from "axios"
 import Constants from "expo-constants"
 
-// const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl
-const API_BASE_URL = "http://10.0.0.223:8080/api"
+const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl
 
 const client = axios.create({
 	baseURL: API_BASE_URL,

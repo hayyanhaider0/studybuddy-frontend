@@ -97,6 +97,9 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			const pressure = 1
 
 			const settings = toolSettings[tool]
+			const normBaseWidth = settings.size / layout.width
+			const normMinWidth = settings.minWidth! / layout.width
+			const normMaxWidth = settings.maxWidth! / layout.width
 
 			const dotPath: PathType = {
 				id: uuid.v4(),
@@ -104,9 +107,9 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 				brush: {
 					type: tool,
 					color: settings.color,
-					baseWidth: settings.size,
-					minWidth: settings.minWidth!,
-					maxWidth: settings.maxWidth!,
+					baseWidth: normBaseWidth,
+					minWidth: normMinWidth,
+					maxWidth: normMaxWidth,
 					opacity: settings.opacity ?? 1,
 					strokeCap: settings.strokeCap || StrokeCap.Butt,
 					strokeJoin: settings.strokeJoin || StrokeJoin.Miter,
