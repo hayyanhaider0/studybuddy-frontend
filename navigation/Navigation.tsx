@@ -62,7 +62,7 @@ export default function Navigation() {
 			{/* Actual navigation logic */}
 			<NavigationContainer>
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
-					{authState.isLoggedIn ? (
+					{!authState.isLoggedIn ? (
 						<Stack.Screen name='main' component={DrawerNavigation} />
 					) : (
 						<>

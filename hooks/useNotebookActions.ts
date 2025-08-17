@@ -5,10 +5,9 @@
  * Also contains helper functions that open a modal when required.
  */
 
-import { DrawingPath } from "../components/drawing/types/DrawingTypes"
+import { PathType } from "../components/drawing/types/DrawingTypes"
 import { useModal, ModalType } from "../contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import { PathType } from "../types/global"
 import { Canvas, Notebook } from "../types/notebook"
 import {
 	addCanvas,
@@ -56,7 +55,7 @@ export default function useNotebookActions() {
 	const editNotebook = (notebookId: string, title?: string, fill?: string) => {
 		const updated = notebooks.map((n) =>
 			n.id === notebookId
-				? { ...n, title: title ?? n.title, fill: fill ?? n.fill, updatedAt: Date.now() }
+				? { ...n, title: title ?? n.title, fill: fill ?? n.fillColor, updatedAt: Date.now() }
 				: n
 		)
 		setNotebooks(updated)
@@ -148,7 +147,7 @@ export default function useNotebookActions() {
 	 * Helper function that adds a new path to the canvas.
 	 * @param newPath - The new path drawn by the user.
 	 */
-	const addPathToCanvas = (newPathObject: DrawingPath) => {
+	const addPathToCanvas = (newPathObject: PathType) => {
 		if (!activeCanvas) return
 
 		const snapshot = createSnapshot()
@@ -162,6 +161,41 @@ export default function useNotebookActions() {
 		}
 
 		updateCanvas(updatedCanvas)
+	}
+
+	const handleErase = (x: number, y: number, size: number, width: number, height: number) => {
+		if (!activeCanvas) return 
+
+		const paths = activeCanvas.paths
+
+		if (!paths || paths.length === 0) return
+
+		const normX = x / width
+		const normY = y / height
+		const r = size / 2
+
+		paths.forEach((p) => {
+			if (p.bbox.minX > normX || p.bbox.maxX < normX || p.bbox.minY > normY || p.bbox.maxY < normY) return
+			
+			p.points.forEach((pt) => {
+				const dist = Math.sqrt(Math.pow(pt.x * width - x, 2) - Math.pow(pt.y * height - y, 2))
+				// if (pt.x * width <= x + r && pt.x * width >= x - r && pt.y * height <= y + r && pt.y * height >= y - r) {	
+				if (dist <= r) {				
+					const snapshot = createSnapshot()
+
+					const updatedCanvas = {
+						...activeCanvas,
+						paths: paths.filter((path) => path.id !== p.id),
+						undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
+			redoStack: [],
+			updatedAt: Date.now(),
+					}
+
+					updateCanvas(updatedCanvas)
+			}})
+
+			return
+		})
 	}
 
 	// Undo the last action by the user.
@@ -277,6 +311,7 @@ export default function useNotebookActions() {
 		handleNewChapter,
 		handleNewCanvas,
 		addPathToCanvas,
+		handleErase,
 		undo,
 		canUndo,
 		redo,

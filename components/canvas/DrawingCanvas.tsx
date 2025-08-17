@@ -5,7 +5,7 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import { Canvas, Circle, Text as SkiaText, useFont } from "@shopify/react-native-skia"
+import { Canvas, Circle, Rect, Text as SkiaText, useFont } from "@shopify/react-native-skia"
 import { View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import Background1 from "./Background1"
@@ -64,6 +64,18 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 					)}
 					{canvasPaths.map((path: PathType) => (
 						<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
+	// 					{path.bbox && (
+    //   <Rect
+    //     x={path.bbox.minX * layout.width}
+    //     y={path.bbox.minY * layout.height}
+    //     width={(path.bbox.maxX - path.bbox.minX) * layout.width}
+    //     height={(path.bbox.maxY - path.bbox.minY) * layout.height}
+    //     color="rgba(255,0,0,0.3)" // semi-transparent red for visibility
+    //     style="stroke" // outline instead of filled
+    //     strokeWidth={1}
+    //   />
+    // )}
+
 					))}
 
 					{current[canvasId] && current[canvasId]!.points.length > 0 && (
@@ -73,6 +85,7 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							width={layout.width}
 							height={layout.height}
 						/>
+						
 					)}
 
 					{tool === "eraser" && (

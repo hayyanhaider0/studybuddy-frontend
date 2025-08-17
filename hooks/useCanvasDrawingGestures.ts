@@ -11,8 +11,8 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
 	const { current, setCurrentPath, updateCurrentPath, clearCurrentPath, layout } =
 		useCanvasContext()
-	const { tool, toolSettings, setEraserPos } = useToolContext()
-	const { addPathToCanvas } = useNotebookActions()
+	const { tool, toolSettings, eraserPos, setEraserPos } = useToolContext()
+	const { addPathToCanvas, handleErase } = useNotebookActions()
 
 	// Check whether the selected tool can draw.
 	const isDrawingTool = (t: BrushType) =>
@@ -56,6 +56,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 					strokeCap: settings.strokeCap ?? StrokeCap.Round,
 					strokeJoin: settings.strokeJoin ?? StrokeJoin.Round,
 				},
+				bbox: {minX: normX, maxX: normX, minY: normY, maxY: normY}
 			}
 
 			setCurrentPath(canvasId, newPath)
@@ -65,6 +66,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 
 			if (tool === BrushType.ERASER) {
 				setEraserPos({ x: e.x, y: e.y })
+				handleErase(eraserPos.x, eraserPos.y, toolSettings[tool].size, layout.width, layout.height)
 				return
 			}
 
@@ -79,7 +81,18 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 
 			const finishedPath = current[canvasId]
 			if (finishedPath) {
-				addPathToCanvas(finishedPath)
+
+				const pathWithBBox: PathType = {
+					...finishedPath,
+					bbox: {
+						minX: Math.min(...finishedPath.points.map((p) => p.x)),
+					maxX: Math.max(...finishedPath.points.map((p) => p.x)),
+					minY: Math.min(...finishedPath.points.map((p) => p.y)),
+					maxY: Math.max(...finishedPath.points.map((p) => p.y)),
+					}
+				}
+				
+				addPathToCanvas(pathWithBBox)
 			}
 
 			clearCurrentPath(canvasId)
@@ -114,6 +127,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 					strokeCap: settings.strokeCap || StrokeCap.Butt,
 					strokeJoin: settings.strokeJoin || StrokeJoin.Miter,
 				},
+				bbox: {minX: normX, maxX: normX, minY: normY, maxY: normY}
 			}
 
 			addPathToCanvas(dotPath)

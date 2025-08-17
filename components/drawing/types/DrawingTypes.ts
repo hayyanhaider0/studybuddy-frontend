@@ -25,4 +25,13 @@ export interface PathType {
 	id: string
 	points: PathPoint[] // points in the path.
 	brush: BrushSettings // how the path should look.
+	bbox: BoundingBox // bounding box for the path.
+}
+
+// Bounding box for a path.
+export interface BoundingBox {
+	minX: number
+	maxX: number
+	minY: number
+	maxY: number
 }
