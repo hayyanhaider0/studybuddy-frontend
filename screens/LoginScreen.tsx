@@ -13,7 +13,7 @@ import tinycolor from "tinycolor2"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
 import CustomScrollView from "../components/common/CustomScrollView"
-import Signup from "../components/login/SignUp"
+import Signup from "../components/login/Signup"
 
 export default function LoginScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "login">>()

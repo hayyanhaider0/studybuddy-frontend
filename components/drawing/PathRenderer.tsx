@@ -16,23 +16,15 @@ interface PathRendererProps {
 }
 
 export default function PathRenderer({ path, width, height }: PathRendererProps): ReactNode {
-	const brush = path.brush // Brush style.
-	const skPath = toSkiaPath(path.points, width, height) // Conversion to Skia path.
+	const brush = path.brush
+	const skPath = toSkiaPath(path.points, brush, width, height)
 
 	if (!skPath || path.points.length === 0) return null
 
-	// Create a styled paint.
 	const paint = Skia.Paint()
-
-	// Denormalize stroke width.
-	const denormStrokeWidth = brush.baseWidth * width
-
 	paint.setColor(Skia.Color(brush.color))
-	paint.setStrokeWidth(denormStrokeWidth)
-	paint.setStrokeJoin(brush.strokeJoin)
-	paint.setStrokeCap(brush.strokeCap)
 	paint.setAlphaf(brush.opacity)
-	paint.setStyle(1)
+	paint.setStyle(0)
 
 	return <Path path={skPath} paint={paint} />
 }
