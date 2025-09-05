@@ -22,30 +22,31 @@ export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 
 	return useMutation({
 		mutationFn: login,
-		onSuccess: (data, variables) => {
+		onSuccess: (data) => {
 			const response = data.data
 
-			// If the response includes an access token -- successful login.
-			if (response.accessToken) {
-				// Save the access token.
-				saveToken(response.accessToken)
-				// Save the refresh token.
-				saveRefreshToken(response.refreshToken)
-				// Set the user auth state.
-				setAuthState({
-					isLoggedIn: true,
-					email: response.email,
-					username: response.username,
-					displayName: response.displayName,
-					occupation: response.occupation || Occupation.STUDENT,
-					educationLevel: response.educationLevel || EducationLevel.UNDERGRAD_YEAR_THREE,
-				})
-			} else {
-				// If the user's account is not verified.
-				nav.navigate("verify", { email: variables.login })
-			}
+			// Save the access token.
+			saveToken(response.accessToken)
+			// Save the refresh token.
+			saveRefreshToken(response.refreshToken)
+			// Set the user auth state.
+			setAuthState({
+				isLoggedIn: true,
+				email: response.email,
+				username: response.username,
+				displayName: response.displayName,
+				occupation: response.occupation || Occupation.STUDENT,
+				educationLevel: response.educationLevel || EducationLevel.UNDERGRAD_YEAR_THREE,
+			})
 		},
-		onError: (e: AxiosError<{ message: string }>) => {
+		onError: (e: AxiosError<{ data: any; error: string; message: string }>) => {
+			const errorData = e.response?.data
+
+			if (errorData?.error === "EMAIL_NOT_VERIFIED") {
+				nav.navigate("verify", { email: errorData.data.email })
+				return
+			}
+
 			const errorMessage = e.response?.data?.message
 			if (!errorMessage) {
 				setError("root", { message: e.response?.data?.message || "A network error has occured." })
