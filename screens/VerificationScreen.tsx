@@ -6,17 +6,17 @@
  */
 
 import { Text, View, TextInput, Image } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import { useEffect, useRef, useState } from "react"
-import CustomPressable from "../components/common/CustomPressable"
+import CustomPressable from "../features/common/components/CustomPressable"
 import { msToMinutesSeconds } from "../utils/date"
 import { RouteProp } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
 import { getLoginStyles } from "../styles/login"
 import tinycolor from "tinycolor2"
-import CustomScrollView from "../components/common/CustomScrollView"
-import useResend from "../hooks/auth/useResend"
-import useVerifyEmail from "../hooks/auth/useVerifyEmail"
+import CustomScrollView from "../features/common/components/CustomScrollView"
+import useResend from "../features/auth/hooks/useResend"
+import useVerifyEmail from "../features/auth/hooks/useVerifyEmail"
 
 type VerificationScreenProps = {
 	route: RouteProp<RootStackParamList, "verify">

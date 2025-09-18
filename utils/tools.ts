@@ -5,7 +5,7 @@
  * pencil, highlighter, text.
  */
 
-import { useToolContext } from "../contexts/ToolContext"
+import { useToolContext } from "../features/notebook/contexts/ToolContext"
 import { BrushType } from "../enums/global"
 import { ToolType } from "../types/global"
 

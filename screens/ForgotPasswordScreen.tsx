@@ -1,16 +1,16 @@
 import { View, Text, TextInput } from "react-native"
-import CustomPressable from "../components/common/CustomPressable"
-import { useThemeContext } from "../contexts/ThemeContext"
-import LoginInput from "../components/login/LoginInput"
+import CustomPressable from "../features/common/components/CustomPressable"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
+import LoginInput from "../features/auth/components/LoginInput"
 import { useForm } from "react-hook-form"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
 import { useEffect, useRef, useState } from "react"
 import { getLoginStyles } from "../styles/login"
-import CustomScrollView from "../components/common/CustomScrollView"
+import CustomScrollView from "../features/common/components/CustomScrollView"
 import { LoginRequest } from "../types/auth"
-import useVerifyReset from "../hooks/auth/useVerifyReset"
-import useForgotPassword from "../hooks/auth/useForgotPassword"
+import useVerifyReset from "../features/auth/hooks/useVerifyReset"
+import useForgotPassword from "../features/auth/hooks/useForgotPassword"
 
 export default function ForgotPasswordScreen() {
 	const ENABLE_RESEND_TIMER = 60000 // 1m

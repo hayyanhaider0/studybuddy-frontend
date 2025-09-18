@@ -1,7 +1,7 @@
 import { Text, View } from "react-native"
-import Grid from "../components/common/Grid"
-import { useThemeContext } from "../contexts/ThemeContext"
-import CustomScrollView from "../components/common/CustomScrollView"
+import Grid from "../features/common/components/Grid"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
+import CustomScrollView from "../features/common/components/CustomScrollView"
 
 export default function AINotesScreen() {
 	const { GlobalStyles } = useThemeContext()

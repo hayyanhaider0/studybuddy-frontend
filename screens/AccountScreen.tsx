@@ -6,15 +6,15 @@
  */
 
 import { View, Text } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import DetailView from "../components/account/DetailView"
-import { useAuthContext } from "../contexts/AuthContext"
+import DetailView from "../features/account/components/DetailView"
+import { useAuthContext } from "../features/auth/contexts/AuthContext"
 import { formatEducationLevel, formatOccupation } from "../utils/formatters"
 import { useMemo } from "react"
-import CustomScrollView from "../components/common/CustomScrollView"
-import CustomPressable from "../components/common/CustomPressable"
-import { removeRefreshToken, removeToken } from "../utils/keychain"
+import CustomScrollView from "../features/common/components/CustomScrollView"
+import CustomPressable from "../features/common/components/CustomPressable"
+import { removeRefreshToken, removeToken } from "../utils/secureStore"
 
 export default function AccountScreen() {
 	const { authState, resetAuthState } = useAuthContext()

@@ -4,7 +4,7 @@
  * Contains options used within all context menus.
  */
 
-import { useSort } from "../contexts/SortContext"
+import { useSort } from "../features/common/contexts/SortContext"
 import { ContextMenuOptionType, SortMap } from "../types/global"
 
 export const getSortOptions = (section: keyof SortMap): ContextMenuOptionType[] => {

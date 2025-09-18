@@ -5,7 +5,7 @@
  */
 
 import { Text, View } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { getSettingsStyles } from "../styles/settings"
@@ -13,8 +13,8 @@ import { useNavigation } from "@react-navigation/native"
 import { SettingsParamList } from "../navigation/SettingsNavigation"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { SettingsType } from "../types/global"
-import Settings from "../components/settings/Settings"
-import CustomScrollView from "../components/common/CustomScrollView"
+import Settings from "../features/settings/components/Settings"
+import CustomScrollView from "../features/common/components/CustomScrollView"
 
 export default function SettingsScreen() {
 	// Theming

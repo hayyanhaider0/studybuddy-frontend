@@ -5,17 +5,17 @@
  */
 
 import { StatusBar, StatusBarStyle } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import { NavigationContainer } from "@react-navigation/native"
 import LoginScreen from "../screens/LoginScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import DrawerNavigation from "./DrawerNavigation"
-import Modal from "../components/common/Modal"
-import ContextMenu from "../components/common/ContextMenu"
+import Modal from "../features/common/components/Modal"
+import ContextMenu from "../features/common/components/ContextMenu"
 import VerificationScreen from "../screens/VerificationScreen"
-import { getToken } from "../utils/keychain"
+import { getToken } from "../utils/secureStore"
 import { useEffect } from "react"
-import { useAuthContext } from "../contexts/AuthContext"
+import { useAuthContext } from "../features/auth/contexts/AuthContext"
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen"
 import ResetPasswordScreen from "../screens/ResetPasswordScreen"
 
@@ -62,7 +62,7 @@ export default function Navigation() {
 			{/* Actual navigation logic */}
 			<NavigationContainer>
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
-					{!authState.isLoggedIn ? (
+					{authState.isLoggedIn ? (
 						<Stack.Screen name='main' component={DrawerNavigation} />
 					) : (
 						<>

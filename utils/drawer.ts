@@ -12,7 +12,7 @@ import NotebooksScreen from "../screens/NotebooksScreen"
 import QuizzesScreen from "../screens/QuizzesScreen"
 
 // All screens except Canvas and Settings.
-export const screens = [
+export const SCREENS = [
 	{
 		name: "notebooks",
 		title: "Notebooks",

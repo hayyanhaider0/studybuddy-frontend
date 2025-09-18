@@ -45,9 +45,9 @@ export const createNotebook = (title: string): Notebook => ({
 	id: uuid.v4() as string,
 	title: title || "My Notebook",
 	chapters: [createChapter("Chapter 1")],
-	createdAt: Date.now(),
-	updatedAt: Date.now(),
-	fill: "blue",
+	createdAt: Date.now().toString(),
+	updatedAt: Date.now().toString(),
+	color: "blue",
 })
 
 /////////////////////////////////////////
@@ -70,7 +70,7 @@ export const addChapter = (
 			? {
 					...n,
 					chapters: [...n.chapters, createChapter(title)],
-					updatedAt: Date.now(),
+					updatedAt: Date.now().toString(),
 			  }
 			: n
 	)
@@ -103,7 +103,7 @@ export const addCanvas = (
 					  }
 					: ch
 			),
-			updatedAt: Date.now(),
+			updatedAt: Date.now().toString(),
 		}
 	})
 

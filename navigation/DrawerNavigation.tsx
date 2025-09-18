@@ -11,7 +11,7 @@ import CanvasScreen from "../screens/CanvasScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import Header from "./Header"
-import { screens } from "../utils/drawer"
+import { SCREENS } from "../utils/drawer"
 import CustomDrawer from "./CustomDrawer"
 import SettingsNavigation from "./SettingsNavigation"
 
@@ -62,7 +62,7 @@ export default function DrawerNavigation() {
 				}}
 			/>
 			{/* Render all options except Canvas and Settings. */}
-			{screens.map((s, i) => (
+			{SCREENS.map((s, i) => (
 				<Drawer.Screen
 					key={i}
 					name={s.name as keyof DrawerParamList}

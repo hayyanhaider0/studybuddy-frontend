@@ -5,11 +5,11 @@
  */
 
 import { ReactNode } from "react"
-import { ThemeProvider } from "../contexts/ThemeContext"
-import { SortProvider } from "../contexts/SortContext"
-import { NotebookProvider } from "../contexts/NotebookContext"
-import { SettingsProvider } from "../contexts/SettingsContext"
-import { AuthProvider } from "../contexts/AuthContext"
+import { ThemeProvider } from "../features/common/contexts/ThemeContext"
+import { SortProvider } from "../features/common/contexts/SortContext"
+import { NotebookProvider } from "../features/notebook/contexts/NotebookContext"
+import { SettingsProvider } from "../features/common/contexts/SettingsContext"
+import { AuthProvider } from "../features/auth/contexts/AuthContext"
 
 export function AppProvider({ children }: { children: ReactNode }) {
 	return (

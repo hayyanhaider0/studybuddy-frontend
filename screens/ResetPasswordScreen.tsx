@@ -1,12 +1,12 @@
 import { View, Text } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
-import LoginInput from "../components/login/LoginInput"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
+import LoginInput from "../features/auth/components/LoginInput"
 import { useForm } from "react-hook-form"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
-import CustomScrollView from "../components/common/CustomScrollView"
-import CustomPressable from "../components/common/CustomPressable"
-import useResetPassword from "../hooks/auth/useResetPassword"
+import CustomScrollView from "../features/common/components/CustomScrollView"
+import CustomPressable from "../features/common/components/CustomPressable"
+import useResetPassword from "../features/auth/hooks/useResetPassword"
 
 export default function ResetPasswordScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "reset">>()

@@ -5,9 +5,9 @@
  */
 
 import { ReactNode } from "react"
-import { ToolProvider } from "../contexts/ToolContext"
-import { CanvasStateProvider } from "../contexts/CanvasStateContext"
-import { TransformProvider } from "../contexts/TransformContext"
+import { ToolProvider } from "../features/notebook/contexts/ToolContext"
+import { CanvasStateProvider } from "../features/notebook/contexts/CanvasStateContext"
+import { TransformProvider } from "../features/notebook/contexts/TransformContext"
 
 export function CanvasProvider({ children }: { children: ReactNode }) {
 	return (

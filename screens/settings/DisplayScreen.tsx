@@ -5,14 +5,14 @@
  */
 
 import { View } from "react-native"
-import { useThemeContext } from "../../contexts/ThemeContext"
+import { useThemeContext } from "../../features/common/contexts/ThemeContext"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import Settings from "../../components/settings/Settings"
+import Settings from "../../features/settings/components/Settings"
 import { SettingsType } from "../../types/global"
-import { ModalType, useModal } from "../../contexts/ModalContext"
-import { useSettings } from "../../contexts/SettingsContext"
+import { ModalType, useModal } from "../../features/common/contexts/ModalContext"
+import { useSettings } from "../../features/common/contexts/SettingsContext"
 import { FontScale, ThemeName } from "../../enums/global"
-import CustomScrollView from "../../components/common/CustomScrollView"
+import CustomScrollView from "../../features/common/components/CustomScrollView"
 
 export default function DisplayScreen() {
 	const { openModal } = useModal() // Get the openModal function from context.

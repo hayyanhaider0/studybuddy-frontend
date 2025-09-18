@@ -7,13 +7,13 @@
 
 import { Text, View, Image } from "react-native"
 import { useState } from "react"
-import Login from "../components/login/Login"
-import { useThemeContext } from "../contexts/ThemeContext"
+import Login from "../features/auth/components/Login"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import tinycolor from "tinycolor2"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
-import CustomScrollView from "../components/common/CustomScrollView"
-import Signup from "../components/login/Signup"
+import CustomScrollView from "../features/common/components/CustomScrollView"
+import Signup from "../features/auth/components/Signup"
 
 export default function LoginScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "login">>()

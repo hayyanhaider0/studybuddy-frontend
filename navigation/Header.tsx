@@ -1,12 +1,12 @@
 import { View, Pressable, Text } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useNavigation, useRoute } from "@react-navigation/native"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "./DrawerNavigation"
-import { useSort } from "../contexts/SortContext"
+import { useSort } from "../features/common/contexts/SortContext"
 import { useRef } from "react"
-import { useContextMenu } from "../contexts/ContextMenuContext"
+import { useContextMenu } from "../features/common/contexts/ContextMenuContext"
 import { getSortOptions } from "../utils/contextMenuOptions"
 
 type HeaderProps = {

@@ -7,12 +7,12 @@
  */
 
 import { View } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
-import useNotebookActions from "../hooks/useNotebookActions"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
+import useNotebookActions from "../features/notebook/hooks/useNotebookActions"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import NotebookList from "../components/notebook/NotebookList"
-import CustomPressable from "../components/common/CustomPressable"
-import CustomScrollView from "../components/common/CustomScrollView"
+import CustomPressable from "../features/common/components/CustomPressable"
+import CustomScrollView from "../features/common/components/CustomScrollView"
+import NotebookList from "../features/notebook/components/NotebookList"
 
 export default function NotebooksScreen() {
 	const { handleCreateNotebook } = useNotebookActions() // Get create notebook action.

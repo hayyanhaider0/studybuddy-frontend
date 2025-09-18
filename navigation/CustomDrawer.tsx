@@ -1,7 +1,7 @@
 import { DrawerContentComponentProps, DrawerContentScrollView } from "@react-navigation/drawer"
 import { LinearGradient } from "expo-linear-gradient"
 import { Pressable, View, Text, Image } from "react-native"
-import { useThemeContext } from "../contexts/ThemeContext"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import tinycolor from "tinycolor2"
 
 export default function CustomDrawer({

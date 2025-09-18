@@ -4,18 +4,18 @@
  * Main screen component that orchestrates the canvas interface.
  */
 
-import { useThemeContext } from "../contexts/ThemeContext"
+import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import { Text, Pressable, View } from "react-native"
-import Toolbar from "../components/canvas/toolbar/Toolbar"
-import ChapterTab from "../components/chapterTab/ChapterTab"
+import Toolbar from "../features/notebook/components/canvas/toolbar/Toolbar"
+import ChapterTab from "../features/notebook/components/chapterTab/ChapterTab"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
-import useNotebookActions from "../hooks/useNotebookActions"
-import ZoomIndicator from "../components/canvas/ZoomIndicator"
-import CanvasList from "../components/canvas/CanvasList"
+import useNotebookActions from "../features/notebook/hooks/useNotebookActions"
+import ZoomIndicator from "../features/notebook/components/canvas/ZoomIndicator"
+import CanvasList from "../features/notebook/components/canvas/CanvasList"
 import { getCanvasStyles } from "../styles/canvas"
-import { useNotebookContext } from "../contexts/NotebookContext"
+import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
 import { GestureDetector } from "react-native-gesture-handler"
-import { useCanvasTranslateGestures } from "../hooks/useCanvasTranslateGestures"
+import { useCanvasTranslateGestures } from "../features/notebook/hooks/useCanvasTranslateGestures"
 
 export default function CanvasScreen() {
 	// Context Imports

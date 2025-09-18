@@ -5,9 +5,9 @@
  * clear, menu, etc.
  */
 
-import { useNotebookContext } from "../contexts/NotebookContext"
-import { useToolContext } from "../contexts/ToolContext"
-import useNotebookActions from "../hooks/useNotebookActions"
+import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
+import { useToolContext } from "../features/notebook/contexts/ToolContext"
+import useNotebookActions from "../features/notebook/hooks/useNotebookActions"
 import { OptionType } from "../types/global"
 import { getCanvas } from "./notebook"
 
