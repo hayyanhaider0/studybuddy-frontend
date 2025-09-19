@@ -27,12 +27,14 @@ const createCanvas = (): Canvas => ({
  * @param title - Name of the new chapter.
  * @returns A named chapter with a canvas.
  */
-const createChapter = (title: string): Chapter => ({
+const createChapter = (title: string, order: number): Chapter => ({
 	id: uuid.v4() as string,
 	title: title || "My Chapter",
 	canvases: [createCanvas()],
-	createdAt: Date.now(),
-	updatedAt: Date.now(),
+	order: order,
+	createdAt: Date.now().toString(),
+	updatedAt: Date.now().toString(),
+	lastAccessedAt: Date.now().toString(),
 })
 
 /**
@@ -41,13 +43,14 @@ const createChapter = (title: string): Chapter => ({
  * @param title - Name of the new notebook.
  * @returns A named notebook with one chapter called "Chapter 1" and one canvas.
  */
-export const createNotebook = (title: string): Notebook => ({
+export const createNotebook = (title: string, color: string | null): Notebook => ({
 	id: uuid.v4() as string,
 	title: title || "My Notebook",
-	chapters: [createChapter("Chapter 1")],
+	chapters: [createChapter("Chapter 1", 0)],
 	createdAt: Date.now().toString(),
 	updatedAt: Date.now().toString(),
-	color: "blue",
+	lastAccessedAt: Date.now().toString(),
+	color: color,
 })
 
 /////////////////////////////////////////
@@ -63,13 +66,14 @@ export const createNotebook = (title: string): Notebook => ({
 export const addChapter = (
 	notebooks: Notebook[],
 	notebookId: string,
-	title: string
+	title: string,
+	order: number
 ): Notebook[] => {
 	const updatedNotebooks = notebooks.map((n) =>
 		n.id === notebookId
 			? {
 					...n,
-					chapters: [...n.chapters, createChapter(title)],
+					chapters: [...n.chapters, createChapter(title, order)],
 					updatedAt: Date.now().toString(),
 			  }
 			: n
@@ -99,7 +103,7 @@ export const addCanvas = (
 					? {
 							...ch,
 							canvases: [...ch.canvases, createCanvas()],
-							updatedAt: Date.now(),
+							updatedAt: Date.now().toString(),
 					  }
 					: ch
 			),

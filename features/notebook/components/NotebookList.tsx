@@ -16,14 +16,11 @@ import MiniCanvas from "../../common/components/MiniCanvas"
 import { useSort } from "../../common/contexts/SortContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import useGetNotebooks from "../hooks/useGetNotebooks"
-import { useEffect } from "react"
 
 export default function NotebookList() {
 	// Get context values.
-	const { notebooks, setNotebooks, setSelectedNotebookId } = useNotebookContext()
+	const { notebooks, setSelectedNotebookId } = useNotebookContext()
 	const { sorts } = useSort()
-	const { data } = useGetNotebooks()
 
 	// Theming
 	const { GlobalStyles } = useThemeContext()
@@ -69,16 +66,6 @@ export default function NotebookList() {
 
 	// Sorted array of notebooks without amending the original notebooks array.
 	const sortedNotebooks = [...notebooks].sort(getSortMethod())
-
-	useEffect(() => {
-		if (data) {
-			const mapped = (data as Notebook[]).map((n) => ({
-				...n,
-				chapters: [],
-			}))
-			setNotebooks(mapped)
-		}
-	}, [data])
 
 	return (
 		<Grid

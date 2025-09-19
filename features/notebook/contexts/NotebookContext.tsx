@@ -7,8 +7,10 @@
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { Notebook } from "../../../types/notebook"
-import { getNotebooks } from "../../../api/mutations/notebook"
+import { getChapters, getNotebooks } from "../../../api/mutations/notebook"
 import { useQuery } from "@tanstack/react-query"
+import { useAuthContext } from "../../auth/contexts/AuthContext"
+import { ChapterResponse, NotebookResponse } from "../api"
 
 // Types for the notebook context.
 type NotebookContextType = {
@@ -47,9 +49,21 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	const [selectedChapterId, setSelectedChapterId] = useState<string>("")
 	const [selectedCanvasId, setSelectedCanvasId] = useState<string>("")
 
-	const { data } = useQuery({
+	// Auth state to check whether the user is logged in or not.
+	const { authState } = useAuthContext()
+
+	// Fetch user notebook data if logged in.
+	const { data: notebooksData, refetch: refetchNotebooks } = useQuery({
 		queryKey: ["notebooks"],
 		queryFn: getNotebooks,
+		enabled: authState.isLoggedIn,
+	})
+
+	// Fetch user chapter data if logged in.
+	const { data: chaptersData, refetch: refetchChapters } = useQuery({
+		queryKey: ["chapters"],
+		queryFn: getChapters,
+		enabled: authState.isLoggedIn,
 	})
 
 	/**
@@ -75,12 +89,41 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}
 
+	/**
+	 * Fetch user data if it changes.
+	 */
 	useEffect(() => {
-		if (data) {
-			console.log("Fetched notebooks:", data as Notebook)
-			setNotebooks(data as Notebook[])
+		if (notebooksData && chaptersData) {
+			console.log("Fetched notebooks:", JSON.stringify(notebooksData, null, 2))
+			console.log("Fetched chapters:", JSON.stringify(chaptersData, null, 2))
+
+			const temp_chapters = chaptersData.map((c: ChapterResponse) => ({
+				...c,
+				canvases: [],
+			}))
+
+			const mapped: Notebook[] = notebooksData.map((n: NotebookResponse) => ({
+				...n,
+				chapters: temp_chapters.filter((c: ChapterResponse) => c.notebookId === n.id),
+			}))
+
+			setNotebooks(mapped as Notebook[])
 		}
-	}, [])
+	}, [notebooksData, chaptersData])
+
+	useEffect(() => {
+		if (authState.isLoggedIn) {
+			refetchNotebooks()
+			refetchChapters()
+		}
+	}, [authState.isLoggedIn])
+
+	console.log("=== DEBUG INFO ===")
+	console.log("notebooksData:", notebooksData)
+	console.log("chaptersData:", chaptersData)
+	// console.log("notebooksLoading:", notebooksLoading)
+	// console.log("chaptersLoading:", chaptersLoading)
+	console.log("authState.isLoggedIn:", authState.isLoggedIn)
 
 	return (
 		<NotebookContext.Provider

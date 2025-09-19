@@ -41,8 +41,8 @@ export default function useNotebookActions() {
 	 *
 	 * @param title - Name of the new notebook.
 	 */
-	const addNotebook = (title: string) => {
-		const notebook = createNotebook(title)
+	const addNotebook = (title: string, color: string | null) => {
+		const notebook = createNotebook(title, color)
 		const updatedNotebooks = [...notebooks, notebook]
 		setNotebooks(updatedNotebooks)
 	}
@@ -94,7 +94,7 @@ export default function useNotebookActions() {
 				createNotebookApi(
 					{ title: input },
 					{
-						onSuccess: (data: NotebookResponse) => addNotebook(data.title),
+						onSuccess: (data: NotebookResponse) => addNotebook(data.title, data.color),
 						onError: (error: any) => console.error("Error creating notebook:", error),
 					}
 				)
@@ -136,7 +136,12 @@ export default function useNotebookActions() {
 			placeholder: "Enter chapter name...",
 			buttonText: "Create",
 			onSubmit: (input) => {
-				const updated = addChapter(notebooks, selectedNotebookId, input)
+				const notebook = notebooks.find((n) => n.id === selectedNotebookId)
+
+				if (!notebook) throw new Error("Notebook not found.")
+
+				const order = notebook?.chapters.length - 1
+				const updated = addChapter(notebooks, selectedNotebookId, input, order)
 				setNotebooks(updated)
 			},
 		})
@@ -291,7 +296,7 @@ export default function useNotebookActions() {
 		const updatedChapter = {
 			...activeChapter,
 			canvases: activeChapter.canvases.map((cv) => (cv.id === newCanvas.id ? newCanvas : cv)),
-			updatedAt: Date.now(),
+			updatedAt: Date.now().toString(),
 		}
 
 		// Update the notebook
