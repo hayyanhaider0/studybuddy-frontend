@@ -1,7 +1,6 @@
 import client from "../../api/client"
 import { ApiResponse } from "../../types/global"
 import { Chapter } from "../../types/notebook"
-import { getToken } from "../../utils/secureStore"
 
 // Notebooks
 export interface NotebookRequest {
@@ -22,12 +21,15 @@ export interface NotebookResponse {
 
 export interface ChapterRequest {
 	title: string
+	order: number
+	notebookId: string
 }
 
 export interface ChapterResponse {
 	id: string
 	notebookId: string
 	title: string
+	order: number
 	createdAt: string
 	updatedAt: string
 	isDeleted: boolean
@@ -36,86 +38,27 @@ export interface ChapterResponse {
 
 // Notebooks
 export const createNotebookApi = async (req: NotebookRequest): Promise<NotebookResponse> => {
-	const token = await getToken()
-
-	if (!token) {
-		throw new Error("No authentication token found.")
-	}
-
-	try {
-		const res = await client.post<ApiResponse<NotebookResponse>>("/notebooks", req, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
-
-		const response: ApiResponse<NotebookResponse> = res.data
-		return response.data!
-	} catch (e: any) {
-		throw new Error(e.data.message || "Failed to create notebook.")
-	}
+	const res = await client.post<ApiResponse<NotebookResponse>>("/notebooks", req)
+	return res.data.data!
 }
 
 export const getNotebooksApi = async (): Promise<NotebookResponse[]> => {
-	const token = await getToken()
-
-	if (!token) {
-		throw new Error("No authentication token found.")
-	}
-
-	try {
-		const res = await client.get<ApiResponse<NotebookResponse[]>>("/notebooks", {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
-
-		const response: ApiResponse<NotebookResponse[]> = res.data
-		return response.data!
-	} catch (e: any) {
-		throw new Error(e.data.message || "Failed to fetch notebooks.")
-	}
+	const res = await client.get<ApiResponse<NotebookResponse[]>>("/notebooks")
+	return res.data.data!
 }
 
 // Chapters
-export const createChapterApi = async (): Promise<ChapterResponse> => {
-	const token = checkToken()
-
-	try {
-		const res = await client.post<ApiResponse<ChapterResponse>>("/chapters", {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
-
-		const response: ApiResponse<ChapterResponse> = res.data
-		return response.data!
-	} catch (e: any) {
-		throw new Error(e.data.message || "Failed to create chapter.")
-	}
+export const createChapterApi = async (req: ChapterRequest): Promise<ChapterResponse> => {
+	const res = await client.post<ApiResponse<ChapterResponse>>("/chapters", req)
+	return res.data.data!
 }
 
-export const getChaptersApi = async (): Promise<ChapterResponse[]> => {
-	const token = checkToken()
-
-	try {
-		const res = await client.get<ApiResponse<ChapterResponse[]>>("/chapters", {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
-
-		const response: ApiResponse<ChapterResponse[]> = res.data
-		return response.data!
-	} catch (e: any) {
-		throw new Error(e.data.message || "Failed to fetch chapters.")
-	}
-}
-
-const checkToken = () => {
-	const token = getToken()
-	if (!token) {
-		throw new Error("No authentication token found.")
-	}
-	return token
+export const getChaptersApi = async (
+	notebookIds: string[] | undefined
+): Promise<ChapterResponse[]> => {
+	if (!notebookIds) throw new Error("getChaptersApi: No notebook ids provided.")
+	const res = await client.post<ApiResponse<ChapterResponse[]>>("/chapters/by-notebooks", {
+		notebookIds,
+	})
+	return res.data.data!
 }

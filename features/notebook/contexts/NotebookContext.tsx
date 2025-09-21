@@ -5,18 +5,18 @@
  * selection.
  */
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { Notebook } from "../../../types/notebook"
-import { getChapters, getNotebooks } from "../../../api/mutations/notebook"
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { Chapter, Notebook } from "../../../types/notebook"
 import { useQuery } from "@tanstack/react-query"
 import { useAuthContext } from "../../auth/contexts/AuthContext"
-import { ChapterResponse, NotebookResponse } from "../api"
+import { ChapterResponse, getChaptersApi, getNotebooksApi, NotebookResponse } from "../api"
+import { createCanvas } from "../../../utils/notebook"
 
 // Types for the notebook context.
 type NotebookContextType = {
-	// Global list of all of the user's notebooks.
+	// React query stored state for the list of all notebooks.
 	notebooks: Notebook[]
-	// Setter for the user's list of notebooks.
+	// Sets the selected ids for UI components.
 	setNotebooks: (newNotebooks: Notebook[]) => void
 	// Id of the currently selected notebook, or null if no notebook is selected.
 	selectedNotebookId: string
@@ -43,28 +43,48 @@ const NotebookContext = createContext<NotebookContextType | null>(null)
  * @param children - JSX Components that require NotebookProvider shared values.
  */
 export const NotebookProvider = ({ children }: { children: ReactNode }) => {
+	// Auth state to check whether the user is logged in or not.
+	const { authState } = useAuthContext()
 	// Pagination, chapter and notebook state values.
-	const [notebooks, setNotebooksState] = useState<Notebook[]>([])
 	const [selectedNotebookId, setSelectedNotebookId] = useState<string>("")
 	const [selectedChapterId, setSelectedChapterId] = useState<string>("")
 	const [selectedCanvasId, setSelectedCanvasId] = useState<string>("")
 
-	// Auth state to check whether the user is logged in or not.
-	const { authState } = useAuthContext()
-
 	// Fetch user notebook data if logged in.
-	const { data: notebooksData, refetch: refetchNotebooks } = useQuery({
+	const { data: notebooksData } = useQuery({
 		queryKey: ["notebooks"],
-		queryFn: getNotebooks,
+		queryFn: getNotebooksApi,
 		enabled: authState.isLoggedIn,
 	})
 
 	// Fetch user chapter data if logged in.
-	const { data: chaptersData, refetch: refetchChapters } = useQuery({
-		queryKey: ["chapters"],
-		queryFn: getChapters,
-		enabled: authState.isLoggedIn,
+	const notebookIds = notebooksData?.map((n) => n.id) || []
+	const { data: chaptersData } = useQuery<ChapterResponse[]>({
+		queryKey: ["chapters", notebookIds],
+		queryFn: () => getChaptersApi(notebookIds),
+		enabled: authState.isLoggedIn && notebookIds.length > 0,
 	})
+
+	const notebooks: Notebook[] = useMemo(() => {
+		if (!notebooksData || !chaptersData || notebooksData.length === 0) return []
+
+		return notebooksData.map((n: NotebookResponse) => {
+			const chapterResponses = chaptersData.filter((c: ChapterResponse) => c.notebookId === n.id)
+			const chapters: Chapter[] = chapterResponses.map((c: Chapter) => ({
+				id: c.id,
+				title: c.title,
+				canvases: [createCanvas()], // initialize empty canvases
+				order: c.order ?? 0,
+				createdAt: c.createdAt,
+				updatedAt: c.updatedAt,
+			}))
+
+			return {
+				...n,
+				chapters,
+			}
+		})
+	}, [notebooksData, chaptersData])
 
 	/**
 	 * Sets the notebooks array to a new state. Also initializes selected notebook, chapter, and canvas
@@ -72,8 +92,6 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	 * @param newNotebooks - New notebooks array state.
 	 */
 	const setNotebooks = (newNotebooks: Notebook[]) => {
-		setNotebooksState(newNotebooks)
-
 		const currentNotebook = newNotebooks.find((n) => n.id === selectedNotebookId)
 		const currentChapter = currentNotebook?.chapters.find((ch) => ch.id === selectedChapterId)
 		const currentCanvas = currentChapter?.canvases.find((cv) => cv.id === selectedCanvasId)
@@ -89,41 +107,13 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}
 
-	/**
-	 * Fetch user data if it changes.
-	 */
 	useEffect(() => {
-		if (notebooksData && chaptersData) {
-			console.log("Fetched notebooks:", JSON.stringify(notebooksData, null, 2))
-			console.log("Fetched chapters:", JSON.stringify(chaptersData, null, 2))
-
-			const temp_chapters = chaptersData.map((c: ChapterResponse) => ({
-				...c,
-				canvases: [],
-			}))
-
-			const mapped: Notebook[] = notebooksData.map((n: NotebookResponse) => ({
-				...n,
-				chapters: temp_chapters.filter((c: ChapterResponse) => c.notebookId === n.id),
-			}))
-
-			setNotebooks(mapped as Notebook[])
+		if (notebooks.length && notebooks[0].chapters.length) {
+			if (!selectedNotebookId) setSelectedNotebookId(notebooks[0].id)
+			if (!selectedChapterId) setSelectedChapterId(notebooks[0].chapters[0].id)
+			if (!selectedCanvasId) setSelectedCanvasId(notebooks[0].chapters[0].canvases[0]?.id || "")
 		}
-	}, [notebooksData, chaptersData])
-
-	useEffect(() => {
-		if (authState.isLoggedIn) {
-			refetchNotebooks()
-			refetchChapters()
-		}
-	}, [authState.isLoggedIn])
-
-	console.log("=== DEBUG INFO ===")
-	console.log("notebooksData:", notebooksData)
-	console.log("chaptersData:", chaptersData)
-	// console.log("notebooksLoading:", notebooksLoading)
-	// console.log("chaptersLoading:", chaptersLoading)
-	console.log("authState.isLoggedIn:", authState.isLoggedIn)
+	}, [notebooks])
 
 	return (
 		<NotebookContext.Provider

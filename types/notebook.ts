@@ -13,14 +13,16 @@ export type Canvas = {
 	redoStack: any[]
 	createdAt: number
 	updatedAt: number
+	lastAccessedAt: number
 }
 
 export type Chapter = {
 	id: string
 	title: string
 	canvases: Canvas[]
-	createdAt: number
-	updatedAt: number
+	order: number
+	createdAt: string
+	updatedAt: string
 }
 
 export type Notebook = {
@@ -29,5 +31,6 @@ export type Notebook = {
 	chapters: Chapter[]
 	createdAt: string
 	updatedAt: string
-	color: string
+	lastAccessedAt: string
+	color: string | null
 }

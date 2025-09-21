@@ -16,7 +16,7 @@ import { EducationLevel, Occupation } from "../../../enums/global"
 import { saveToken, saveRefreshToken } from "../../../utils/secureStore"
 import { AxiosError } from "axios"
 import { queryClient } from "../../../api/queryClient"
-import { getNotebooks } from "../../../api/mutations/notebook"
+import { getNotebooksApi } from "../../notebook/api"
 
 export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 	const nav = useNavigation<NavProp<"main">>()
@@ -43,7 +43,7 @@ export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 
 			await queryClient.prefetchQuery({
 				queryKey: ["notebooks"],
-				queryFn: getNotebooks,
+				queryFn: getNotebooksApi,
 			})
 		},
 		onError: (e: AxiosError<{ data: any; error: string; message: string }>) => {

@@ -25,7 +25,7 @@ export default function ChapterList() {
 		setSelectedChapterId,
 		setSelectedCanvasId,
 	} = useNotebookContext()
-	const { handleNewChapter } = useNotebookActions()
+	const { handleCreateChapter } = useNotebookActions()
 
 	// Currently selected notebook
 	const notebook = getNotebook(notebooks, selectedNotebookId)!
@@ -95,7 +95,7 @@ export default function ChapterList() {
 					? () => (
 							<CustomPressable
 								type='secondary'
-								onPress={handleNewChapter}
+								onPress={handleCreateChapter}
 								circle
 								style={{ marginLeft: 8 }}
 							>

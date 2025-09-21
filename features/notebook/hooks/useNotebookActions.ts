@@ -9,16 +9,10 @@ import { PathType } from "../../drawing/types/DrawingTypes"
 import { useModal, ModalType } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Notebook } from "../../../types/notebook"
-import {
-	addCanvas,
-	addChapter,
-	createNotebook,
-	getCanvas,
-	getChapter,
-	getNotebook,
-} from "../../../utils/notebook"
+import { addCanvas, getCanvas, getChapter, getNotebook } from "../../../utils/notebook"
 import useCreateNotebook from "./useCreateNotebook"
-import { NotebookResponse } from "../api"
+import { queryClient } from "../../../api/queryClient"
+import useCreateChapter from "./useCreateChapter"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -36,17 +30,6 @@ export default function useNotebookActions() {
 	/////////////////////////////////////////
 	// Updater Functions
 	/////////////////////////////////////////
-	/**
-	 * Adds a notebook for the user.
-	 *
-	 * @param title - Name of the new notebook.
-	 */
-	const addNotebook = (title: string, color: string | null) => {
-		const notebook = createNotebook(title, color)
-		const updatedNotebooks = [...notebooks, notebook]
-		setNotebooks(updatedNotebooks)
-	}
-
 	/**
 	 * Edits a notebook for the user.
 	 *
@@ -94,8 +77,8 @@ export default function useNotebookActions() {
 				createNotebookApi(
 					{ title: input },
 					{
-						onSuccess: (data: NotebookResponse) => addNotebook(data.title, data.color),
-						onError: (error: any) => console.error("Error creating notebook:", error),
+						onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notebooks"] }),
+						onError: (e: any) => console.error("Error creating notebook:", e),
 					}
 				)
 			},
@@ -128,21 +111,28 @@ export default function useNotebookActions() {
 	}
 
 	// Helper function to create a new chapter with a title.
-	const handleNewChapter = () => {
+	const { mutate: createChapterApi } = useCreateChapter()
+
+	const handleCreateChapter = () => {
 		openModal({
 			type: ModalType.INPUT,
 			title: "Create New Chapter",
 			description: "Organize your content by adding a new chapter to this notebook.",
 			placeholder: "Enter chapter name...",
 			buttonText: "Create",
-			onSubmit: (input) => {
+			onSubmit: (input: string) => {
 				const notebook = notebooks.find((n) => n.id === selectedNotebookId)
-
 				if (!notebook) throw new Error("Notebook not found.")
 
-				const order = notebook?.chapters.length - 1
-				const updated = addChapter(notebooks, selectedNotebookId, input, order)
-				setNotebooks(updated)
+				const order = notebook.chapters.length
+
+				createChapterApi(
+					{ title: input, order, notebookId: selectedNotebookId },
+					{
+						onSuccess: () => queryClient.invalidateQueries({ queryKey: ["chapters"] }),
+						onError: (e: any) => console.error("Error creating chapter:", e),
+					}
+				)
 			},
 		})
 	}
@@ -332,7 +322,7 @@ export default function useNotebookActions() {
 		handleCreateNotebook,
 		handleEditNotebook,
 		handleDeleteNotebook,
-		handleNewChapter,
+		handleCreateChapter,
 		handleNewCanvas,
 		addPathToCanvas,
 		handleErase,

@@ -12,76 +12,19 @@ import uuid from "react-native-uuid"
 // Factory Functions
 /////////////////////////////////////////
 // Creates a new canvas/page.
-const createCanvas = (): Canvas => ({
+export const createCanvas = (): Canvas => ({
 	id: uuid.v4() as string,
 	paths: [],
 	undoStack: [],
 	redoStack: [],
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
-})
-
-/**
- * Creates a new chapter.
- *
- * @param title - Name of the new chapter.
- * @returns A named chapter with a canvas.
- */
-const createChapter = (title: string, order: number): Chapter => ({
-	id: uuid.v4() as string,
-	title: title || "My Chapter",
-	canvases: [createCanvas()],
-	order: order,
-	createdAt: Date.now().toString(),
-	updatedAt: Date.now().toString(),
-	lastAccessedAt: Date.now().toString(),
-})
-
-/**
- * Creates a new notebook.
- *
- * @param title - Name of the new notebook.
- * @returns A named notebook with one chapter called "Chapter 1" and one canvas.
- */
-export const createNotebook = (title: string, color: string | null): Notebook => ({
-	id: uuid.v4() as string,
-	title: title || "My Notebook",
-	chapters: [createChapter("Chapter 1", 0)],
-	createdAt: Date.now().toString(),
-	updatedAt: Date.now().toString(),
-	lastAccessedAt: Date.now().toString(),
-	color: color,
+	lastAccessedAt: Date.now(),
 })
 
 /////////////////////////////////////////
 // Mutation Functions
 /////////////////////////////////////////
-/**
- * Creates a new chapter and adds it to the specified notebook.
- *
- * @param notebook - The notebook the chapter will belong to.
- * @param title - Name of the new chapter.
- * @returns An empty chapter with an array of canvases inside the selected notebook.
- */
-export const addChapter = (
-	notebooks: Notebook[],
-	notebookId: string,
-	title: string,
-	order: number
-): Notebook[] => {
-	const updatedNotebooks = notebooks.map((n) =>
-		n.id === notebookId
-			? {
-					...n,
-					chapters: [...n.chapters, createChapter(title, order)],
-					updatedAt: Date.now().toString(),
-			  }
-			: n
-	)
-
-	return updatedNotebooks
-}
-
 /**
  * Creates a new canvas and adds it to the specified chapter.
  *
