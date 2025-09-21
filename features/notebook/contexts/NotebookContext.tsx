@@ -6,11 +6,11 @@
  */
 
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { Chapter, Notebook } from "../../../types/notebook"
-import { useQuery } from "@tanstack/react-query"
-import { useAuthContext } from "../../auth/contexts/AuthContext"
-import { ChapterResponse, getChaptersApi, getNotebooksApi, NotebookResponse } from "../api"
-import { createCanvas } from "../../../utils/notebook"
+import { Canvas, Chapter, Notebook } from "../../../types/notebook"
+import { ChapterResponse, NotebookResponse } from "../api"
+import useGetNotebooks from "../hooks/useGetNotebooks"
+import useGetChapters from "../hooks/useGetChapters"
+import useGetCanvases from "../hooks/useGetCanvases"
 
 // Types for the notebook context.
 type NotebookContextType = {
@@ -43,48 +43,60 @@ const NotebookContext = createContext<NotebookContextType | null>(null)
  * @param children - JSX Components that require NotebookProvider shared values.
  */
 export const NotebookProvider = ({ children }: { children: ReactNode }) => {
-	// Auth state to check whether the user is logged in or not.
-	const { authState } = useAuthContext()
 	// Pagination, chapter and notebook state values.
 	const [selectedNotebookId, setSelectedNotebookId] = useState<string>("")
 	const [selectedChapterId, setSelectedChapterId] = useState<string>("")
 	const [selectedCanvasId, setSelectedCanvasId] = useState<string>("")
 
-	// Fetch user notebook data if logged in.
-	const { data: notebooksData } = useQuery({
-		queryKey: ["notebooks"],
-		queryFn: getNotebooksApi,
-		enabled: authState.isLoggedIn,
-	})
+	// Fetch user notebook data.
+	const { data: notebooksData } = useGetNotebooks()
 
-	// Fetch user chapter data if logged in.
+	// Fetch user chapter data.
 	const notebookIds = notebooksData?.map((n) => n.id) || []
-	const { data: chaptersData } = useQuery<ChapterResponse[]>({
-		queryKey: ["chapters", notebookIds],
-		queryFn: () => getChaptersApi(notebookIds),
-		enabled: authState.isLoggedIn && notebookIds.length > 0,
-	})
+	const { data: chaptersData } = useGetChapters(notebookIds)
+
+	// Fetch user canvas data.
+	const chapterIds = chaptersData?.map((c) => c.id) || []
+	const { data: canvasesData } = useGetCanvases(chapterIds)
 
 	const notebooks: Notebook[] = useMemo(() => {
-		if (!notebooksData || !chaptersData || notebooksData.length === 0) return []
+		if (!notebooksData || !chaptersData || !canvasesData || notebooksData.length === 0) return []
 
 		return notebooksData.map((n: NotebookResponse) => {
-			const chapterResponses = chaptersData.filter((c: ChapterResponse) => c.notebookId === n.id)
-			const chapters: Chapter[] = chapterResponses.map((c: Chapter) => ({
-				id: c.id,
-				title: c.title,
-				canvases: [createCanvas()], // initialize empty canvases
-				order: c.order ?? 0,
-				createdAt: c.createdAt,
-				updatedAt: c.updatedAt,
-			}))
+			const chapterResponses = chaptersData.filter((c) => c.notebookId === n.id)
+			const chapters: Chapter[] = chapterResponses.map((c: ChapterResponse) => {
+				let canvasesForChapter: Canvas[] = canvasesData
+					.filter((cv) => cv.chapterId === c.id)
+					.map((cv) => ({
+						id: cv.id,
+						order: cv.order,
+						createdAt: Number(cv.createdAt), // convert string -> number
+						updatedAt: Number(cv.updatedAt),
+						lastAccessedAt: Number(cv.lastAccessedAt),
+						paths: [],
+						undoStack: [],
+						redoStack: [],
+					}))
+
+				return {
+					id: c.id,
+					title: c.title,
+					order: c.order ?? 0,
+					createdAt: Number(c.createdAt), // convert string -> number
+					updatedAt: Number(c.updatedAt),
+					canvases: canvasesForChapter,
+				}
+			})
 
 			return {
 				...n,
 				chapters,
+				createdAt: Number(n.createdAt), // convert string -> number
+				updatedAt: Number(n.updatedAt),
+				lastAccessedAt: Number(n.lastAccessedAt),
 			}
 		})
-	}, [notebooksData, chaptersData])
+	}, [notebooksData, chaptersData, canvasesData])
 
 	/**
 	 * Sets the notebooks array to a new state. Also initializes selected notebook, chapter, and canvas

@@ -21,16 +21,16 @@ export type Chapter = {
 	title: string
 	canvases: Canvas[]
 	order: number
-	createdAt: string
-	updatedAt: string
+	createdAt: number
+	updatedAt: number
 }
 
 export type Notebook = {
 	id: string
 	title: string
 	chapters: Chapter[]
-	createdAt: string
-	updatedAt: string
-	lastAccessedAt: string
+	createdAt: number
+	updatedAt: number
+	lastAccessedAt: number
 	color: string | null
 }

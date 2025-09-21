@@ -9,10 +9,10 @@ import { PathType } from "../../drawing/types/DrawingTypes"
 import { useModal, ModalType } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Notebook } from "../../../types/notebook"
-import { addCanvas, getCanvas, getChapter, getNotebook } from "../../../utils/notebook"
+import { getCanvas, getChapter, getNotebook } from "../../../utils/notebook"
 import useCreateNotebook from "./useCreateNotebook"
-import { queryClient } from "../../../api/queryClient"
 import useCreateChapter from "./useCreateChapter"
+import useCreateCanvas from "./useCreateCanvas"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -44,7 +44,7 @@ export default function useNotebookActions() {
 						...n,
 						title: title ?? n.title,
 						color: color ?? n.color,
-						updatedAt: Date.now().toString(),
+						updatedAt: Date.now(),
 				  }
 				: n
 		)
@@ -74,13 +74,7 @@ export default function useNotebookActions() {
 			placeholder: "Enter notebook name...",
 			buttonText: "Create",
 			onSubmit: (input: string) => {
-				createNotebookApi(
-					{ title: input },
-					{
-						onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notebooks"] }),
-						onError: (e: any) => console.error("Error creating notebook:", e),
-					}
-				)
+				createNotebookApi({ title: input })
 			},
 		})
 	}
@@ -126,21 +120,15 @@ export default function useNotebookActions() {
 
 				const order = notebook.chapters.length
 
-				createChapterApi(
-					{ title: input, order, notebookId: selectedNotebookId },
-					{
-						onSuccess: () => queryClient.invalidateQueries({ queryKey: ["chapters"] }),
-						onError: (e: any) => console.error("Error creating chapter:", e),
-					}
-				)
+				createChapterApi({ title: input, order, notebookId: selectedNotebookId })
 			},
 		})
 	}
 
 	// Helper function to create a new canvas
-	const handleNewCanvas = () => {
-		const updatedNotebook = addCanvas(notebooks, selectedNotebookId, selectedChapterId)
-		setNotebooks(updatedNotebook)
+	const { mutate: createCanvasApi } = useCreateCanvas()
+	const handleCreateCanvas = (order: number = 0) => {
+		createCanvasApi({ chapterId: selectedChapterId, order: order })
 	}
 
 	/////////////////////////////////////////
@@ -286,7 +274,7 @@ export default function useNotebookActions() {
 		const updatedChapter = {
 			...activeChapter,
 			canvases: activeChapter.canvases.map((cv) => (cv.id === newCanvas.id ? newCanvas : cv)),
-			updatedAt: Date.now().toString(),
+			updatedAt: Date.now(),
 		}
 
 		// Update the notebook
@@ -295,7 +283,7 @@ export default function useNotebookActions() {
 			chapters: activeNotebook.chapters.map((ch) =>
 				ch.id === updatedChapter.id ? updatedChapter : ch
 			),
-			updatedAt: Date.now().toString(),
+			updatedAt: Date.now(),
 		}
 
 		// Update the notebooks array
@@ -323,7 +311,7 @@ export default function useNotebookActions() {
 		handleEditNotebook,
 		handleDeleteNotebook,
 		handleCreateChapter,
-		handleNewCanvas,
+		handleCreateCanvas,
 		addPathToCanvas,
 		handleErase,
 		undo,

@@ -1,6 +1,5 @@
 import client from "../../api/client"
 import { ApiResponse } from "../../types/global"
-import { Chapter } from "../../types/notebook"
 
 // Notebooks
 export interface NotebookRequest {
@@ -15,10 +14,9 @@ export interface NotebookResponse {
 	createdAt: string
 	updatedAt: string
 	lastAccessedAt: string
-	isDeleted: boolean
-	chapters: Chapter[]
 }
 
+// Chapters
 export interface ChapterRequest {
 	title: string
 	order: number
@@ -32,8 +30,21 @@ export interface ChapterResponse {
 	order: number
 	createdAt: string
 	updatedAt: string
-	isDeleted: boolean
-	canvases: []
+}
+
+// Canvases
+export interface CanvasRequest {
+	chapterId: string
+	order: number
+}
+
+export interface CanvasResponse {
+	id: string
+	chapterId: string
+	order: number
+	createdAt: string
+	updatedAt: string
+	lastAccessedAt: string
 }
 
 // Notebooks
@@ -44,6 +55,8 @@ export const createNotebookApi = async (req: NotebookRequest): Promise<NotebookR
 
 export const getNotebooksApi = async (): Promise<NotebookResponse[]> => {
 	const res = await client.get<ApiResponse<NotebookResponse[]>>("/notebooks")
+
+	console.log("Notebooks:", JSON.stringify(res.data, null, 2))
 	return res.data.data!
 }
 
@@ -53,12 +66,25 @@ export const createChapterApi = async (req: ChapterRequest): Promise<ChapterResp
 	return res.data.data!
 }
 
-export const getChaptersApi = async (
-	notebookIds: string[] | undefined
-): Promise<ChapterResponse[]> => {
+export const getChaptersApi = async (notebookIds: string[]): Promise<ChapterResponse[]> => {
 	if (!notebookIds) throw new Error("getChaptersApi: No notebook ids provided.")
 	const res = await client.post<ApiResponse<ChapterResponse[]>>("/chapters/by-notebooks", {
 		notebookIds,
 	})
+	console.log("Chapters:", JSON.stringify(res.data, null, 2))
+	return res.data.data!
+}
+
+// Canvases
+export const createCanvasApi = async (req: CanvasRequest): Promise<CanvasResponse> => {
+	const res = await client.post<ApiResponse<CanvasResponse>>("/canvases", req)
+	return res.data.data!
+}
+
+export const getCanvasesApi = async (chapterIds: string[]): Promise<CanvasResponse[]> => {
+	const res = await client.post<ApiResponse<CanvasResponse[]>>("/canvases/by-chapters", {
+		chapterIds,
+	})
+	console.log("Canvas:", JSON.stringify(res.data, null, 2))
 	return res.data.data!
 }

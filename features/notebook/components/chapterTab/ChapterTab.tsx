@@ -23,7 +23,7 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 export default function ChapterTab() {
 	// Get context values.
 	const { notebooks, selectedNotebookId, selectedChapterId } = useNotebookContext()
-	const { handleNewCanvas } = useNotebookActions()
+	const { handleCreateCanvas } = useNotebookActions()
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 
 	const notebook = getNotebook(notebooks, selectedNotebookId)
@@ -70,7 +70,11 @@ export default function ChapterTab() {
 						</Pressable>
 						{/* Add a new canvas/page */}
 						{chapter && (
-							<CustomPressable type='primary' onPress={handleNewCanvas} circle>
+							<CustomPressable
+								type='primary'
+								onPress={() => handleCreateCanvas(chapter.canvases.length)}
+								circle
+							>
 								<MaterialC name='plus' size={28} color={theme.accent.onAccent} />
 							</CustomPressable>
 						)}
