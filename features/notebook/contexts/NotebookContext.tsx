@@ -70,9 +70,9 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 					.map((cv) => ({
 						id: cv.id,
 						order: cv.order,
-						createdAt: Number(cv.createdAt), // convert string -> number
-						updatedAt: Number(cv.updatedAt),
-						lastAccessedAt: Number(cv.lastAccessedAt),
+						createdAt: Date.parse(cv.createdAt),
+						updatedAt: Date.parse(cv.updatedAt),
+						lastAccessedAt: Date.parse(cv.lastAccessedAt),
 						paths: [],
 						undoStack: [],
 						redoStack: [],
@@ -82,8 +82,8 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 					id: c.id,
 					title: c.title,
 					order: c.order ?? 0,
-					createdAt: Number(c.createdAt), // convert string -> number
-					updatedAt: Number(c.updatedAt),
+					createdAt: Date.parse(c.createdAt),
+					updatedAt: Date.parse(c.updatedAt),
 					canvases: canvasesForChapter,
 				}
 			})
@@ -91,9 +91,9 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 			return {
 				...n,
 				chapters,
-				createdAt: Number(n.createdAt), // convert string -> number
-				updatedAt: Number(n.updatedAt),
-				lastAccessedAt: Number(n.lastAccessedAt),
+				createdAt: Date.parse(n.createdAt),
+				updatedAt: Date.parse(n.updatedAt),
+				lastAccessedAt: Date.parse(n.lastAccessedAt),
 			}
 		})
 	}, [notebooksData, chaptersData, canvasesData])
