@@ -62,8 +62,8 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							color={theme.colors.textPrimary}
 						/>
 					)}
-					{canvasPaths.map((path: PathType) => (
-						<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
+					{canvasPaths.map((path: PathType, i: number) => (
+						<PathRenderer key={i} path={path} width={layout.width} height={layout.height} />
 					))}
 
 					{current[canvasId] && current[canvasId]!.points.length > 0 && (

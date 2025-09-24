@@ -1,5 +1,4 @@
 import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
-import { BrushType } from "../../../enums/global"
 
 // Single point in a drawing stroke.
 export interface PathPoint {
@@ -22,7 +21,6 @@ export interface BrushSettings {
 
 // A complete drawing stroke.
 export interface PathType {
-	id: string
 	points: PathPoint[] // points in the path.
 	brush: BrushSettings // how the path should look.
 	bbox: BoundingBox // bounding box for the path.
@@ -35,3 +33,6 @@ export interface BoundingBox {
 	minY: number
 	maxY: number
 }
+
+// Brush type 
+export type BrushType = "pen" | "pencil" | "highlighter" | "eraser" | "text" | "pointer"

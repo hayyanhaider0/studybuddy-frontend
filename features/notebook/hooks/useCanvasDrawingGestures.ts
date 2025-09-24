@@ -2,10 +2,8 @@ import { Gesture } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useToolContext } from "../contexts/ToolContext"
 import useNotebookActions from "./useNotebookActions"
-import { BrushType } from "../../../enums/global"
-import uuid from "react-native-uuid"
 import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
-import { PathType } from "../../drawing/types/DrawingTypes"
+import { BrushType, PathType } from "../../drawing/types/DrawingTypes"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
@@ -16,10 +14,9 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 
 	// Check whether the selected tool can draw.
 	const isDrawingTool = (t: BrushType) =>
-		t === BrushType.PEN ||
-		t === BrushType.PENCIL ||
-		t === BrushType.HIGHLIGHTER ||
-		t === BrushType.ERASER
+		t === "pen" ||
+		t === "pencil" ||
+		t === "highlighter"
 
 	// Draw gesture: Allows user to draw on the canvas.
 	const drawGesture = Gesture.Pan()
@@ -29,7 +26,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 		.onBegin((e) => {
 			if (!isDrawingTool(tool)) return
 
-			if (tool === BrushType.ERASER) {
+			if (tool === "eraser") {
 				setEraserPos({ x: e.x, y: e.y })
 				return
 			}
@@ -44,7 +41,6 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			const normMaxWidth = settings.maxWidth! / layout.width
 
 			const newPath: PathType = {
-				id: uuid.v4(),
 				points: [{ x: normX, y: normY, pressure }],
 				brush: {
 					type: tool,
@@ -64,7 +60,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 		.onUpdate((e) => {
 			if (!isDrawingTool(tool)) return
 
-			if (tool === BrushType.ERASER) {
+			if (tool === ) {
 				setEraserPos({ x: e.x, y: e.y })
 				handleErase(eraserPos.x, eraserPos.y, toolSettings[tool].size, layout.width, layout.height)
 				return
@@ -77,7 +73,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			updateCurrentPath(canvasId, { x: normX, y: normY, pressure })
 		})
 		.onEnd(() => {
-			if (!isDrawingTool(tool) || tool === BrushType.ERASER) return
+			if (!isDrawingTool(tool) || tool === "eraser") return
 
 			const finishedPath = current[canvasId]
 			if (finishedPath) {
@@ -114,7 +110,6 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			const normMaxWidth = settings.maxWidth! / layout.width
 
 			const dotPath: PathType = {
-				id: uuid.v4(),
 				points: [{ x: normX, y: normY, pressure }],
 				brush: {
 					type: tool,

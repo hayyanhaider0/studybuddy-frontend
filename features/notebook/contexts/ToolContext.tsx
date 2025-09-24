@@ -8,8 +8,8 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { ToolSwatches } from "../../../types/global"
 import { getStoredJSON } from "../../../utils/storage"
-import { BrushType } from "../../../enums/global"
 import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
+import { BrushType } from "../../drawing/types/DrawingTypes"
 
 /////////////////////////////////////////
 // TYPES
@@ -76,7 +76,7 @@ type ToolContextType = {
 /////////////////////////////////////////
 const DEFAULT_SWATCHES = ["#dc2626", "#fb923c", "#facc15", "#3b82f6", "#10b981", "#000000"]
 const DEFAULT_TOOL_SETTINGS: ToolSettingsMap = {
-	[BrushType.PEN]: {
+	["pen"]: {
 		color: "#dc2626",
 		size: 4,
 		minWidth: 2,
@@ -85,8 +85,8 @@ const DEFAULT_TOOL_SETTINGS: ToolSettingsMap = {
 		strokeCap: StrokeCap.Round,
 		strokeJoin: StrokeJoin.Round,
 	},
-	[BrushType.ERASER]: { color: "transparent", size: 4 },
-	[BrushType.PENCIL]: {
+	["eraser"]: { color: "transparent", size: 4 },
+	["pencil"]: {
 		color: "black",
 		size: 1,
 		minWidth: 0.5,
@@ -95,7 +95,7 @@ const DEFAULT_TOOL_SETTINGS: ToolSettingsMap = {
 		strokeCap: StrokeCap.Round,
 		strokeJoin: StrokeJoin.Round,
 	},
-	[BrushType.HIGHLIGHTER]: {
+	["highlighter"]: {
 		color: "#FFFF00",
 		size: 32,
 		minWidth: 16,
@@ -104,8 +104,8 @@ const DEFAULT_TOOL_SETTINGS: ToolSettingsMap = {
 		strokeCap: StrokeCap.Round,
 		strokeJoin: StrokeJoin.Round,
 	},
-	[BrushType.TEXT]: { color: "black", size: 8 },
-	[BrushType.POINTER]: { color: "black", size: 8 },
+	["text"]: { color: "black", size: 8 },
+	["pointer"]: { color: "black", size: 8 },
 }
 
 const DEFAULT_SWATCH_MAP = {
@@ -132,7 +132,7 @@ export const ToolContext = createContext<ToolContextType | null>(null)
  */
 export function ToolProvider({ children }: { children: ReactNode }) {
 	// Tool and tool setting values.
-	const [tool, setTool] = useState<BrushType>(BrushType.PEN)
+	const [tool, setTool] = useState<BrushType>("pen")
 	const [toolSettings, setToolSettings] = useState<ToolSettingsMap>(DEFAULT_TOOL_SETTINGS)
 	const [eraserPos, setEraserPos] = useState<EraserPosType>({ x: 0, y: 0 })
 	// Toolbar collapsed values.
@@ -148,7 +148,7 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		const loadSwatches = async () => {
-			const tools: BrushType[] = Object.values(BrushType) as BrushType[]
+			const tools: BrushType[] = ["pen", "eraser", "pencil", "highlighter", "text", "pointer"]
 			const result: Partial<ToolSwatches> = {}
 
 			for (const t of tools) {
