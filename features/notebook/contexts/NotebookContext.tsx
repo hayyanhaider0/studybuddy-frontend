@@ -21,6 +21,7 @@ import useGetCanvases from "../hooks/useGetCanvases"
 import useGetPaths from "../hooks/useGetPaths"
 import { BrushSettings, PathType } from "../../drawing/types/DrawingTypes"
 import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
+import uuid from "react-native-uuid"
 
 // Types for the notebook context.
 type NotebookContextType = {
@@ -109,6 +110,7 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
                                     }
 
                                     return {
+                                        pid: uuid.v4(),
                                         points: p.points,
                                         brush: brushSettings,
                                         bbox: {
@@ -151,6 +153,7 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
                 lastAccessedAt: Date.parse(n.lastAccessedAt),
             }
         })
+
     }, [notebooksData, chaptersData, canvasesData, pathsData])
 
     /**

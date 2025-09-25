@@ -5,8 +5,8 @@
  * pencil, highlighter, text.
  */
 
+import { BrushType } from "../features/drawing/types/DrawingTypes"
 import { useToolContext } from "../features/notebook/contexts/ToolContext"
-import { BrushType } from "../enums/global"
 import { ToolType } from "../types/global"
 
 export function useToolDefinitions() {
@@ -26,7 +26,7 @@ export function useToolDefinitions() {
 				// If the next selected tool is also the same, toggle its menu.
 				const next = prev === selectedTool ? null : selectedTool
 				// If the next tool is not the pen, close the color picker.
-				if (next !== BrushType.PEN) {
+				if (next !== "pen") {
 					setColorPicker(false)
 				}
 				return next
@@ -46,35 +46,35 @@ export function useToolDefinitions() {
 			name: "pen",
 			icon: "pen",
 			image: require("../assets/canvasImages/pen.png"),
-			action: () => handleToolSelection(BrushType.PEN),
+			action: () => handleToolSelection("pen"),
 		},
 		// Default eraser tool that allows the user to delete paths by drawing over them.
 		{
 			name: "eraser",
 			icon: "eraser",
 			image: require("../assets/canvasImages/eraser.png"),
-			action: () => handleToolSelection(BrushType.ERASER),
+			action: () => handleToolSelection("eraser"),
 		},
 		// Thicker pen tool with decreased opacity.
 		{
 			name: "highlighter",
 			icon: "format-color-highlight",
 			image: require("../assets/canvasImages/highlighter.png"),
-			action: () => handleToolSelection(BrushType.HIGHLIGHTER),
+			action: () => handleToolSelection("highlighter"),
 		},
 		// Text tool that allows the user to type ASCII characters on the canvas.
 		{
 			name: "text",
 			icon: "format-text",
 			image: require("../assets/canvasImages/text.png"),
-			action: () => handleToolSelection(BrushType.TEXT),
+			action: () => handleToolSelection("text"),
 		},
 		// Pointer tool to allow for gestures.
 		{
 			name: "pointer",
 			icon: "pointer",
 			image: require("../assets/canvasImages/pointer.png"),
-			action: () => handleToolSelection(BrushType.POINTER),
+			action: () => handleToolSelection("pointer"),
 		},
 	]
 

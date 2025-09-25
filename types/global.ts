@@ -9,7 +9,7 @@ import { RootStackParamList } from "../navigation/Navigation"
 import { ImageSourcePropType } from "react-native"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "../navigation/DrawerNavigation"
-import { BrushType } from "../enums/global"
+import { BrushType } from "../features/drawing/types/DrawingTypes"
 
 // Api
 export interface ApiResponse<T> {

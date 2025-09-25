@@ -1,7 +1,6 @@
 import client from "../../api/client"
-import { BrushType } from "../../enums/global"
 import { ApiResponse } from "../../types/global"
-import { PathPoint } from "../drawing/types/DrawingTypes"
+import { BrushType, PathPoint } from "../drawing/types/DrawingTypes"
 
 // Notebooks
 export interface NotebookRequest {
@@ -53,7 +52,7 @@ export interface CanvasResponse {
 export interface PathRequest {
     canvasId: string
     points: PathPoint[]
-    brushType: BrushType
+    brushType: string
     baseWidth: number
     color: string
     opacity: number
@@ -62,7 +61,7 @@ export interface PathRequest {
 export interface PathResponse {
     canvasId: string
     points: PathPoint[]
-    brushType: BrushType
+    brushType: string
     baseWidth: number
     color: string
     opacity: number

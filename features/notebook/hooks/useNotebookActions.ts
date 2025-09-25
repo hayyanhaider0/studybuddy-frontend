@@ -13,6 +13,7 @@ import { getCanvas, getChapter, getNotebook } from "../../../utils/notebook"
 import useCreateNotebook from "./useCreateNotebook"
 import useCreateChapter from "./useCreateChapter"
 import useCreateCanvas from "./useCreateCanvas"
+import useCreatePath from "./useCreatePath"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -143,6 +144,7 @@ export default function useNotebookActions() {
 		}
 	}
 
+	const { mutate: createPathApi} = useCreatePath()
 	/**
 	 * Helper function that adds a new path to the canvas.
 	 * @param newPath - The new path drawn by the user.
@@ -159,6 +161,16 @@ export default function useNotebookActions() {
 			redoStack: [],
 			updatedAt: Date.now(),
 		}
+
+		// Send path to DB
+		createPathApi({
+			canvasId: activeCanvas.id,
+				points: newPathObject.points,
+				brushType: newPathObject.brush.type.toUpperCase(),
+				baseWidth: newPathObject.brush.baseWidth,
+				color: newPathObject.brush.color,
+				opacity: newPathObject.brush.opacity
+		})
 
 		updateCanvas(updatedCanvas)
 	}
@@ -186,7 +198,7 @@ export default function useNotebookActions() {
 
 					const updatedCanvas = {
 						...activeCanvas,
-						paths: paths.filter((path) => path.id !== p.id),
+						paths: paths.filter((path) => path.pid !== p.pid),
 						undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
 						redoStack: [],
 						updatedAt: Date.now(),

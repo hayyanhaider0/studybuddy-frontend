@@ -1,5 +1,15 @@
-import { Text } from "react-native"
+import { View, ActivityIndicator } from "react-native"
 
 export default function LoadingSpinner() {
-	return <Text style={{ color: "red" }}>Loading...</Text>
+	return (
+		<View
+			style={{
+				flex: 1,
+				alignItems: "center",
+				justifyContent: "center",
+			}}
+		>
+			<ActivityIndicator size="large" />
+		</View>
+	)
 }

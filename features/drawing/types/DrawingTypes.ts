@@ -9,7 +9,7 @@ export interface PathPoint {
 
 // Settings for how a brush draws.
 export interface BrushSettings {
-	type: BrushType
+	type: BrushType // type of brush.
 	color: string // hex color.
 	baseWidth: number // base stroke width in pixels.
 	minWidth: number // thinnest width (light pressure).
@@ -21,6 +21,7 @@ export interface BrushSettings {
 
 // A complete drawing stroke.
 export interface PathType {
+	pid: string // path id.
 	points: PathPoint[] // points in the path.
 	brush: BrushSettings // how the path should look.
 	bbox: BoundingBox // bounding box for the path.

@@ -153,7 +153,7 @@ export function ToolProvider({ children }: { children: ReactNode }) {
 
 			for (const t of tools) {
 				const swatches = await getStoredJSON(`${t}_swatches`, DEFAULT_SWATCHES)
-				result[tool] = swatches
+				result[t] = swatches
 			}
 
 			setSwatches((prev) => ({ ...prev, ...result }))
