@@ -6,11 +6,11 @@
  */
 
 import { useMutation } from "@tanstack/react-query"
-import { verifyReset } from "../../../api/mutations/auth"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../../types/global"
 import { AxiosError } from "axios"
 import { UseFormSetError } from "react-hook-form"
+import { verifyReset } from "../api"
 
 export default function useVerifyReset(setError: UseFormSetError<{}>) {
 	const nav = useNavigation<NavProp<"reset">>()

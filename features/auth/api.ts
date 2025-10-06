@@ -1,5 +1,5 @@
+import client from "../../api/client"
 import { LoginRequest, SignupRequest } from "../../types/auth"
-import client from "../client"
 
 export async function signup(data: SignupRequest) {
 	const res = await client.post("/auth/signup", data)

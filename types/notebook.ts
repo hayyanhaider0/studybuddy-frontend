@@ -8,6 +8,8 @@ import { PathType } from "../features/drawing/types/DrawingTypes"
 
 export type Canvas = {
 	id: string
+	chapterId: string
+	order: number
 	paths: PathType[]
 	undoStack: any[]
 	redoStack: any[]
@@ -18,6 +20,7 @@ export type Canvas = {
 
 export type Chapter = {
 	id: string
+	notebookId: string
 	title: string
 	canvases: Canvas[]
 	order: number

@@ -6,9 +6,9 @@
  */
 
 import { useMutation } from "@tanstack/react-query"
-import { reset } from "../../../api/mutations/auth"
 import { UseFormSetError } from "react-hook-form"
 import { AxiosError } from "axios"
+import { reset } from "../api"
 
 export default function useForgotPassword(setError: UseFormSetError<{ login: string }>) {
 	return useMutation({

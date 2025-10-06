@@ -6,10 +6,10 @@
  */
 
 import { useMutation } from "@tanstack/react-query"
-import { verifyEmail } from "../../../api/mutations/auth"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../../types/global"
 import { AxiosError } from "axios"
+import { verifyEmail } from "../api"
 
 export default function useVerifyEmail(
 	setError: React.Dispatch<React.SetStateAction<string | null>>

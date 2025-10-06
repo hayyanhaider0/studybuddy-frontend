@@ -27,6 +27,7 @@
     "expo": "^54.0.7",
     "expo-blur": "~15.0.7",
     "expo-linear-gradient": "~15.0.7",
+    "expo-secure-store": "~15.0.7",
     "expo-status-bar": "~3.0.8",
     "moti": "^0.30.0",
     "react": "^19.1.0",
@@ -53,8 +54,7 @@
     "react-native-worklets": "^0.5.1",
     "react-navigation": "^5.0.0",
     "reanimated-color-picker": "^4.0.1",
-    "tinycolor2": "^1.6.0",
-    "expo-secure-store": "~15.0.7"
+    "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

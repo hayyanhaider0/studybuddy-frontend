@@ -6,11 +6,11 @@
  */
 
 import { useMutation } from "@tanstack/react-query"
-import { resetPassword } from "../../../api/mutations/auth"
 import { UseFormSetError } from "react-hook-form"
 import { AxiosError } from "axios"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../../types/global"
+import { resetPassword } from "../api"
 
 export default function useResetPassword(setError: UseFormSetError<{}>) {
 	const nav = useNavigation<NavProp<"login">>()

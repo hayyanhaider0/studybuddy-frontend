@@ -4,7 +4,6 @@ import { useToolContext } from "../contexts/ToolContext"
 import useNotebookActions from "./useNotebookActions"
 import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
 import { BrushType, PathType } from "../../drawing/types/DrawingTypes"
-import uuid from "react-native-uuid"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
@@ -15,10 +14,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 
 	// Check whether the selected tool can draw.
 	const isDrawingTool = (t: BrushType) =>
-		t === "pen" ||
-		t === "pencil" ||
-		t === "highlighter" ||
-		t === "eraser"
+		t === "pen" || t === "pencil" || t === "highlighter" || t === "eraser"
 
 	// Draw gesture: Allows user to draw on the canvas.
 	const drawGesture = Gesture.Pan()
@@ -44,7 +40,8 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			const normMaxWidth = settings.maxWidth! / layout.width
 
 			const newPath: PathType = {
-				pid: uuid.v4(),
+				id: `temp-${Date.now()}`,
+				canvasId,
 				points: [{ x: normX, y: normY, pressure }],
 				brush: {
 					type: tool,
@@ -115,7 +112,8 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			const normMaxWidth = settings.maxWidth! / layout.width
 
 			const dotPath: PathType = {
-				pid: uuid.v4(),
+				id: `temp-${Date.now()}`,
+				canvasId,
 				points: [{ x: normX, y: normY, pressure }],
 				brush: {
 					type: tool,

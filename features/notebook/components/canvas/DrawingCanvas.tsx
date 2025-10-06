@@ -15,7 +15,7 @@ import { useThemeContext } from "../../../common/contexts/ThemeContext"
 import { useNotebookContext } from "../../contexts/NotebookContext"
 import useCanvasDrawingGestures from "../../hooks/useCanvasDrawingGestures"
 import { useSettings } from "../../../common/contexts/SettingsContext"
-import { getChapter } from "../../../../utils/notebook"
+import { getCanvas, getChapter } from "../../../../utils/notebook"
 import PathRenderer from "../../../drawing/PathRenderer"
 import { PathType } from "../../../drawing/types/DrawingTypes"
 
@@ -34,7 +34,8 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	const canvasNumber = canvasIndex !== -1 ? canvasIndex + 1 + "" : "?"
 
 	// Get the current canvas's paths and current path if any.
-	const canvasPaths = chapter.canvases[canvasIndex].paths
+	const canvas = getCanvas(notebooks, selectedNotebookId, selectedChapterId, canvasId)
+	const canvasPaths = canvas?.paths ?? []
 
 	// Font import for Skia -- used for page number.
 	const Roboto = useFont(require("../../../../assets/fonts/Roboto-Bold.ttf"), layout.height * 0.025)
@@ -64,7 +65,7 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 					)}
 
 					{canvasPaths.map((path: PathType) => (
-						<PathRenderer key={path.pid} path={path} width={layout.width} height={layout.height} />
+						<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
 					))}
 
 					{current[canvasId] && current[canvasId]!.points.length > 0 && (

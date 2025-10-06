@@ -9,7 +9,7 @@ import { PathType } from "../../drawing/types/DrawingTypes"
 import { useModal, ModalType } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Notebook } from "../../../types/notebook"
-import { getCanvas, getChapter, getNotebook } from "../../../utils/notebook"
+import { getCanvas } from "../../../utils/notebook"
 import useCreateNotebook from "./useCreateNotebook"
 import useCreateChapter from "./useCreateChapter"
 import useCreateCanvas from "./useCreateCanvas"
@@ -21,8 +21,8 @@ export default function useNotebookActions() {
 		useNotebookContext()
 	const { openModal, setInput } = useModal()
 
-	const activeNotebook = getNotebook(notebooks, selectedNotebookId)
-	const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
+	// const activeNotebook = getNotebook(notebooks, selectedNotebookId)
+	// const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
 	const activeCanvas = getCanvas(notebooks, selectedNotebookId, selectedChapterId, selectedCanvasId)
 
 	const MAX_UNDO_HISTORY = 100
@@ -39,17 +39,7 @@ export default function useNotebookActions() {
 	 * @param color - New cover icon color, if any.
 	 */
 	const editNotebook = (notebookId: string, title?: string, color?: string) => {
-		const updated = notebooks.map((n) =>
-			n.id === notebookId
-				? {
-						...n,
-						title: title ?? n.title,
-						color: color ?? n.color,
-						updatedAt: Date.now(),
-				  }
-				: n
-		)
-		setNotebooks(updated)
+		console.log("Editing notebook with ID:", notebookId, title, color)
 	}
 
 	/**
@@ -57,8 +47,7 @@ export default function useNotebookActions() {
 	 * @param notebook - Notebook to be deleted
 	 */
 	const deleteNotebook = (notebookId: string) => {
-		const updated = notebooks.filter((n) => n.id !== notebookId)
-		setNotebooks(updated)
+		console.log("Deleting notebook with ID:", notebookId)
 	}
 
 	/////////////////////////////////////////
@@ -144,7 +133,7 @@ export default function useNotebookActions() {
 		}
 	}
 
-	const { mutate: createPathApi} = useCreatePath()
+	const { mutate: createPathApi } = useCreatePath()
 	/**
 	 * Helper function that adds a new path to the canvas.
 	 * @param newPath - The new path drawn by the user.
@@ -165,11 +154,11 @@ export default function useNotebookActions() {
 		// Send path to DB
 		createPathApi({
 			canvasId: activeCanvas.id,
-				points: newPathObject.points,
-				brushType: newPathObject.brush.type.toUpperCase(),
-				baseWidth: newPathObject.brush.baseWidth,
-				color: newPathObject.brush.color,
-				opacity: newPathObject.brush.opacity
+			points: newPathObject.points,
+			brushType: newPathObject.brush.type.toUpperCase(),
+			baseWidth: newPathObject.brush.baseWidth,
+			color: newPathObject.brush.color,
+			opacity: newPathObject.brush.opacity,
 		})
 
 		updateCanvas(updatedCanvas)
@@ -198,7 +187,7 @@ export default function useNotebookActions() {
 
 					const updatedCanvas = {
 						...activeCanvas,
-						paths: paths.filter((path) => path.pid !== p.pid),
+						paths: paths.filter((path) => path.id !== p.id),
 						undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
 						redoStack: [],
 						updatedAt: Date.now(),
@@ -279,32 +268,28 @@ export default function useNotebookActions() {
 	 * Helper function to update the canvas from the notebooks array.
 	 * @param newCanvas - The new canvas state
 	 */
-	const updateCanvas = (newCanvas: Canvas) => {
-		if (!activeNotebook || !activeChapter || !activeCanvas) return
+	const updateCanvas = (_newCanvas: Canvas) => {
+		if (!activeCanvas) return
 
-		// Update the chapter
-		const updatedChapter = {
-			...activeChapter,
-			canvases: activeChapter.canvases.map((cv) => (cv.id === newCanvas.id ? newCanvas : cv)),
-			updatedAt: Date.now(),
-		}
-
-		// Update the notebook
-		const updatedNotebook = {
-			...activeNotebook,
-			chapters: activeNotebook.chapters.map((ch) =>
-				ch.id === updatedChapter.id ? updatedChapter : ch
-			),
-			updatedAt: Date.now(),
-		}
-
-		// Update the notebooks array
-		const updatedNotebooks = notebooks.map((n) =>
-			n.id === updatedNotebook.id ? updatedNotebook : n
+		setNotebooks((prevNotebooks) =>
+			prevNotebooks.map((notebook) =>
+				notebook.id === selectedNotebookId
+					? {
+							...notebook,
+							chapters: notebook.chapters.map((chapter) =>
+								chapter.id === selectedChapterId
+									? {
+											...chapter,
+											canvases: chapter.canvases.map((canvas) =>
+												canvas.id === _newCanvas.id ? _newCanvas : canvas
+											),
+									  }
+									: chapter
+							),
+					  }
+					: notebook
+			)
 		)
-
-		// Set the notebooks array
-		setNotebooks(updatedNotebooks)
 	}
 
 	// Helper to push items onto both undo and redo stacks.

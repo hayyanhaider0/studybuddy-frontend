@@ -13,18 +13,16 @@ import useNotebookActions from "../features/notebook/hooks/useNotebookActions"
 import ZoomIndicator from "../features/notebook/components/canvas/ZoomIndicator"
 import CanvasList from "../features/notebook/components/canvas/CanvasList"
 import { getCanvasStyles } from "../styles/canvas"
-import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
 import { GestureDetector } from "react-native-gesture-handler"
 import { useCanvasTranslateGestures } from "../features/notebook/hooks/useCanvasTranslateGestures"
-import useGetNotebooks from "../features/notebook/hooks/useGetNotebooks"
 import LoadingSpinner from "../features/common/components/LoadingSpinner"
+import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
 
 export default function CanvasScreen() {
 	// Context Imports
-	const { notebooks } = useNotebookContext()
+	const { notebooks, isPending } = useNotebookContext()
 	const { handleCreateNotebook } = useNotebookActions()
 	const translateGesture = useCanvasTranslateGestures()
-	const { isLoading } = useGetNotebooks()
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
@@ -33,13 +31,12 @@ export default function CanvasScreen() {
 
 	return (
 		<View style={styles.surface}>
-			<ChapterTab />
-			<ZoomIndicator />
-
-			{isLoading ? (
+			{isPending ? (
 				<LoadingSpinner />
 			) : notebooks.length > 0 ? (
 				<>
+					<ChapterTab />
+					<ZoomIndicator />
 					<Toolbar />
 					<GestureDetector gesture={translateGesture}>
 						<View style={{ flex: 1, position: "relative" }}>

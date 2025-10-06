@@ -21,7 +21,8 @@ export interface BrushSettings {
 
 // A complete drawing stroke.
 export interface PathType {
-	pid: string // path id.
+	id: string // path id.
+	canvasId: string // which canvas this path belongs to.
 	points: PathPoint[] // points in the path.
 	brush: BrushSettings // how the path should look.
 	bbox: BoundingBox // bounding box for the path.
@@ -35,5 +36,5 @@ export interface BoundingBox {
 	maxY: number
 }
 
-// Brush type 
+// Brush type
 export type BrushType = "pen" | "pencil" | "highlighter" | "eraser" | "text" | "pointer"

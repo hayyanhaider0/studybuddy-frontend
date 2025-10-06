@@ -1,11 +1,11 @@
 import { Canvas } from "@shopify/react-native-skia"
-import { useNotebookContext } from "../../notebook/contexts/NotebookContext"
 import { PathType } from "../../drawing/types/DrawingTypes"
 import PathRenderer from "../../drawing/PathRenderer"
 import { useState } from "react"
 import Background1 from "../../notebook/components/canvas/Background1"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { View } from "react-native"
+import { useNotebookContext } from "../../notebook/contexts/NotebookContext"
 
 export default function MiniCanvas({ id }: { id: string }) {
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -16,16 +16,16 @@ export default function MiniCanvas({ id }: { id: string }) {
 	const notebook = notebooks.find((n) => n.id === id)
 
 	if (!notebook) throw new Error("Notebook not found!")
-	if (notebook.chapters.length === 0) {
+	if (notebook.chapters && notebook.chapters.length === 0) {
 		return <Canvas style={{ height: "100%", aspectRatio: 9 / 16 }} />
 	}
 
-	const firstChapter = notebook.chapters[0]
-	if (firstChapter.canvases.length === 0) {
+	const firstChapter = notebook.chapters?.[0]
+	const firstCanvas = firstChapter?.canvases?.[0]
+
+	if (!firstCanvas) {
 		return <Canvas style={{ height: "100%", aspectRatio: 9 / 16 }} />
 	}
-
-	const firstCanvas = firstChapter.canvases[0]
 
 	return (
 		<View
@@ -40,8 +40,8 @@ export default function MiniCanvas({ id }: { id: string }) {
 					height={dimensions.height}
 					backgroundColor={theme.colors.background}
 				/>
-				{firstCanvas.paths.map((p: PathType) => (
-					<PathRenderer key={p.id} path={p} width={dimensions.width} height={dimensions.height} />
+				{(firstCanvas.paths ?? []).map((p: PathType) => (
+					<PathRenderer key={p.pid} path={p} width={dimensions.width} height={dimensions.height} />
 				))}
 			</Canvas>
 		</View>
