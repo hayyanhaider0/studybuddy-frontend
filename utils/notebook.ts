@@ -97,7 +97,7 @@ export const addNotebook = (title: string, color: Color, now: number, length: nu
 	const id = `temp-${uuid.v4()}`
 	const notebook: Notebook = {
 		id,
-		title: `Notebook ${length}`,
+		title: title || `Notebook ${length}`,
 		chapters: [addChapter(id, `Chapter 1`, 0, now)],
 		createdAt: now,
 		updatedAt: now,
