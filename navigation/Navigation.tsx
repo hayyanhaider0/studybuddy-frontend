@@ -14,10 +14,12 @@ import Modal from "../features/common/components/Modal"
 import ContextMenu from "../features/common/components/ContextMenu"
 import VerificationScreen from "../screens/VerificationScreen"
 import { getToken } from "../utils/secureStore"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAuthContext } from "../features/auth/contexts/AuthContext"
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen"
 import ResetPasswordScreen from "../screens/ResetPasswordScreen"
+import LoadingScreen from "../screens/LoadingScreen"
+import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
 
 export type RootStackParamList = {
 	// All available screens.
@@ -26,6 +28,7 @@ export type RootStackParamList = {
 	forgot: { login?: string | undefined }
 	reset: { email?: string }
 	main: undefined
+	loading: undefined
 }
 
 // Stack navigation.
@@ -33,6 +36,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export default function Navigation() {
 	const { authState, setAuthState } = useAuthContext()
+	const { loaded } = useNotebookContext()
 
 	// Theming
 	const { theme } = useThemeContext()
@@ -64,13 +68,15 @@ export default function Navigation() {
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
 					{authState.isLoggedIn ? (
 						<Stack.Screen name='main' component={DrawerNavigation} />
-					) : (
+					) : loaded ? (
 						<>
 							<Stack.Screen name='login' component={LoginScreen} />
 							<Stack.Screen name='verify' component={VerificationScreen} />
 							<Stack.Screen name='forgot' component={ForgotPasswordScreen} />
 							<Stack.Screen name='reset' component={ResetPasswordScreen} />
 						</>
+					) : (
+						<Stack.Screen name='loading' component={LoadingScreen} />
 					)}
 				</Stack.Navigator>
 				<ContextMenu />

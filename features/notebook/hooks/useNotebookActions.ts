@@ -9,11 +9,7 @@ import { PathType } from "../../drawing/types/DrawingTypes"
 import { useModal, ModalType } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Notebook } from "../../../types/notebook"
-import { getCanvas } from "../../../utils/notebook"
-import useCreateNotebook from "./useCreateNotebook"
-import useCreateChapter from "./useCreateChapter"
-import useCreateCanvas from "./useCreateCanvas"
-import useCreatePath from "./useCreatePath"
+import { addCanvas, addChapter, addNotebook, getCanvas } from "../../../utils/notebook"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -54,8 +50,6 @@ export default function useNotebookActions() {
 	// UI Aware Functions
 	/////////////////////////////////////////
 	// Helper function to create a new notebook with a title.
-	const { mutate: createNotebookApi } = useCreateNotebook()
-
 	const handleCreateNotebook = () => {
 		openModal({
 			type: ModalType.INPUT,
@@ -64,7 +58,9 @@ export default function useNotebookActions() {
 			placeholder: "Enter notebook name...",
 			buttonText: "Create",
 			onSubmit: (input: string) => {
-				createNotebookApi({ title: input })
+				// Create notebook here
+				const now = Date.now()
+				setNotebooks((prev) => [...prev, addNotebook(input, null, now, notebooks.length)])
 			},
 		})
 	}
@@ -95,8 +91,6 @@ export default function useNotebookActions() {
 	}
 
 	// Helper function to create a new chapter with a title.
-	const { mutate: createChapterApi } = useCreateChapter()
-
 	const handleCreateChapter = () => {
 		openModal({
 			type: ModalType.INPUT,
@@ -109,16 +103,38 @@ export default function useNotebookActions() {
 				if (!notebook) throw new Error("Notebook not found.")
 
 				const order = notebook.chapters.length
+				const now = Date.now()
 
-				createChapterApi({ title: input, order, notebookId: selectedNotebookId })
+				// Create chapter here
+				setNotebooks((prev) =>
+					prev.map((n) =>
+						n.id === selectedNotebookId
+							? { ...n, chapters: [...n.chapters, addChapter(n.id, input, order, now)] }
+							: n
+					)
+				)
 			},
 		})
 	}
 
 	// Helper function to create a new canvas
-	const { mutate: createCanvasApi } = useCreateCanvas()
 	const handleCreateCanvas = (order: number = 0) => {
-		createCanvasApi({ chapterId: selectedChapterId, order: order })
+		const now = Date.now()
+
+		setNotebooks((prev) =>
+			prev.map((n) =>
+				n.id === selectedNotebookId
+					? {
+							...n, // spread the notebook fields
+							chapters: n.chapters.map((ch) =>
+								ch.id === selectedChapterId
+									? { ...ch, canvases: [...ch.canvases, addCanvas(ch.id, order, now)] }
+									: ch
+							),
+					  }
+					: n
+			)
+		)
 	}
 
 	/////////////////////////////////////////
@@ -133,7 +149,6 @@ export default function useNotebookActions() {
 		}
 	}
 
-	const { mutate: createPathApi } = useCreatePath()
 	/**
 	 * Helper function that adds a new path to the canvas.
 	 * @param newPath - The new path drawn by the user.
@@ -151,15 +166,7 @@ export default function useNotebookActions() {
 			updatedAt: Date.now(),
 		}
 
-		// Send path to DB
-		createPathApi({
-			canvasId: activeCanvas.id,
-			points: newPathObject.points,
-			brushType: newPathObject.brush.type.toUpperCase(),
-			baseWidth: newPathObject.brush.baseWidth,
-			color: newPathObject.brush.color,
-			opacity: newPathObject.brush.opacity,
-		})
+		// Create path here
 
 		updateCanvas(updatedCanvas)
 	}

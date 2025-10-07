@@ -12,8 +12,10 @@ import {
 	ChapterResponse,
 	NotebookResponse,
 	PathResponse,
-} from "../features/notebook/api"
+} from "../features/notebook/api/api"
 import { Canvas, Chapter, Notebook } from "../types/notebook"
+import { Color } from "../types/global"
+import uuid from "react-native-uuid"
 
 /**
  * Builds a tree structure of notebooks, chapters, canvases, and paths using data received from the API.
@@ -65,7 +67,6 @@ export const buildNotebooksTree = (
 										.map(
 											(p): PathType => ({
 												id: p.id,
-												pid: "",
 												canvasId: cv.id,
 												points: p.points,
 												brush: {
@@ -87,6 +88,60 @@ export const buildNotebooksTree = (
 				),
 		})
 	)
+}
+
+/////////////////////////////////////////
+// Mutator Functions
+/////////////////////////////////////////
+export const addNotebook = (title: string, color: Color, now: number, length: number): Notebook => {
+	const id = `temp-${uuid.v4()}`
+	const notebook: Notebook = {
+		id,
+		title: `Notebook ${length}`,
+		chapters: [addChapter(id, `Chapter 1`, 0, now)],
+		createdAt: now,
+		updatedAt: now,
+		lastAccessedAt: now,
+		color,
+	}
+
+	return notebook
+}
+
+export const addChapter = (
+	notebookId: string,
+	title: string,
+	order: number,
+	now: number
+): Chapter => {
+	const id = `temp-${uuid.v4()}`
+	const chapter: Chapter = {
+		id,
+		notebookId,
+		title: title || `Chapter ${order + 1}`,
+		canvases: [addCanvas(id, 0, now)],
+		order,
+		createdAt: now,
+		updatedAt: now,
+	}
+
+	return chapter
+}
+
+export const addCanvas = (chapterId: string, order: number, now: number): Canvas => {
+	const canvas: Canvas = {
+		id: `temp-${uuid.v4()}`,
+		chapterId,
+		order,
+		paths: [],
+		undoStack: [],
+		redoStack: [],
+		createdAt: now,
+		updatedAt: now,
+		lastAccessedAt: now,
+	}
+
+	return canvas
 }
 
 /////////////////////////////////////////

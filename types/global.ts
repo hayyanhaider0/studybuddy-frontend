@@ -46,6 +46,10 @@ export type ThemeColors = {
 	onSecondary: string
 }
 
+type Hex3 = `#${string}${string}${string}`
+type Hex6 = `#${string}${string}${string}${string}${string}${string}`
+export type Color = Hex3 | Hex6 | null
+
 /**
  * Canvas Types
  */

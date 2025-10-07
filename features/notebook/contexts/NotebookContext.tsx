@@ -10,6 +10,10 @@ import { Notebook } from "../../../types/notebook"
 
 // Types for the notebook context.
 type NotebookContextType = {
+	// Flag to check whether data is loaded from the database or not.
+	loaded: boolean
+	// Setter for data flag.
+	setLoaded: React.Dispatch<React.SetStateAction<boolean>>
 	// List of all notebooks.
 	notebooks: Notebook[]
 	// Setter for the list of all notebooks.
@@ -40,6 +44,7 @@ const NotebookContext = createContext<NotebookContextType | null>(null)
  */
 export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	// Pagination, chapter and notebook state values.
+	const [loaded, setLoaded] = useState<boolean>(false)
 	const [notebooks, setNotebooks] = useState<Notebook[]>([])
 	const [selectedNotebookId, setSelectedNotebookId] = useState<string>("")
 	const [selectedChapterId, setSelectedChapterId] = useState<string>("")
@@ -48,6 +53,8 @@ export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	return (
 		<NotebookContext.Provider
 			value={{
+				loaded,
+				setLoaded,
 				notebooks,
 				setNotebooks,
 				selectedNotebookId,

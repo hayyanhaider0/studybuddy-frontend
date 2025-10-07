@@ -1,6 +1,6 @@
-import client from "../../api/client"
-import { ApiResponse } from "../../types/global"
-import { PathPoint } from "../drawing/types/DrawingTypes"
+import client from "../../../api/client"
+import { ApiResponse } from "../../../types/global"
+import { PathPoint } from "../../drawing/types/DrawingTypes"
 
 // Notebooks
 export interface NotebookRequest {
@@ -69,12 +69,12 @@ export interface PathResponse {
 }
 
 // Notebooks
-export const createNotebookApi = async (req: NotebookRequest): Promise<NotebookResponse> => {
+export const createNotebook = async (req: NotebookRequest): Promise<NotebookResponse> => {
 	const res = await client.post<ApiResponse<NotebookResponse>>("/notebooks", req)
 	return res.data.data!
 }
 
-export const getNotebooksApi = async (): Promise<NotebookResponse[]> => {
+export const fetchNotebooks = async (): Promise<NotebookResponse[]> => {
 	const res = await client.get<ApiResponse<NotebookResponse[]>>("/notebooks")
 
 	console.log("Notebooks:", JSON.stringify(res.data, null, 2))
@@ -82,12 +82,12 @@ export const getNotebooksApi = async (): Promise<NotebookResponse[]> => {
 }
 
 // Chapters
-export const createChapterApi = async (req: ChapterRequest): Promise<ChapterResponse> => {
+export const createChapter = async (req: ChapterRequest): Promise<ChapterResponse> => {
 	const res = await client.post<ApiResponse<ChapterResponse>>("/chapters", req)
 	return res.data.data!
 }
 
-export const getChaptersApi = async (notebookIds: string[]): Promise<ChapterResponse[]> => {
+export const fetchChapters = async (notebookIds: string[]): Promise<ChapterResponse[]> => {
 	if (!notebookIds) throw new Error("getChaptersApi: No notebook ids provided.")
 	const res = await client.post<ApiResponse<ChapterResponse[]>>("/chapters/by-notebooks", {
 		notebookIds,
@@ -97,12 +97,12 @@ export const getChaptersApi = async (notebookIds: string[]): Promise<ChapterResp
 }
 
 // Canvases
-export const createCanvasApi = async (req: CanvasRequest): Promise<CanvasResponse> => {
+export const createCanvas = async (req: CanvasRequest): Promise<CanvasResponse> => {
 	const res = await client.post<ApiResponse<CanvasResponse>>("/canvases", req)
 	return res.data.data!
 }
 
-export const getCanvasesApi = async (chapterIds: string[]): Promise<CanvasResponse[]> => {
+export const fetchCanvases = async (chapterIds: string[]): Promise<CanvasResponse[]> => {
 	const res = await client.post<ApiResponse<CanvasResponse[]>>("/canvases/by-chapters", {
 		chapterIds,
 	})
@@ -111,12 +111,12 @@ export const getCanvasesApi = async (chapterIds: string[]): Promise<CanvasRespon
 }
 
 // Paths
-export const createPathApi = async (req: PathRequest) => {
+export const createPath = async (req: PathRequest) => {
 	const res = await client.post<ApiResponse<void>>("/paths", req)
 	return res.data.data!
 }
 
-export const getPathsApi = async (canvasIds: string[]) => {
+export const fetchPaths = async (canvasIds: string[]) => {
 	const res = await client.post<ApiResponse<PathResponse[]>>("/paths/by-canvases", canvasIds)
 	return res.data.data!
 }
