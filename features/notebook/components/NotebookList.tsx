@@ -16,10 +16,11 @@ import MiniCanvas from "../../common/components/MiniCanvas"
 import { useSort } from "../../common/contexts/SortContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
+import { getChapter, getNotebook } from "../../../utils/notebook"
 
 export default function NotebookList() {
 	// Get context values.
-	const { notebooks, setSelectedNotebookId } = useNotebookContext()
+	const { notebookState, dispatch } = useNotebookContext()
 	const { sorts } = useSort()
 
 	// Theming
@@ -33,7 +34,11 @@ export default function NotebookList() {
 	 * @param notebook - Notebook to navigate to.
 	 */
 	const selectNotebook = (notebookId: string) => {
-		setSelectedNotebookId(notebookId)
+		dispatch({ type: "SELECT_NOTEBOOK", payload: notebookId })
+		const notebook = getNotebook(notebookState.notebooks, notebookId)
+		dispatch({ type: "SELECT_CHAPTER", payload: notebook?.chapters[0].id! })
+		const chapter = getChapter(notebookState.notebooks, notebookId, notebookState.selectedChapterId)
+		dispatch({ type: "SELECT_CANVAS", payload: chapter?.canvases[0].id! })
 		nav.navigate("canvas")
 	}
 
@@ -65,7 +70,7 @@ export default function NotebookList() {
 	}
 
 	// Sorted array of notebooks without amending the original notebooks array.
-	const sortedNotebooks = [...notebooks].sort(getSortMethod())
+	const sortedNotebooks = [...notebookState.notebooks].sort(getSortMethod())
 
 	return (
 		<Grid

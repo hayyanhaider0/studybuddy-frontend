@@ -15,10 +15,27 @@ import { EducationLevel, Occupation } from "../../../enums/global"
 import { saveToken, saveRefreshToken } from "../../../utils/secureStore"
 import { AxiosError } from "axios"
 import { login } from "../api"
+import { queryClient } from "../../../api/queryClient"
+import {
+	CanvasResponse,
+	ChapterResponse,
+	fetchCanvases,
+	fetchChapters,
+	fetchNotebooks,
+	fetchPaths,
+	mapToCanvas,
+	mapToChapter,
+	mapToNotebook,
+	mapToPathType,
+	PathResponse,
+} from "../../notebook/api/api"
+import { buildNotebooksTree } from "../../../utils/notebook"
+import { useNotebookContext } from "../../notebook/contexts/NotebookContext"
 
 export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 	const nav = useNavigation<NavProp<"main">>()
 	const { setAuthState } = useAuthContext()
+	const { dispatch } = useNotebookContext()
 
 	return useMutation({
 		mutationFn: login,
@@ -29,6 +46,64 @@ export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 			saveToken(response.accessToken)
 			// Save the refresh token.
 			saveRefreshToken(response.refreshToken)
+
+			const notebooks = await queryClient.fetchQuery({
+				queryKey: ["notebooks"],
+				queryFn: fetchNotebooks,
+			})
+			const notebookIds = notebooks.map((n) => n.id)
+
+			// Fetch chapters only if there are notebooks
+			let chapters: ChapterResponse[] = []
+			if (notebookIds.length > 0) {
+				chapters = await queryClient.fetchQuery({
+					queryKey: ["chapters", notebookIds],
+					queryFn: () => fetchChapters(notebookIds),
+				})
+			}
+			const chapterIds = chapters.map((ch) => ch.id)
+
+			// Fetch canvases only if there are chapters
+			let canvases: CanvasResponse[] = []
+			if (chapterIds.length > 0) {
+				canvases = await queryClient.fetchQuery({
+					queryKey: ["canvases", chapterIds],
+					queryFn: () => fetchCanvases(chapterIds),
+				})
+			}
+			const canvasIds = canvases.map((cv) => cv.id)
+
+			// Fetch paths only if there are canvases
+			let paths: PathResponse[] = []
+			if (canvasIds.length > 0) {
+				paths = await queryClient.fetchQuery({
+					queryKey: ["paths", canvasIds],
+					queryFn: () => fetchPaths(canvasIds),
+				})
+			}
+
+			const mappedNotebooks = notebooks.map(mapToNotebook)
+			const mappedChapters = chapters.map(mapToChapter)
+			const mappedCanvases = canvases.map(mapToCanvas)
+			const mappedPaths = paths.map(mapToPathType)
+
+			const nbTree = buildNotebooksTree(
+				mappedNotebooks,
+				mappedChapters,
+				mappedCanvases,
+				mappedPaths
+			)
+			dispatch({ type: "SET_NOTEBOOKS", payload: nbTree })
+
+			if (nbTree.length > 0) {
+				dispatch({ type: "SELECT_NOTEBOOK", payload: nbTree[0].id })
+				if (nbTree[0].chapters.length > 0) {
+					dispatch({ type: "SELECT_CHAPTER", payload: nbTree[0].chapters[0].id })
+					if (nbTree[0].chapters[0].canvases.length > 0) {
+						dispatch({ type: "SELECT_CANVAS", payload: nbTree[0].chapters[0].canvases[0].id })
+					}
+				}
+			}
 
 			// Set the user auth state.
 			setAuthState({

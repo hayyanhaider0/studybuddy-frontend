@@ -9,17 +9,24 @@ import { PathType } from "../../drawing/types/DrawingTypes"
 import { useModal, ModalType } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Notebook } from "../../../types/notebook"
-import { addCanvas, addChapter, addNotebook, getCanvas } from "../../../utils/notebook"
+import { getCanvas } from "../../../utils/notebook"
+import { useNotebookMutations } from "./useNotebookMutations"
 
 export default function useNotebookActions() {
 	// Get context values.
-	const { notebooks, setNotebooks, selectedNotebookId, selectedChapterId, selectedCanvasId } =
-		useNotebookContext()
+	const { notebookState, dispatch } = useNotebookContext()
 	const { openModal, setInput } = useModal()
+	const { createNotebookServer, createChapterServer, createCanvasServer, createPathServer } =
+		useNotebookMutations()
 
 	// const activeNotebook = getNotebook(notebooks, selectedNotebookId)
 	// const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
-	const activeCanvas = getCanvas(notebooks, selectedNotebookId, selectedChapterId, selectedCanvasId)
+	const activeCanvas = getCanvas(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId,
+		notebookState.selectedCanvasId
+	)
 
 	const MAX_UNDO_HISTORY = 100
 	const MAX_REDO_HISTORY = 100
@@ -59,8 +66,7 @@ export default function useNotebookActions() {
 			buttonText: "Create",
 			onSubmit: (input: string) => {
 				// Create notebook here
-				const now = Date.now()
-				setNotebooks((prev) => [...prev, addNotebook(input, null, now, notebooks.length)])
+				createNotebookServer.mutate({ title: input, color: null })
 			},
 		})
 	}
@@ -99,42 +105,26 @@ export default function useNotebookActions() {
 			placeholder: "Enter chapter name...",
 			buttonText: "Create",
 			onSubmit: (input: string) => {
-				const notebook = notebooks.find((n) => n.id === selectedNotebookId)
+				const notebook = notebookState.notebooks.find(
+					(n) => n.id === notebookState.selectedNotebookId
+				)
 				if (!notebook) throw new Error("Notebook not found.")
 
 				const order = notebook.chapters.length
-				const now = Date.now()
 
 				// Create chapter here
-				setNotebooks((prev) =>
-					prev.map((n) =>
-						n.id === selectedNotebookId
-							? { ...n, chapters: [...n.chapters, addChapter(n.id, input, order, now)] }
-							: n
-					)
-				)
+				createChapterServer.mutate({
+					title: input,
+					notebookId: notebookState.selectedNotebookId!,
+					order,
+				})
 			},
 		})
 	}
 
 	// Helper function to create a new canvas
 	const handleCreateCanvas = (order: number = 0) => {
-		const now = Date.now()
-
-		setNotebooks((prev) =>
-			prev.map((n) =>
-				n.id === selectedNotebookId
-					? {
-							...n, // spread the notebook fields
-							chapters: n.chapters.map((ch) =>
-								ch.id === selectedChapterId
-									? { ...ch, canvases: [...ch.canvases, addCanvas(ch.id, order, now)] }
-									: ch
-							),
-					  }
-					: n
-			)
-		)
+		createCanvasServer.mutate({ chapterId: notebookState.selectedChapterId!, order })
 	}
 
 	/////////////////////////////////////////
@@ -167,6 +157,14 @@ export default function useNotebookActions() {
 		}
 
 		// Create path here
+		createPathServer.mutate({
+			canvasId: activeCanvas.id,
+			points: newPathObject.points,
+			brushType: newPathObject.brush.type.toUpperCase(),
+			baseWidth: newPathObject.brush.baseWidth,
+			color: newPathObject.brush.color,
+			opacity: newPathObject.brush.opacity,
+		})
 
 		updateCanvas(updatedCanvas)
 	}
@@ -275,28 +273,18 @@ export default function useNotebookActions() {
 	 * Helper function to update the canvas from the notebooks array.
 	 * @param newCanvas - The new canvas state
 	 */
-	const updateCanvas = (_newCanvas: Canvas) => {
+	const updateCanvas = (newCanvas: Canvas) => {
 		if (!activeCanvas) return
 
-		setNotebooks((prevNotebooks) =>
-			prevNotebooks.map((notebook) =>
-				notebook.id === selectedNotebookId
-					? {
-							...notebook,
-							chapters: notebook.chapters.map((chapter) =>
-								chapter.id === selectedChapterId
-									? {
-											...chapter,
-											canvases: chapter.canvases.map((canvas) =>
-												canvas.id === _newCanvas.id ? _newCanvas : canvas
-											),
-									  }
-									: chapter
-							),
-					  }
-					: notebook
-			)
-		)
+		dispatch({
+			type: "UPDATE_CANVAS",
+			payload: {
+				notebookId: notebookState.selectedNotebookId!,
+				chapterId: notebookState.selectedChapterId!,
+				id: activeCanvas.id,
+				updates: newCanvas,
+			},
+		})
 	}
 
 	// Helper to push items onto both undo and redo stacks.

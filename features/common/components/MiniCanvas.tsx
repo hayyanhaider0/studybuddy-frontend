@@ -10,10 +10,10 @@ import { useNotebookContext } from "../../notebook/contexts/NotebookContext"
 export default function MiniCanvas({ id }: { id: string }) {
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
-	const { notebooks } = useNotebookContext()
+	const { notebookState } = useNotebookContext()
 	const { theme } = useThemeContext()
 
-	const notebook = notebooks.find((n) => n.id === id)
+	const notebook = notebookState.notebooks.find((n) => n.id === id)
 
 	if (!notebook) throw new Error("Notebook not found!")
 	if (notebook.chapters && notebook.chapters.length === 0) {
@@ -41,7 +41,7 @@ export default function MiniCanvas({ id }: { id: string }) {
 					backgroundColor={theme.colors.background}
 				/>
 				{(firstCanvas.paths ?? []).map((p: PathType) => (
-					<PathRenderer key={p.pid} path={p} width={dimensions.width} height={dimensions.height} />
+					<PathRenderer key={p.id} path={p} width={dimensions.width} height={dimensions.height} />
 				))}
 			</Canvas>
 		</View>

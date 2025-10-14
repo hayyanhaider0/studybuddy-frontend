@@ -15,12 +15,11 @@ import CanvasList from "../features/notebook/components/canvas/CanvasList"
 import { getCanvasStyles } from "../styles/canvas"
 import { GestureDetector } from "react-native-gesture-handler"
 import { useCanvasTranslateGestures } from "../features/notebook/hooks/useCanvasTranslateGestures"
-import LoadingSpinner from "../features/common/components/LoadingSpinner"
 import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
 
 export default function CanvasScreen() {
 	// Context Imports
-	const { notebooks, isPending } = useNotebookContext()
+	const { notebookState } = useNotebookContext()
 	const { handleCreateNotebook } = useNotebookActions()
 	const translateGesture = useCanvasTranslateGestures()
 
@@ -31,11 +30,9 @@ export default function CanvasScreen() {
 
 	return (
 		<View style={styles.surface}>
-			{isPending ? (
-				<LoadingSpinner />
-			) : notebooks.length > 0 ? (
+			<ChapterTab />
+			{notebookState.notebooks.length > 0 ? (
 				<>
-					<ChapterTab />
 					<ZoomIndicator />
 					<Toolbar />
 					<GestureDetector gesture={translateGesture}>

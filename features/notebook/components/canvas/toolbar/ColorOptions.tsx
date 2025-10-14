@@ -10,7 +10,7 @@ import { getCanvasStyles } from "../../../../../styles/canvas"
 import { useThemeContext } from "../../../../common/contexts/ThemeContext"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import tinycolor from "tinycolor2"
-import { BrushType } from "../../../../../enums/global"
+import { BrushType } from "../../../../drawing/types/DrawingTypes"
 
 export default function ColorOptions({ tool }: { tool: BrushType }) {
 	const {

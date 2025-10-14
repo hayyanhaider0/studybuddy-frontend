@@ -5,31 +5,20 @@
  * selection.
  */
 
-import React, { createContext, ReactNode, useContext, useState } from "react"
-import { Notebook } from "../../../types/notebook"
+import React, { createContext, ReactNode, useContext, useReducer } from "react"
+import {
+	INITIAL_STATE,
+	NOTEBOOK_ACTION,
+	notebookReducer,
+	NotebookState,
+} from "../reducers/NotebookReducer"
 
 // Types for the notebook context.
 type NotebookContextType = {
-	// Flag to check whether data is loaded from the database or not.
-	loaded: boolean
-	// Setter for data flag.
-	setLoaded: React.Dispatch<React.SetStateAction<boolean>>
 	// List of all notebooks.
-	notebooks: Notebook[]
+	notebookState: NotebookState
 	// Setter for the list of all notebooks.
-	setNotebooks: React.Dispatch<React.SetStateAction<Notebook[]>>
-	// Id of the currently selected notebook, or null if no notebook is selected.
-	selectedNotebookId: string
-	// Setter for the id of the currently selected notebook.
-	setSelectedNotebookId: React.Dispatch<React.SetStateAction<string>>
-	// Id of the currently selected chapter.
-	selectedChapterId: string
-	// Setter for the id of the currently selected notebook.
-	setSelectedChapterId: React.Dispatch<React.SetStateAction<string>>
-	// Id of the currently selected canvas.
-	selectedCanvasId: string
-	// Setter for the id of the currently selected notebook.
-	setSelectedCanvasId: React.Dispatch<React.SetStateAction<string>>
+	dispatch: React.Dispatch<NOTEBOOK_ACTION>
 }
 
 // React context for pagination, chapter and notebook selection.
@@ -44,25 +33,13 @@ const NotebookContext = createContext<NotebookContextType | null>(null)
  */
 export const NotebookProvider = ({ children }: { children: ReactNode }) => {
 	// Pagination, chapter and notebook state values.
-	const [loaded, setLoaded] = useState<boolean>(false)
-	const [notebooks, setNotebooks] = useState<Notebook[]>([])
-	const [selectedNotebookId, setSelectedNotebookId] = useState<string>("")
-	const [selectedChapterId, setSelectedChapterId] = useState<string>("")
-	const [selectedCanvasId, setSelectedCanvasId] = useState<string>("")
+	const [notebookState, dispatch] = useReducer(notebookReducer, INITIAL_STATE)
 
 	return (
 		<NotebookContext.Provider
 			value={{
-				loaded,
-				setLoaded,
-				notebooks,
-				setNotebooks,
-				selectedNotebookId,
-				setSelectedNotebookId,
-				selectedChapterId,
-				setSelectedChapterId,
-				selectedCanvasId,
-				setSelectedCanvasId,
+				notebookState,
+				dispatch,
 			}}
 		>
 			{children}

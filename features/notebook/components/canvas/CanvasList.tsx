@@ -18,13 +18,16 @@ export default function CanvasList() {
 	// Get context values.
 	const flatListRef = useRef<FlatList>(null)
 	const { layout } = useCanvasContext()
-	const { notebooks, selectedNotebookId, selectedChapterId, setSelectedCanvasId } =
-		useNotebookContext()
+	const { notebookState, dispatch } = useNotebookContext()
 	const { scale, translateX, translateY } = useTransformContext()
 	const screen = Dimensions.get("screen")
 
 	// Get the currently selected chapter.
-	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
+	const chapter = getChapter(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId
+	)
 
 	// DEFAULT VALUES.
 	const GAP = 4
@@ -66,7 +69,7 @@ export default function CanvasList() {
 		const clampedIndex = Math.max(0, Math.min(closestIndex, chapter.canvases.length - 1))
 
 		// Set the active canvas.
-		setSelectedCanvasId(chapter.canvases[clampedIndex].id)
+		dispatch({ type: "SELECT_CANVAS", payload: chapter.canvases[clampedIndex].id })
 	}
 
 	return (

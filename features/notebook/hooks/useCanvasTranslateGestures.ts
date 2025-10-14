@@ -13,10 +13,14 @@ import { getCanvas } from "../../../utils/notebook"
 export function useCanvasTranslateGestures() {
 	const { offsetX, offsetY, translateX, translateY, scale, savedScale } = useTransformContext()
 	const { clearCurrentPath } = useCanvasContext()
-	const { notebooks, selectedNotebookId, selectedChapterId, selectedCanvasId } =
-		useNotebookContext()
+	const { notebookState } = useNotebookContext()
 
-	const activeCanvas = getCanvas(notebooks, selectedNotebookId, selectedChapterId, selectedCanvasId)
+	const activeCanvas = getCanvas(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId,
+		notebookState.selectedCanvasId
+	)
 
 	// Pinch gesture: Allows user to zoom in or out within a defined limit.
 	const pinchGesture = Gesture.Pinch()

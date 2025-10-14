@@ -5,14 +5,7 @@
  * chapters, and canvases.
  */
 
-import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
-import { BrushType, PathType } from "../features/drawing/types/DrawingTypes"
-import {
-	CanvasResponse,
-	ChapterResponse,
-	NotebookResponse,
-	PathResponse,
-} from "../features/notebook/api/api"
+import { PathType } from "../features/drawing/types/DrawingTypes"
 import { Canvas, Chapter, Notebook } from "../types/notebook"
 import { Color } from "../types/global"
 import uuid from "react-native-uuid"
@@ -27,67 +20,50 @@ import uuid from "react-native-uuid"
  * @returns A tree structure of notebooks, chapters, canvases, and paths.
  */
 export const buildNotebooksTree = (
-	notebooksResp: NotebookResponse[],
-	chaptersResp: ChapterResponse[],
-	canvasesResp: CanvasResponse[],
-	pathsResp: PathResponse[]
+	notebooks: Notebook[],
+	chapters: Chapter[],
+	canvases: Canvas[],
+	paths: PathType[]
 ): Notebook[] => {
-	return notebooksResp.map(
-		(nb): Notebook => ({
-			id: nb.id,
-			title: nb.title,
-			color: nb.color ?? null,
-			createdAt: new Date(nb.createdAt).getTime(),
-			updatedAt: new Date(nb.updatedAt).getTime(),
-			lastAccessedAt: 0,
-			chapters: chaptersResp
-				.filter((ch) => ch.notebookId === nb.id)
-				.map(
-					(ch): Chapter => ({
-						id: ch.id,
-						notebookId: ch.notebookId,
-						title: ch.title,
-						order: ch.order,
-						createdAt: new Date(ch.createdAt).getTime(),
-						updatedAt: new Date(ch.updatedAt).getTime(),
-						canvases: canvasesResp
-							.filter((cv) => cv.chapterId === ch.id)
-							.map(
-								(cv): Canvas => ({
-									id: cv.id,
-									chapterId: cv.chapterId,
-									order: cv.order,
-									createdAt: new Date(cv.createdAt).getTime(),
-									updatedAt: new Date(cv.updatedAt).getTime(),
-									lastAccessedAt: 0,
-									undoStack: [],
-									redoStack: [],
-									paths: pathsResp
-										.filter((p) => p.canvasId === cv.id)
-										.map(
-											(p): PathType => ({
-												id: p.id,
-												canvasId: cv.id,
-												points: p.points,
-												brush: {
-													type: p.brushType.toLowerCase() as BrushType,
-													color: p.color,
-													baseWidth: p.baseWidth,
-													opacity: p.opacity,
-													strokeCap: StrokeCap.Round,
-													strokeJoin: StrokeJoin.Round,
-													minWidth: p.baseWidth * 0.5,
-													maxWidth: p.baseWidth * 1.5,
-												},
-												bbox: { minX: 0, maxX: 0, minY: 0, maxY: 0 },
-											})
-										),
-								})
-							),
-					})
-				),
-		})
-	)
+	return notebooks.map((nb) => {
+		// Chapters that already exist on the notebook
+		const notebookChapters = nb.chapters?.map((ch) => mapChapter(ch, canvases, paths)) || []
+
+		// Chapters fetched separately that aren't in notebook.chapters yet
+		const extraChapters = chapters
+			.filter((ch) => ch.notebookId === nb.id && !notebookChapters.some((c) => c.id === ch.id))
+			.map((ch) => mapChapter(ch, canvases, paths))
+
+		return {
+			...nb,
+			chapters: [...notebookChapters, ...extraChapters],
+		}
+	})
+}
+
+const mapChapter = (ch: Chapter, canvases: Canvas[], paths: PathType[]): Chapter => {
+	// Canvases that already exist on the chapter
+	const chapterCanvases = ch.canvases?.map((cv) => mapCanvas(cv, paths)) || []
+
+	// Canvases fetched separately that aren't in chapter.canvases yet
+	const extraCanvases = canvases
+		.filter((cv) => cv.chapterId === ch.id && !chapterCanvases.some((c) => c.id === cv.id))
+		.map((cv) => mapCanvas(cv, paths))
+
+	return {
+		...ch,
+		canvases: [...chapterCanvases, ...extraCanvases],
+	}
+}
+
+const mapCanvas = (cv: Canvas, paths: PathType[]): Canvas => {
+	const canvasPaths = paths.filter((p) => p.canvasId === cv.id)
+	return {
+		...cv,
+		paths: canvasPaths,
+		undoStack: cv.undoStack || [],
+		redoStack: cv.redoStack || [],
+	}
 }
 
 /////////////////////////////////////////
@@ -147,33 +123,35 @@ export const addCanvas = (chapterId: string, order: number, now: number): Canvas
 /////////////////////////////////////////
 // Getter Functions
 /////////////////////////////////////////
-export const getNotebook = (notebooks: Notebook[], notebookId: string): Notebook => {
-	const notebook = notebooks.find((n) => n.id === notebookId)
-
-	if (!notebook) throw new Error("[GET_NOTEBOOK: UTILS/NOTEBOOK.TS]: Notebook not found!")
-
-	return notebook
+export const getNotebook = (
+	notebooks: Notebook[],
+	notebookId: string | undefined
+): Notebook | undefined => {
+	if (!notebookId) throw new Error("[utils/notebook.ts, GET_NOTEBOOK]: Notebook ID undefined")
+	return notebooks.find((n) => n.id === notebookId)
 }
 
 export const getChapter = (
 	notebooks: Notebook[],
-	notebookId: string,
-	chapterId: string
-): Chapter => {
+	notebookId: string | undefined,
+	chapterId: string | undefined
+): Chapter | undefined => {
+	if (!notebookId || !chapterId)
+		throw new Error("[utils/notebook.ts, GET_CHAPTER]: Notebook ID and/or Chapter ID undefined")
 	const notebook = getNotebook(notebooks, notebookId)
-	const chapter = notebook?.chapters.find((c) => c.id === chapterId)
-	if (!chapter) throw new Error("[GET_CHAPTER: UTILS/NOTEBOOK.TS]: Chapter not found!")
-	return chapter
+	return notebook?.chapters.find((c) => c.id === chapterId)
 }
 
 export const getCanvas = (
 	notebooks: Notebook[],
-	notebookId: string,
-	chapterId: string,
-	canvasId: string
-): Canvas => {
+	notebookId: string | undefined,
+	chapterId: string | undefined,
+	canvasId: string | undefined
+): Canvas | undefined => {
+	if (!notebookId || !chapterId)
+		throw new Error(
+			"[utils/notebook.ts, GET_CHAPTER]: Notebook ID and/or Chapter ID and/or Canvas ID undefined"
+		)
 	const chapter = getChapter(notebooks, notebookId, chapterId)
-	const canvas = chapter?.canvases.find((c) => c.id === canvasId)
-	if (!canvas) throw new Error("[GET_CANVAS: UTILS/NOTEBOOK.TS]: Canvas not found!")
-	return canvas
+	return chapter?.canvases.find((c) => c.id === canvasId)
 }

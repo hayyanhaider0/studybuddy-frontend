@@ -22,19 +22,28 @@ import { PathType } from "../../../drawing/types/DrawingTypes"
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
 	const { current, layout } = useCanvasContext()
-	const { notebooks, selectedNotebookId, selectedChapterId } = useNotebookContext()
+	const { notebookState } = useNotebookContext()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
 
 	// Get the currently selected chapter.
-	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)!
+	const chapter = getChapter(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId
+	)!
 
 	const canvasIndex = chapter.canvases.findIndex((cv) => cv.id === canvasId)
 	const canvasNumber = canvasIndex !== -1 ? canvasIndex + 1 + "" : "?"
 
 	// Get the current canvas's paths and current path if any.
-	const canvas = getCanvas(notebooks, selectedNotebookId, selectedChapterId, canvasId)
+	const canvas = getCanvas(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId,
+		canvasId
+	)
 	const canvasPaths = canvas?.paths ?? []
 
 	// Font import for Skia -- used for page number.

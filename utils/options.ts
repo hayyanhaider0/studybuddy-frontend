@@ -14,14 +14,13 @@ import { getCanvas } from "./notebook"
 export function useOptionDefinitions() {
 	const { collapsed, setCollapsed } = useToolContext() // To check whether toolbar is collapsed.
 	const { undo, canUndo, redo, canRedo, clearCanvas } = useNotebookActions()
-	const { notebooks, selectedNotebookId, selectedChapterId, selectedCanvasId } =
-		useNotebookContext()
+	const { notebookState } = useNotebookContext()
 
 	const activeCanvas = getCanvas(
-		notebooks,
-		selectedNotebookId,
-		selectedChapterId,
-		selectedCanvasId
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId,
+		notebookState.selectedCanvasId
 	)!
 
 	// Object array that contains all objects that are shown in the toolbar.
