@@ -49,7 +49,7 @@ export default function Modal() {
 					from={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
-					transition={{ type: "spring", damping: 18 }}
+					transition={{ type: "timing", duration: 128 }}
 					style={GlobalStyles.dimBackground}
 				>
 					{/* Modal Container */}
@@ -58,7 +58,7 @@ export default function Modal() {
 							from={{ translateY: 512 }}
 							animate={{ translateY: 0 }}
 							exit={{ translateY: 512 }}
-							transition={{ type: "spring", damping: 18 }}
+							transition={{ type: "spring", duration: 128 }}
 							style={GlobalStyles.choiceModalContainer}
 						>
 							<Handle close={closeModal} />
@@ -101,7 +101,7 @@ export default function Modal() {
 							from={{ translateY: 256, opacity: 0 }}
 							animate={{ translateY: 0, opacity: 1 }}
 							exit={{ translateY: 128, opacity: 0 }}
-							transition={{ type: "spring", damping: 18 }}
+							transition={{ type: "spring", duration: 128 }}
 							style={GlobalStyles.modalContainer}
 						>
 							{/* Modal components */}

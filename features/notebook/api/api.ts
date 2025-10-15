@@ -54,6 +54,7 @@ export interface CanvasResponse {
 
 // Paths
 export interface PathRequest {
+	tempId: string
 	canvasId: string
 	points: PathPoint[]
 	brushType: string
@@ -72,6 +73,11 @@ export interface PathResponse {
 	opacity: number
 }
 
+export interface PathCreateResponse {
+	id: string
+	tempId: string
+}
+
 // Notebooks
 export const createNotebook = async (req: NotebookRequest): Promise<NotebookResponse> => {
 	const res = await client.post<ApiResponse<NotebookResponse>>("/notebooks", req)
@@ -82,6 +88,11 @@ export const createNotebook = async (req: NotebookRequest): Promise<NotebookResp
 export const fetchNotebooks = async (): Promise<NotebookResponse[]> => {
 	const res = await client.get<ApiResponse<NotebookResponse[]>>("/notebooks")
 	console.log("Notebooks:", JSON.stringify(res.data, null, 2))
+	return res.data.data!
+}
+
+export const deleteNotebook = async (id: string): Promise<void> => {
+	const res = await client.delete<ApiResponse<void>>(`/notebooks/${id}`)
 	return res.data.data!
 }
 
@@ -115,6 +126,11 @@ export const fetchChapters = async (notebookIds: string[]): Promise<ChapterRespo
 	return res.data.data!
 }
 
+export const deleteChapter = async (id: string): Promise<void> => {
+	const res = await client.delete<ApiResponse<void>>(`/chapters/${id}`)
+	return res.data.data!
+}
+
 export const mapToChapter = (res: ChapterResponse): Chapter => {
 	const chapter = {
 		...res,
@@ -141,6 +157,11 @@ export const fetchCanvases = async (chapterIds: string[]): Promise<CanvasRespons
 	return res.data.data!
 }
 
+export const deleteCanvas = async (id: string): Promise<void> => {
+	const res = await client.delete<ApiResponse<void>>(`/canvases/${id}`)
+	return res.data.data!
+}
+
 export const mapToCanvas = (res: CanvasResponse): Canvas => {
 	const canvas = {
 		...res,
@@ -156,15 +177,38 @@ export const mapToCanvas = (res: CanvasResponse): Canvas => {
 }
 
 // Paths
-export const createPath = async (req: PathRequest) => {
-	const res = await client.post<ApiResponse<void>>("/paths", req)
+export const createPaths = async (req: PathRequest[]): Promise<PathCreateResponse[]> => {
+	if (!req) throw new Error("notebooks/api.ts/[CREATE_PATHS]: Request must be provided.")
+	const res = await client.post<ApiResponse<PathCreateResponse[]>>("/paths", req)
 	return res.data.data!
 }
 
-export const fetchPaths = async (canvasIds: string[]) => {
-	if (!canvasIds) throw new Error("[fetchPaths]: No canvas ids provided.")
+export const fetchPaths = async (canvasIds: string[]): Promise<PathResponse[]> => {
+	if (!canvasIds) throw new Error("notebooks/api.ts/[FETCH_PATHS]: canvasIds must be provided.")
 	const res = await client.post<ApiResponse<PathResponse[]>>("/paths/by-canvases", canvasIds)
 	return res.data.data!
+}
+
+export const deletePaths = async (pathIds: string[]): Promise<void> => {
+	if (!pathIds) throw new Error("notebooks/api.ts/[DELETE_PATHS]: pathIds must be provided.")
+	console.log("Deleting paths with ids:", pathIds)
+	const res = await client.delete<ApiResponse<void>>("/paths", { data: pathIds })
+	console.log("Response:", res.data)
+	return res.data.data!
+}
+
+export const mapToPathRequest = (path: PathType): PathRequest => {
+	const req: PathRequest = {
+		tempId: `temp-${Date.now()}`,
+		canvasId: path.canvasId,
+		points: path.points,
+		brushType: path.brush.type.toUpperCase(),
+		baseWidth: path.brush.baseWidth,
+		color: path.brush.color,
+		opacity: path.brush.opacity,
+	}
+
+	return req
 }
 
 export const mapToPathType = (res: PathResponse): PathType => {
@@ -191,4 +235,11 @@ export const mapToPathType = (res: PathResponse): PathType => {
 	}
 
 	return path
+}
+
+// Syncing
+export const sync = async (req: any): Promise<void> => {
+	if (!req) throw new Error("notebooks/api.ts/[SYNC]: Request must be provided.")
+	const res = await client.post<ApiResponse<void>>("/sync", req)
+	return res.data.data!
 }

@@ -9,14 +9,18 @@ import {
 	createCanvas,
 	createChapter,
 	createNotebook,
-	createPath,
+	createPaths,
+	deleteNotebook,
+	deletePaths,
 	mapToCanvas,
 	mapToChapter,
 	mapToNotebook,
 	NotebookRequest,
+	PathCreateResponse,
 	PathRequest,
+	sync,
 } from "../api/api"
-import { addCanvas, addChapter, addNotebook } from "../../../utils/notebook"
+import { addCanvas, addChapter, addNotebook, getNotebook } from "../../../utils/notebook"
 import { useNotebookContext } from "../contexts/NotebookContext"
 
 export const useNotebookMutations = () => {
@@ -41,9 +45,11 @@ export const useNotebookMutations = () => {
 			return { tempId }
 		},
 		// If api call fails.
-		onError: (_err, _vars, context) => {
-			// Roll back to previous state.
-			dispatch({ type: "DELETE_NOTEBOOK", payload: { id: context?.tempId! } })
+		onError: (err) => {
+			// Print an error message.
+			// This is to be replaced by batched update logic.
+			// Store updates in a queue and send them to the server upon restoration of connection.
+			console.error("[useNotebookMutations.ts/CREATE_NOTEBOOK_SERVER]: Mutation failed.", err)
 		},
 		// If api call succeeds.
 		onSuccess: (data, _vars, context) => {
@@ -62,6 +68,21 @@ export const useNotebookMutations = () => {
 		},
 	})
 
+	const deleteNotebookServer = useMutation({
+		mutationFn: (id: string) => deleteNotebook(id),
+		onMutate: async (id: string) => {
+			const notebook = getNotebook(notebookState.notebooks, id)
+			dispatch({ type: "DELETE_NOTEBOOK", payload: { id } })
+
+			return { notebook }
+		},
+		onError: (err, _vars, context) => {
+			console.error("[useNotebookMutations.ts/[DELETE_NOTEBOOK_SERVER]: Mutation failed.", err)
+			dispatch({ type: "ADD_NOTEBOOK", payload: context?.notebook! })
+		},
+		onSuccess: () => console.log("Notebook deleted"),
+	})
+
 	const createChapterServer = useMutation({
 		mutationFn: (req: ChapterRequest) => createChapter(req),
 		onMutate: async (req: ChapterRequest) => {
@@ -76,11 +97,8 @@ export const useNotebookMutations = () => {
 
 			return { tempId, notebookId: req.notebookId }
 		},
-		onError: (_err, _vars, context) => {
-			dispatch({
-				type: "DELETE_CHAPTER",
-				payload: { id: context?.tempId!, notebookId: context?.notebookId! },
-			})
+		onError: (err) => {
+			console.error("[useNotebookMutations.ts/CREATE_CHAPTER_SERVER]: Mutation failed.", err)
 		},
 		onSuccess: (data, _vars, context) => {
 			dispatch({
@@ -112,15 +130,8 @@ export const useNotebookMutations = () => {
 
 			return { tempId, chapterId: req.chapterId, notebookId }
 		},
-		onError: (_err, _vars, context) => {
-			dispatch({
-				type: "DELETE_CANVAS",
-				payload: {
-					notebookId: context?.notebookId!,
-					chapterId: context?.chapterId!,
-					id: context?.tempId!,
-				},
-			})
+		onError: (err) => {
+			console.error("[useNotebookMutations.ts/CREATE_CANVAS_SERVER]: Mutation failed.", err)
 		},
 		onSuccess: (data, _vars, context) => {
 			dispatch({
@@ -135,10 +146,51 @@ export const useNotebookMutations = () => {
 		},
 	})
 
-	const createPathServer = useMutation({
-		mutationFn: (req: PathRequest) => createPath(req),
-		onError: (err) => console.log("Error creating path:", err),
+	const createPathsServer = useMutation({
+		mutationFn: (req: PathRequest[]) => createPaths(req),
+		onError: (err) =>
+			console.error("[useNotebookMutations.ts/CREATE_PATH_SERVER]: Mutation failed.", err),
+		onSuccess: (data: PathCreateResponse[]) => {
+			const notebookId = notebookState.selectedNotebookId!
+			const chapterId = notebookState.selectedChapterId!
+			const canvasId = notebookState.selectedCanvasId!
+
+			console.log("Data received:", JSON.stringify(data, null, 2))
+
+			data.forEach((d) => {
+				dispatch({
+					type: "UPDATE_PATH",
+					payload: {
+						notebookId,
+						chapterId,
+						canvasId,
+						id: d.tempId,
+						updates: { id: d.id },
+					},
+				})
+			})
+		},
 	})
 
-	return { createNotebookServer, createChapterServer, createCanvasServer, createPathServer }
+	const deletePathsServer = useMutation({
+		mutationFn: (ids: string[]) => deletePaths(ids),
+		onError: (err) =>
+			console.error("[useNotebookMutations.ts/DELETE_PATH_SERVER]: Mutation failed.", err),
+	})
+
+	const syncWithServer = useMutation({
+		mutationFn: (req: any) => sync(req),
+		onError: (err) =>
+			console.error("[useNotebookMutations.ts/SYNC_WITH_SERVER]: Mutation failed.", err),
+	})
+
+	return {
+		createNotebookServer,
+		deleteNotebookServer,
+		createChapterServer,
+		createCanvasServer,
+		createPathsServer,
+		deletePathsServer,
+		syncWithServer,
+	}
 }

@@ -81,12 +81,10 @@ export default function ContextMenu() {
 											borderBottomWidth: 1,
 											borderColor: theme.colors.onSecondary,
 										},
-										{ padding: 16, paddingRight: 32 },
+										{ padding: 16, paddingRight: 32, justifyContent: "center" },
 									]}
 								>
-									<Text style={{ textAlign: "left", color: theme.colors.textPrimary }}>
-										{opt.label}
-									</Text>
+									<Text style={GlobalStyles.paragraph}>{opt.label}</Text>
 								</TouchableOpacity>
 							))}
 						</MotiView>

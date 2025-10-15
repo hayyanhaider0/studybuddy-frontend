@@ -6,7 +6,7 @@
 
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { useNavigation } from "@react-navigation/native"
-import { Pressable, View, Text } from "react-native"
+import { Pressable, View, Text, GestureResponderEvent } from "react-native"
 import NotebookIcon from "../../../assets/svgs/NotebookIcon"
 import { DrawerParamList } from "../../../navigation/DrawerNavigation"
 import { Notebook } from "../../../types/notebook"
@@ -17,14 +17,19 @@ import { useSort } from "../../common/contexts/SortContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { getChapter, getNotebook } from "../../../utils/notebook"
+import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
+import { useContextMenu } from "../../common/contexts/ContextMenuContext"
+import useNotebookActions from "../hooks/useNotebookActions"
 
 export default function NotebookList() {
 	// Get context values.
 	const { notebookState, dispatch } = useNotebookContext()
 	const { sorts } = useSort()
+	const { openMenu } = useContextMenu()
+	const { handleDeleteNotebook } = useNotebookActions()
 
 	// Theming
-	const { GlobalStyles } = useThemeContext()
+	const { GlobalStyles, theme } = useThemeContext()
 
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
@@ -69,6 +74,20 @@ export default function NotebookList() {
 		}
 	}
 
+	const handleNotebookMenu = (notebook: Notebook, event: GestureResponderEvent) => {
+		event.target.measure((_x, _y, _w, _h, pageX: number, pageY: number) => {
+			openMenu({
+				position: { x: pageX, y: pageY },
+				options: [
+					{
+						label: "Delete",
+						onPress: () => handleDeleteNotebook(notebook),
+					},
+				],
+			})
+		})
+	}
+
 	// Sorted array of notebooks without amending the original notebooks array.
 	const sortedNotebooks = [...notebookState.notebooks].sort(getSortMethod())
 
@@ -83,12 +102,22 @@ export default function NotebookList() {
 				>
 					<View style={{ alignItems: "center", justifyContent: "center", width: "100%" }}>
 						{/* Icon/Canvas container */}
-						<View style={{ aspectRatio: 9 / 16, width: "80%" }}>
+						<View style={{ aspectRatio: 9 / 16, width: "80%", flexDirection: "row" }}>
 							{n.color ? (
 								<NotebookIcon fill={n.color || "green"} width='100%' height='100%' />
 							) : (
 								<MiniCanvas id={n.id} />
 							)}
+							<Pressable
+								onPress={(e) => handleNotebookMenu(n, e)}
+								style={{
+									position: "absolute",
+									top: 12,
+									right: -24,
+								}}
+							>
+								<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
+							</Pressable>
 						</View>
 
 						<View style={{ paddingTop: 8 }}>

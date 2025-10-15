@@ -1,4 +1,5 @@
 import { Canvas, Chapter, Notebook } from "../../../types/notebook"
+import { PathType } from "../../drawing/types/DrawingTypes"
 
 export type NotebookState = {
 	notebooks: Notebook[]
@@ -34,6 +35,16 @@ export type NOTEBOOK_ACTION =
 	  }
 	| { type: "DELETE_CANVAS"; payload: { notebookId: string; chapterId: string; id: string } }
 	| { type: "SELECT_CANVAS"; payload: string }
+	| {
+			type: "UPDATE_PATH"
+			payload: {
+				id: string
+				notebookId: string
+				chapterId: string
+				canvasId: string
+				updates: Partial<PathType>
+			}
+	  }
 
 export const notebookReducer = (state: NotebookState, action: NOTEBOOK_ACTION): NotebookState => {
 	switch (action.type) {
@@ -140,6 +151,36 @@ export const notebookReducer = (state: NotebookState, action: NOTEBOOK_ACTION): 
 								chapters: n.chapters.map((ch) =>
 									ch.id === action.payload.chapterId
 										? { ...ch, canvases: ch.canvases.filter((cv) => cv.id !== action.payload.id) }
+										: ch
+								),
+						  }
+						: n
+				),
+			}
+		case "UPDATE_PATH":
+			return {
+				...state,
+				notebooks: state.notebooks.map((n) =>
+					n.id === action.payload.notebookId
+						? {
+								...n,
+								chapters: n.chapters.map((ch) =>
+									ch.id === action.payload.chapterId
+										? {
+												...ch,
+												canvases: ch.canvases.map((cv) =>
+													cv.id === action.payload.canvasId
+														? {
+																...cv,
+																paths: cv.paths.map((p) =>
+																	p.id === action.payload.id
+																		? { ...p, ...action.payload.updates }
+																		: p
+																),
+														  }
+														: cv
+												),
+										  }
 										: ch
 								),
 						  }

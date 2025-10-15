@@ -11,13 +11,20 @@ import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Notebook } from "../../../types/notebook"
 import { getCanvas } from "../../../utils/notebook"
 import { useNotebookMutations } from "./useNotebookMutations"
+import { mapToPathRequest, PathRequest } from "../api/api"
 
 export default function useNotebookActions() {
 	// Get context values.
 	const { notebookState, dispatch } = useNotebookContext()
 	const { openModal, setInput } = useModal()
-	const { createNotebookServer, createChapterServer, createCanvasServer, createPathServer } =
-		useNotebookMutations()
+	const {
+		createNotebookServer,
+		deleteNotebookServer,
+		createChapterServer,
+		createCanvasServer,
+		createPathsServer,
+		deletePathsServer,
+	} = useNotebookMutations()
 
 	// const activeNotebook = getNotebook(notebooks, selectedNotebookId)
 	// const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
@@ -43,14 +50,6 @@ export default function useNotebookActions() {
 	 */
 	const editNotebook = (notebookId: string, title?: string, color?: string) => {
 		console.log("Editing notebook with ID:", notebookId, title, color)
-	}
-
-	/**
-	 * Deletes a notebook from the user's account.
-	 * @param notebook - Notebook to be deleted
-	 */
-	const deleteNotebook = (notebookId: string) => {
-		console.log("Deleting notebook with ID:", notebookId)
 	}
 
 	/////////////////////////////////////////
@@ -92,7 +91,7 @@ export default function useNotebookActions() {
 			description:
 				"Are you sure you want to delete this notebook? This action can not be undone, and all of your progress will be lost.",
 			buttonText: "Delete",
-			onConfirm: () => deleteNotebook(notebook.id),
+			onConfirm: () => deleteNotebookServer.mutate(notebook.id),
 		})
 	}
 
@@ -157,14 +156,7 @@ export default function useNotebookActions() {
 		}
 
 		// Create path here
-		createPathServer.mutate({
-			canvasId: activeCanvas.id,
-			points: newPathObject.points,
-			brushType: newPathObject.brush.type.toUpperCase(),
-			baseWidth: newPathObject.brush.baseWidth,
-			color: newPathObject.brush.color,
-			opacity: newPathObject.brush.opacity,
-		})
+		createPathsServer.mutate([mapToPathRequest(newPathObject)])
 
 		updateCanvas(updatedCanvas)
 	}
@@ -185,8 +177,7 @@ export default function useNotebookActions() {
 				return
 
 			p.points.forEach((pt) => {
-				const dist = Math.sqrt(Math.pow(pt.x * width - x, 2) - Math.pow(pt.y * height - y, 2))
-				// if (pt.x * width <= x + r && pt.x * width >= x - r && pt.y * height <= y + r && pt.y * height >= y - r) {
+				const dist = Math.sqrt(Math.pow(pt.x * width - x, 2) + Math.pow(pt.y * height - y, 2))
 				if (dist <= r) {
 					const snapshot = createSnapshot()
 
@@ -226,6 +217,11 @@ export default function useNotebookActions() {
 			updatedAt: Date.now(),
 		}
 
+		// Previous and current paths arrays.
+		const currPaths = activeCanvas.paths
+		const prevPaths = [...lastItem.paths]
+		syncPaths(currPaths, prevPaths)
+
 		updateCanvas(updatedCanvas)
 	}
 
@@ -249,6 +245,11 @@ export default function useNotebookActions() {
 			updatedAt: Date.now(),
 		}
 
+		// Previous and current paths arrays.
+		const prevPaths = activeCanvas.paths
+		const currPaths = [...lastItem.paths]
+		syncPaths(prevPaths, currPaths)
+
 		updateCanvas(updatedCanvas)
 	}
 
@@ -258,12 +259,18 @@ export default function useNotebookActions() {
 
 		const snapshot = createSnapshot()
 
+		const pathIdsToDelete = activeCanvas.paths.map((path) => path.id)
+
 		const updatedCanvas = {
 			...activeCanvas,
 			paths: [],
 			undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
 			redoStack: [],
 			updatedAt: Date.now(),
+		}
+
+		if (pathIdsToDelete.length > 0) {
+			deletePathsServer.mutate(pathIdsToDelete)
 		}
 
 		updateCanvas(updatedCanvas)
@@ -294,7 +301,39 @@ export default function useNotebookActions() {
 	const limitStackSize = (stack: any[], max: number) =>
 		stack.length >= max ? stack.slice(stack.length - max + 1) : stack
 
-	// Helpers to allow for checking if undo and redo are enabled
+	// Helper to delete and add paths from the database.
+	const syncPaths = (prevPaths: PathType[], currPaths: PathType[]) => {
+		if (prevPaths.length === currPaths.length) {
+			// Intentionally left empty.
+			return
+		} else if (prevPaths.length > currPaths.length) {
+			// Delete the extra paths after operation.
+			let pathsToDelete: string[] = []
+			prevPaths.forEach((prevPath) => {
+				if (!currPaths.some((currPath) => currPath.id === prevPath.id)) {
+					pathsToDelete.push(prevPath.id)
+				}
+			})
+
+			if (pathsToDelete.length > 0) {
+				deletePathsServer.mutate(pathsToDelete)
+			}
+		} else if (prevPaths.length < currPaths.length) {
+			// Add back the previous paths after operation.
+			let pathsToAdd: PathRequest[] = []
+			currPaths.forEach((currPath) => {
+				if (!prevPaths.some((prevPath) => prevPath.id === currPath.id)) {
+					pathsToAdd.push(mapToPathRequest(currPath))
+				}
+			})
+
+			if (pathsToAdd.length > 0) {
+				createPathsServer.mutate(pathsToAdd)
+			}
+		}
+	}
+
+	// Helpers to allow for checking if undo and redo are enabled.
 	const canUndo = () => activeCanvas && activeCanvas.undoStack.length > 0
 	const canRedo = () => activeCanvas && activeCanvas.redoStack.length > 0
 
