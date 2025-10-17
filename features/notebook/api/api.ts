@@ -92,6 +92,7 @@ export const fetchNotebooks = async (): Promise<NotebookResponse[]> => {
 }
 
 export const deleteNotebook = async (id: string): Promise<void> => {
+	if (!id || id.startsWith("temp")) return
 	const res = await client.delete<ApiResponse<void>>(`/notebooks/${id}`)
 	return res.data.data!
 }
@@ -127,6 +128,7 @@ export const fetchChapters = async (notebookIds: string[]): Promise<ChapterRespo
 }
 
 export const deleteChapter = async (id: string): Promise<void> => {
+	if (!id || id.startsWith("temp")) return
 	const res = await client.delete<ApiResponse<void>>(`/chapters/${id}`)
 	return res.data.data!
 }
@@ -158,6 +160,7 @@ export const fetchCanvases = async (chapterIds: string[]): Promise<CanvasRespons
 }
 
 export const deleteCanvas = async (id: string): Promise<void> => {
+	if (!id || id.startsWith("temp")) return
 	const res = await client.delete<ApiResponse<void>>(`/canvases/${id}`)
 	return res.data.data!
 }
@@ -190,16 +193,17 @@ export const fetchPaths = async (canvasIds: string[]): Promise<PathResponse[]> =
 }
 
 export const deletePaths = async (pathIds: string[]): Promise<void> => {
-	if (!pathIds) throw new Error("notebooks/api.ts/[DELETE_PATHS]: pathIds must be provided.")
-	console.log("Deleting paths with ids:", pathIds)
-	const res = await client.delete<ApiResponse<void>>("/paths", { data: pathIds })
-	console.log("Response:", res.data)
+	if (!pathIds || pathIds.length === 0)
+		throw new Error("notebooks/api.ts/[DELETE_PATHS]: pathIds must be provided.")
+	const pathIdsWithoutTemp = pathIds.filter((id) => !id.startsWith("temp"))
+	if (pathIdsWithoutTemp.length === 0) return
+	const res = await client.delete<ApiResponse<void>>("/paths", { data: pathIdsWithoutTemp })
 	return res.data.data!
 }
 
 export const mapToPathRequest = (path: PathType): PathRequest => {
 	const req: PathRequest = {
-		tempId: `temp-${Date.now()}`,
+		tempId: path.id,
 		canvasId: path.canvasId,
 		points: path.points,
 		brushType: path.brush.type.toUpperCase(),

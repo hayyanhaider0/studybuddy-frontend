@@ -20,7 +20,7 @@ import {
 	PathRequest,
 	sync,
 } from "../api/api"
-import { addCanvas, addChapter, addNotebook, getNotebook } from "../../../utils/notebook"
+import { addCanvas, addChapter, addNotebook, getCanvas, getNotebook } from "../../../utils/notebook"
 import { useNotebookContext } from "../contexts/NotebookContext"
 
 export const useNotebookMutations = () => {
@@ -154,8 +154,6 @@ export const useNotebookMutations = () => {
 			const notebookId = notebookState.selectedNotebookId!
 			const chapterId = notebookState.selectedChapterId!
 			const canvasId = notebookState.selectedCanvasId!
-
-			console.log("Data received:", JSON.stringify(data, null, 2))
 
 			data.forEach((d) => {
 				dispatch({

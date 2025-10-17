@@ -127,7 +127,6 @@ export const getNotebook = (
 	notebooks: Notebook[],
 	notebookId: string | undefined
 ): Notebook | undefined => {
-	if (!notebookId) throw new Error("[utils/notebook.ts, GET_NOTEBOOK]: Notebook ID undefined")
 	return notebooks.find((n) => n.id === notebookId)
 }
 
@@ -136,8 +135,6 @@ export const getChapter = (
 	notebookId: string | undefined,
 	chapterId: string | undefined
 ): Chapter | undefined => {
-	if (!notebookId || !chapterId)
-		throw new Error("[utils/notebook.ts, GET_CHAPTER]: Notebook ID and/or Chapter ID undefined")
 	const notebook = getNotebook(notebooks, notebookId)
 	return notebook?.chapters.find((c) => c.id === chapterId)
 }
@@ -148,10 +145,6 @@ export const getCanvas = (
 	chapterId: string | undefined,
 	canvasId: string | undefined
 ): Canvas | undefined => {
-	if (!notebookId || !chapterId)
-		throw new Error(
-			"[utils/notebook.ts, GET_CHAPTER]: Notebook ID and/or Chapter ID and/or Canvas ID undefined"
-		)
 	const chapter = getChapter(notebooks, notebookId, chapterId)
 	return chapter?.canvases.find((c) => c.id === canvasId)
 }

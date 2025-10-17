@@ -6,7 +6,7 @@
  */
 
 import { PathType } from "../../drawing/types/DrawingTypes"
-import { useModal, ModalType } from "../../common/contexts/ModalContext"
+import { useModal } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Notebook } from "../../../types/notebook"
 import { getCanvas } from "../../../utils/notebook"
@@ -16,7 +16,7 @@ import { mapToPathRequest, PathRequest } from "../api/api"
 export default function useNotebookActions() {
 	// Get context values.
 	const { notebookState, dispatch } = useNotebookContext()
-	const { openModal, setInput } = useModal()
+	const { openModal } = useModal()
 	const {
 		createNotebookServer,
 		deleteNotebookServer,
@@ -58,26 +58,21 @@ export default function useNotebookActions() {
 	// Helper function to create a new notebook with a title.
 	const handleCreateNotebook = () => {
 		openModal({
-			type: ModalType.INPUT,
+			type: "input",
 			title: "Add New Notebook",
 			description: "Give your notebook a title to start organizing your study materials.",
 			placeholder: "Enter notebook name...",
 			buttonText: "Create",
-			onSubmit: (input: string) => {
-				// Create notebook here
-				createNotebookServer.mutate({ title: input, color: null })
-			},
+			onSubmit: (input: string) => createNotebookServer.mutate({ title: input, color: null }),
 		})
 	}
 
 	// Helper function to edit a notebook's title and cover fill.
 	const handleEditNotebook = (notebook: Notebook) => {
-		setInput(notebook.title)
 		openModal({
-			type: ModalType.INPUT,
+			type: "input",
 			title: `Edit ${notebook.title}`,
 			description: "Change your notebook's name and cover icon color.",
-			setInput: notebook.title,
 			placeholder: "Enter notebook name...",
 			buttonText: "Apply",
 			onSubmit: (input: string) => editNotebook(notebook.id, input),
@@ -86,19 +81,19 @@ export default function useNotebookActions() {
 
 	const handleDeleteNotebook = (notebook: Notebook) => {
 		openModal({
-			type: ModalType.CONFIRM,
+			type: "confirm",
 			title: `Delete ${notebook.title}?`,
 			description:
 				"Are you sure you want to delete this notebook? This action can not be undone, and all of your progress will be lost.",
 			buttonText: "Delete",
-			onConfirm: () => deleteNotebookServer.mutate(notebook.id),
+			onSubmit: () => deleteNotebookServer.mutate(notebook.id),
 		})
 	}
 
 	// Helper function to create a new chapter with a title.
 	const handleCreateChapter = () => {
 		openModal({
-			type: ModalType.INPUT,
+			type: "input",
 			title: "Create New Chapter",
 			description: "Organize your content by adding a new chapter to this notebook.",
 			placeholder: "Enter chapter name...",

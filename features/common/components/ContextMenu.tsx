@@ -84,7 +84,18 @@ export default function ContextMenu() {
 										{ padding: 16, paddingRight: 32, justifyContent: "center" },
 									]}
 								>
-									<Text style={GlobalStyles.paragraph}>{opt.label}</Text>
+									<Text
+										style={[
+											GlobalStyles.paragraph,
+											opt.label.startsWith("Generate")
+												? { color: "lightblue" }
+												: opt.label === "Delete"
+												? { color: theme.colors.error }
+												: {},
+										]}
+									>
+										{opt.label}
+									</Text>
 								</TouchableOpacity>
 							))}
 						</MotiView>

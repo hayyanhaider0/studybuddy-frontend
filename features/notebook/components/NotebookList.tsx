@@ -20,19 +20,28 @@ import { getChapter, getNotebook } from "../../../utils/notebook"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useContextMenu } from "../../common/contexts/ContextMenuContext"
 import useNotebookActions from "../hooks/useNotebookActions"
+import useGenerate from "../../llm/hooks/useGenerate"
 
 export default function NotebookList() {
 	// Get context values.
 	const { notebookState, dispatch } = useNotebookContext()
-	const { sorts } = useSort()
-	const { openMenu } = useContextMenu()
-	const { handleDeleteNotebook } = useNotebookActions()
-
 	// Theming
 	const { GlobalStyles, theme } = useThemeContext()
+	const { sorts } = useSort()
+	const { openMenu } = useContextMenu()
+	const { handleEditNotebook, handleDeleteNotebook } = useNotebookActions()
+	const { handleGenerateAINotes } = useGenerate()
 
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
+
+	if (notebookState.notebooks.length === 0) {
+		return (
+			<Text style={[GlobalStyles.paragraph, { textAlign: "left", paddingHorizontal: 16 }]}>
+				No notebooks found. Add a notebook to get started!
+			</Text>
+		)
+	}
 
 	/**
 	 * Select and open the notebook to it's first chapter and its first canvas.
@@ -80,8 +89,28 @@ export default function NotebookList() {
 				position: { x: pageX, y: pageY },
 				options: [
 					{
+						label: "Edit",
+						onPress: () => handleEditNotebook(notebook),
+					},
+					{
 						label: "Delete",
 						onPress: () => handleDeleteNotebook(notebook),
+					},
+					{
+						label: "Generate AI Notes",
+						onPress: () => handleGenerateAINotes(notebook),
+					},
+					{
+						label: "Generate Flashcards",
+						onPress: () => console.log("Generate Flashcards"),
+					},
+					{
+						label: "Generate Quiz",
+						onPress: () => console.log("Generate Quiz"),
+					},
+					{
+						label: "Generate Exam",
+						onPress: () => console.log("Generate Exam"),
 					},
 				],
 			})
