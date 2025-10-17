@@ -10,6 +10,7 @@ import {
 	createChapter,
 	createNotebook,
 	createPaths,
+	deleteChapter,
 	deleteNotebook,
 	deletePaths,
 	mapToCanvas,
@@ -20,8 +21,9 @@ import {
 	PathRequest,
 	sync,
 } from "../api/api"
-import { addCanvas, addChapter, addNotebook, getCanvas, getNotebook } from "../../../utils/notebook"
+import { addCanvas, addChapter, addNotebook, getNotebook } from "../../../utils/notebook"
 import { useNotebookContext } from "../contexts/NotebookContext"
+import { Chapter, Notebook } from "../../../types/notebook"
 
 export const useNotebookMutations = () => {
 	const { notebookState, dispatch } = useNotebookContext()
@@ -39,6 +41,7 @@ export const useNotebookMutations = () => {
 
 			// Set state with the new notebook having a temporary ID.
 			dispatch({ type: "ADD_NOTEBOOK", payload: optimisticNotebook })
+			dispatch({ type: "SELECT_NOTEBOOK", payload: tempId })
 
 			console.log("Optimistic Notebook:", JSON.stringify(optimisticNotebook, null, 2))
 
@@ -68,17 +71,26 @@ export const useNotebookMutations = () => {
 		},
 	})
 
+	// Edit a notebook.
+	const editNotebookServer = (notebookId: string, input: string) => console.log("Editing notebook.")
+
+	// Delete a notebook.
 	const deleteNotebookServer = useMutation({
-		mutationFn: (id: string) => deleteNotebook(id),
-		onMutate: async (id: string) => {
-			const notebook = getNotebook(notebookState.notebooks, id)
-			dispatch({ type: "DELETE_NOTEBOOK", payload: { id } })
+		mutationFn: (notebook: Notebook) => deleteNotebook(notebook.id),
+		// Before the mutation runs, just delete the notebook from the frontend for instant UI updates.
+		onMutate: async (notebook: Notebook) => {
+			dispatch({ type: "DELETE_NOTEBOOK", payload: { id: notebook.id } })
 
 			return { notebook }
 		},
+		// If the api call fails, set the isDeleted flag to true, so that it goes into the user's recycle bin.
+		// Then, send the failed api call to a queue that will retry the api call if needed.
 		onError: (err, _vars, context) => {
 			console.error("[useNotebookMutations.ts/[DELETE_NOTEBOOK_SERVER]: Mutation failed.", err)
-			dispatch({ type: "ADD_NOTEBOOK", payload: context?.notebook! })
+			dispatch({
+				type: "UPDATE_NOTEBOOK",
+				payload: { id: context?.notebook.id!, updates: { isDeleted: true } },
+			})
 		},
 		onSuccess: () => console.log("Notebook deleted"),
 	})
@@ -95,6 +107,8 @@ export const useNotebookMutations = () => {
 				payload: { notebookId: req.notebookId, chapter: optimisticChapter },
 			})
 
+			dispatch({ type: "SELECT_CHAPTER", payload: tempId })
+
 			return { tempId, notebookId: req.notebookId }
 		},
 		onError: (err) => {
@@ -109,7 +123,55 @@ export const useNotebookMutations = () => {
 					updates: mapToChapter(data),
 				},
 			})
+
+			dispatch({ type: "SELECT_CHAPTER", payload: data.id })
 		},
+	})
+
+	const editChapterServer = (chapterId: string, input: string) => console.log("Editing chapter")
+
+	const deleteChapterServer = useMutation({
+		mutationFn: (chapter: Chapter) => deleteChapter(chapter.id),
+		onMutate: async (chapter: Chapter) => {
+			// Optimistically delete chapter before sending an api call.
+			dispatch({
+				type: "DELETE_CHAPTER",
+				payload: { id: chapter.id, notebookId: chapter.notebookId },
+			})
+
+			// If there are no other chapters, delete the last one and create a fresh chapter.
+			const notebook = getNotebook(notebookState.notebooks, chapter.notebookId)
+			// Get the remaining chapters in the notebook.
+			const remaining =
+				notebook?.chapters.filter((ch) => ch.id !== chapter.id && !ch.isDeleted) ?? []
+
+			// If there are other chapters in the notebook, select the previous chapter.
+			if (remaining.length > 0) {
+				const fallback = remaining.find((ch) => ch.order === chapter.order - 1)
+				dispatch({ type: "SELECT_CHAPTER", payload: fallback?.id! })
+				dispatch({ type: "SELECT_CANVAS", payload: fallback?.canvases[0].id! })
+			} else {
+				createChapterServer.mutate({
+					notebookId: chapter.notebookId,
+					title: "Chapter 1",
+					order: 0,
+				})
+			}
+
+			return { chapter }
+		},
+		onError: (err, _vars, context) => {
+			console.log("[useNotebookMutations.ts/[DELETE_CHAPTER_SERVER]: Mutation failed.", err)
+			dispatch({
+				type: "UPDATE_CHAPTER",
+				payload: {
+					id: context?.chapter.id!,
+					notebookId: context?.chapter.notebookId!,
+					updates: { isDeleted: true },
+				},
+			})
+		},
+		onSuccess: () => console.log("Chapter deleted"),
 	})
 
 	const createCanvasServer = useMutation({
@@ -148,12 +210,18 @@ export const useNotebookMutations = () => {
 
 	const createPathsServer = useMutation({
 		mutationFn: (req: PathRequest[]) => createPaths(req),
-		onError: (err) =>
-			console.error("[useNotebookMutations.ts/CREATE_PATH_SERVER]: Mutation failed.", err),
-		onSuccess: (data: PathCreateResponse[]) => {
+		onMutate: async () => {
 			const notebookId = notebookState.selectedNotebookId!
 			const chapterId = notebookState.selectedChapterId!
 			const canvasId = notebookState.selectedCanvasId!
+			return { notebookId, chapterId, canvasId }
+		},
+		onError: (err) =>
+			console.error("[useNotebookMutations.ts/CREATE_PATH_SERVER]: Mutation failed.", err),
+		onSuccess: (data: PathCreateResponse[], _vars, context) => {
+			const notebookId = context?.notebookId
+			const chapterId = context?.chapterId
+			const canvasId = context?.canvasId
 
 			data.forEach((d) => {
 				dispatch({
@@ -184,8 +252,11 @@ export const useNotebookMutations = () => {
 
 	return {
 		createNotebookServer,
+		editNotebookServer,
 		deleteNotebookServer,
 		createChapterServer,
+		editChapterServer,
+		deleteChapterServer,
 		createCanvasServer,
 		createPathsServer,
 		deletePathsServer,

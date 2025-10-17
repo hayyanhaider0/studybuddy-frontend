@@ -14,13 +14,28 @@ import { useThemeContext } from "../contexts/ThemeContext"
 import CustomPressable from "./CustomPressable"
 import Handle from "./Handle"
 import { ScrollView } from "react-native-gesture-handler"
+import { Color } from "../../../types/global"
+import Swatch from "../../notebook/components/canvas/toolbar/Swatch"
+import ColorPicker, {
+	ColorFormatsObject,
+	LuminanceSlider,
+	OpacitySlider,
+	Panel3,
+	Preview,
+} from "reanimated-color-picker"
+import { getCanvasStyles } from "../../../styles/canvas"
 
 export default function Modal() {
 	const { isVisible, modalData, closeModal, handleSubmit } = useModal()
+
 	const [input, setInput] = useState<string>("")
+	const [color, setColor] = useState<boolean>(false)
+	const [colorPicker, setColorPicker] = useState<boolean>(false)
+	const [colorInput, setColorInput] = useState<Color>()
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
+	const styles = getCanvasStyles(theme.colors)
 
 	// Close the modal on backpress.
 	useFocusEffect(
@@ -78,6 +93,74 @@ export default function Modal() {
 								placeholderTextColor={theme.colors.placeholder}
 								style={GlobalStyles.input}
 							/>
+
+							{/* Color options */}
+							{modalData.color && (
+								<View
+									style={{
+										flexDirection: "row",
+										justifyContent: "space-between",
+										alignItems: "center",
+										width: "100%",
+										paddingHorizontal: 8,
+									}}
+								>
+									<Pressable
+										onPress={() => setColor(!color)}
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 8,
+										}}
+									>
+										<MaterialC
+											name={color ? "checkbox-marked" : "checkbox-blank"}
+											size={12}
+											color={theme.colors.textPrimary}
+										/>
+										<Text style={GlobalStyles.buttonText}>
+											{color ? "Remove color" : "Add color"}
+										</Text>
+									</Pressable>
+									{color && (
+										<Swatch
+											color={colorInput || "#fff"}
+											onPress={() => {
+												setColorPicker(!colorPicker)
+											}}
+										/>
+									)}
+								</View>
+							)}
+
+							{colorPicker && (
+								<MotiView
+									style={[styles.colorPickerContainer, { position: "absolute", zIndex: 100 }]}
+								>
+									<ColorPicker
+										value={colorInput || "#fff"}
+										style={{ gap: 16, width: 235 }}
+										onChangeJS={(value: ColorFormatsObject) => {
+											setColorInput(value.hex as Color)
+										}}
+									>
+										{/* Hex value of the color */}
+										<Preview textStyle={{ textTransform: "uppercase" }} />
+										{/* Circular RGB panel */}
+										<Panel3 />
+										<LuminanceSlider />
+										<OpacitySlider />
+									</ColorPicker>
+
+									{/* Close color picker button */}
+									<CustomPressable
+										type='primary'
+										title='Confirm'
+										onPress={() => setColorPicker(false)}
+									/>
+								</MotiView>
+							)}
+
 							{/* Close and Submit buttons */}
 							<View
 								style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}
@@ -89,8 +172,10 @@ export default function Modal() {
 									type='primary'
 									title={modalData.buttonText || "ERROR LOL"}
 									onPress={() => {
-										modalData.onSubmit(input)
+										if (!color) setColorInput(null)
+										modalData.onSubmit(input, colorInput)
 										setInput("")
+										setColorInput("" as Color)
 										closeModal()
 									}}
 								/>

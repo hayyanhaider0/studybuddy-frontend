@@ -18,6 +18,7 @@ export interface NotebookResponse {
 	updatedAt: string
 	lastAccessedAt: string
 	chapters?: ChapterResponse[]
+	isDeleted: boolean
 }
 
 // Chapters
@@ -35,6 +36,7 @@ export interface ChapterResponse {
 	createdAt: string
 	updatedAt: string
 	canvases?: CanvasResponse[]
+	isDeleted: boolean
 }
 
 // Canvases
@@ -50,6 +52,7 @@ export interface CanvasResponse {
 	createdAt: string
 	updatedAt: string
 	lastAccessedAt: string
+	isDeleted: boolean
 }
 
 // Paths
@@ -128,8 +131,10 @@ export const fetchChapters = async (notebookIds: string[]): Promise<ChapterRespo
 }
 
 export const deleteChapter = async (id: string): Promise<void> => {
+	console.log("Deleing chapter with id:", id)
 	if (!id || id.startsWith("temp")) return
 	const res = await client.delete<ApiResponse<void>>(`/chapters/${id}`)
+	console.log("Deleted chapter:", res.data.data)
 	return res.data.data!
 }
 

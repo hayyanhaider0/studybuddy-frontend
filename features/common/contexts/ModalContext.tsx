@@ -5,6 +5,7 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
+import { Color } from "../../../types/global"
 
 // Types
 interface Choice {
@@ -19,7 +20,8 @@ export interface InputModalType extends BaseModalType {
 	type: "input"
 	placeholder: string
 	buttonText: string
-	onSubmit: (input: string) => void
+	color?: boolean
+	onSubmit: (input: string, color?: Color) => void
 }
 
 export interface ConfirmModalType extends BaseModalType {

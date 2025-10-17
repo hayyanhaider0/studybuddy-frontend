@@ -88,37 +88,20 @@ export default function NotebookList() {
 			openMenu({
 				position: { x: pageX, y: pageY },
 				options: [
-					{
-						label: "Edit",
-						onPress: () => handleEditNotebook(notebook),
-					},
-					{
-						label: "Delete",
-						onPress: () => handleDeleteNotebook(notebook),
-					},
-					{
-						label: "Generate AI Notes",
-						onPress: () => handleGenerateAINotes(notebook),
-					},
-					{
-						label: "Generate Flashcards",
-						onPress: () => console.log("Generate Flashcards"),
-					},
-					{
-						label: "Generate Quiz",
-						onPress: () => console.log("Generate Quiz"),
-					},
-					{
-						label: "Generate Exam",
-						onPress: () => console.log("Generate Exam"),
-					},
+					{ label: "Edit", onPress: () => handleEditNotebook(notebook) },
+					{ label: "Delete", onPress: () => handleDeleteNotebook(notebook) },
+					{ label: "Generate AI Notes", onPress: () => handleGenerateAINotes(notebook) },
+					{ label: "Generate Flashcards", onPress: () => console.log("Generate Flashcards") },
+					{ label: "Generate Quiz", onPress: () => console.log("Generate Quiz") },
+					{ label: "Generate Exam", onPress: () => console.log("Generate Exam") },
 				],
 			})
 		})
 	}
 
 	// Sorted array of notebooks without amending the original notebooks array.
-	const sortedNotebooks = [...notebookState.notebooks].sort(getSortMethod())
+	const filteredNotebooks = [...notebookState.notebooks].filter((n) => !n.isDeleted)
+	const sortedNotebooks = filteredNotebooks.sort(getSortMethod())
 
 	return (
 		<Grid

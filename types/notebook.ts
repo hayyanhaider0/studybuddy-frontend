@@ -16,6 +16,7 @@ export type Canvas = {
 	createdAt: number
 	updatedAt: number
 	lastAccessedAt: number
+	isDeleted: boolean
 }
 
 export type Chapter = {
@@ -26,6 +27,7 @@ export type Chapter = {
 	order: number
 	createdAt: number
 	updatedAt: number
+	isDeleted: boolean
 }
 
 export type Notebook = {
@@ -36,4 +38,5 @@ export type Notebook = {
 	updatedAt: number
 	lastAccessedAt: number
 	color: string | null
+	isDeleted: boolean
 }

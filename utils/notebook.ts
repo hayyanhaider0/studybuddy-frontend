@@ -79,6 +79,7 @@ export const addNotebook = (title: string, color: Color, now: number, length: nu
 		updatedAt: now,
 		lastAccessedAt: now,
 		color,
+		isDeleted: false,
 	}
 
 	return notebook
@@ -99,6 +100,7 @@ export const addChapter = (
 		order,
 		createdAt: now,
 		updatedAt: now,
+		isDeleted: false,
 	}
 
 	return chapter
@@ -115,6 +117,7 @@ export const addCanvas = (chapterId: string, order: number, now: number): Canvas
 		createdAt: now,
 		updatedAt: now,
 		lastAccessedAt: now,
+		isDeleted: false,
 	}
 
 	return canvas

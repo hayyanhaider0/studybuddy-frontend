@@ -8,10 +8,11 @@
 import { PathType } from "../../drawing/types/DrawingTypes"
 import { useModal } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import { Canvas, Notebook } from "../../../types/notebook"
+import { Canvas, Chapter, Notebook } from "../../../types/notebook"
 import { getCanvas } from "../../../utils/notebook"
 import { useNotebookMutations } from "./useNotebookMutations"
 import { mapToPathRequest, PathRequest } from "../api/api"
+import { Color } from "../../../types/global"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -19,8 +20,11 @@ export default function useNotebookActions() {
 	const { openModal } = useModal()
 	const {
 		createNotebookServer,
+		editNotebookServer,
 		deleteNotebookServer,
 		createChapterServer,
+		editChapterServer,
+		deleteChapterServer,
 		createCanvasServer,
 		createPathsServer,
 		deletePathsServer,
@@ -39,20 +43,6 @@ export default function useNotebookActions() {
 	const MAX_REDO_HISTORY = 100
 
 	/////////////////////////////////////////
-	// Updater Functions
-	/////////////////////////////////////////
-	/**
-	 * Edits a notebook for the user.
-	 *
-	 * @param notebook - Notebook to be edited.
-	 * @param title - New chapter title, if any.
-	 * @param color - New cover icon color, if any.
-	 */
-	const editNotebook = (notebookId: string, title?: string, color?: string) => {
-		console.log("Editing notebook with ID:", notebookId, title, color)
-	}
-
-	/////////////////////////////////////////
 	// UI Aware Functions
 	/////////////////////////////////////////
 	// Helper function to create a new notebook with a title.
@@ -62,8 +52,10 @@ export default function useNotebookActions() {
 			title: "Add New Notebook",
 			description: "Give your notebook a title to start organizing your study materials.",
 			placeholder: "Enter notebook name...",
+			color: true,
 			buttonText: "Create",
-			onSubmit: (input: string) => createNotebookServer.mutate({ title: input, color: null }),
+			onSubmit: (input: string, color?: Color) =>
+				createNotebookServer.mutate({ title: input, color }),
 		})
 	}
 
@@ -75,7 +67,7 @@ export default function useNotebookActions() {
 			description: "Change your notebook's name and cover icon color.",
 			placeholder: "Enter notebook name...",
 			buttonText: "Apply",
-			onSubmit: (input: string) => editNotebook(notebook.id, input),
+			onSubmit: (input: string) => editNotebookServer(notebook.id, input),
 		})
 	}
 
@@ -83,10 +75,9 @@ export default function useNotebookActions() {
 		openModal({
 			type: "confirm",
 			title: `Delete ${notebook.title}?`,
-			description:
-				"Are you sure you want to delete this notebook? This action can not be undone, and all of your progress will be lost.",
+			description: "Are you sure you want to delete this notebook?",
 			buttonText: "Delete",
-			onSubmit: () => deleteNotebookServer.mutate(notebook.id),
+			onSubmit: () => deleteNotebookServer.mutate(notebook),
 		})
 	}
 
@@ -116,7 +107,30 @@ export default function useNotebookActions() {
 		})
 	}
 
-	// Helper function to create a new canvas
+	// Helper function to edit a chapter.
+	const handleEditChapter = (chapter: Chapter) => {
+		openModal({
+			type: "input",
+			title: `Edit ${chapter.title}`,
+			description: "Change your chapter's name.",
+			placeholder: "Enter chapter name...",
+			buttonText: "Apply",
+			onSubmit: (input: string) => editChapterServer(chapter.id, input),
+		})
+	}
+
+	// Helper function to delete a chapter.
+	const handleDeleteChapter = (chapter: Chapter) => {
+		openModal({
+			type: "confirm",
+			title: `Delete ${chapter.title}?`,
+			description: "Are you sure you want to delete this notebook?",
+			buttonText: "Delete",
+			onSubmit: () => deleteChapterServer.mutate(chapter),
+		})
+	}
+
+	// Helper function to create a new canvas.
 	const handleCreateCanvas = (order: number = 0) => {
 		createCanvasServer.mutate({ chapterId: notebookState.selectedChapterId!, order })
 	}
@@ -337,6 +351,8 @@ export default function useNotebookActions() {
 		handleEditNotebook,
 		handleDeleteNotebook,
 		handleCreateChapter,
+		handleEditChapter,
+		handleDeleteChapter,
 		handleCreateCanvas,
 		addPathToCanvas,
 		handleErase,
