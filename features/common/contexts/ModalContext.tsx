@@ -20,6 +20,8 @@ export interface InputModalType extends BaseModalType {
 	type: "input"
 	placeholder: string
 	buttonText: string
+	defaultValue?: string
+	defaultColor?: Color
 	color?: boolean
 	onSubmit: (input: string, color?: Color) => void
 }

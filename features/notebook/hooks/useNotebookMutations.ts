@@ -13,6 +13,7 @@ import {
 	deleteChapter,
 	deleteNotebook,
 	deletePaths,
+	editNotebook,
 	mapToCanvas,
 	mapToChapter,
 	mapToNotebook,
@@ -36,7 +37,12 @@ export const useNotebookMutations = () => {
 			const now = Date.now()
 
 			// Create a temporary ID for the notebook.
-			const optimisticNotebook = addNotebook(req.title, req.color || null, now, 0)
+			const optimisticNotebook = addNotebook(
+				req.title,
+				req.color || null,
+				now,
+				notebookState.notebooks.length + 1
+			)
 			const tempId = optimisticNotebook.id
 
 			// Set state with the new notebook having a temporary ID.
@@ -72,7 +78,15 @@ export const useNotebookMutations = () => {
 	})
 
 	// Edit a notebook.
-	const editNotebookServer = (notebookId: string, input: string) => console.log("Editing notebook.")
+	const editNotebookServer = useMutation({
+		mutationFn: ({ id, req }: { id: string; req: NotebookRequest }) => editNotebook(id, req),
+		onMutate: ({ id, req }: { id: string; req: NotebookRequest }) => {
+			// Optimistically update notebook.
+			dispatch({ type: "UPDATE_NOTEBOOK", payload: { id, updates: req } })
+		},
+		onError: (err) => console.log("Error updating notebook:", err),
+		onSuccess: () => console.log("Notebook updates successfully."),
+	})
 
 	// Delete a notebook.
 	const deleteNotebookServer = useMutation({

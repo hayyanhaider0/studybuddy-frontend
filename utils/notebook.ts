@@ -69,11 +69,11 @@ const mapCanvas = (cv: Canvas, paths: PathType[]): Canvas => {
 /////////////////////////////////////////
 // Mutator Functions
 /////////////////////////////////////////
-export const addNotebook = (title: string, color: Color, now: number, length: number): Notebook => {
+export const addNotebook = (title: string, color: Color, now: number, num: number): Notebook => {
 	const id = `temp-${uuid.v4()}`
 	const notebook: Notebook = {
 		id,
-		title: title || `Notebook ${length}`,
+		title: title || `Notebook ${num}`,
 		chapters: [addChapter(id, `Chapter 1`, 0, now)],
 		createdAt: now,
 		updatedAt: now,

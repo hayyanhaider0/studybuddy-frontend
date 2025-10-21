@@ -54,8 +54,10 @@ export default function useNotebookActions() {
 			placeholder: "Enter notebook name...",
 			color: true,
 			buttonText: "Create",
-			onSubmit: (input: string, color?: Color) =>
-				createNotebookServer.mutate({ title: input, color }),
+			onSubmit: (input: string, color: Color = null) => {
+				const title = input.trim() === "" ? `Notebook ${notebookState.notebooks.length + 1}` : input
+				createNotebookServer.mutate({ title, color })
+			},
 		})
 	}
 
@@ -66,8 +68,12 @@ export default function useNotebookActions() {
 			title: `Edit ${notebook.title}`,
 			description: "Change your notebook's name and cover icon color.",
 			placeholder: "Enter notebook name...",
+			color: true,
+			defaultValue: notebook.title,
+			defaultColor: notebook.color,
 			buttonText: "Apply",
-			onSubmit: (input: string) => editNotebookServer(notebook.id, input),
+			onSubmit: (input: string, color?: Color) =>
+				editNotebookServer.mutate({ id: notebook.id, req: { title: input, color } }),
 		})
 	}
 

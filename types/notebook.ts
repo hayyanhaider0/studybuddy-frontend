@@ -5,6 +5,7 @@
  */
 
 import { PathType } from "../features/drawing/types/DrawingTypes"
+import { Color } from "./global"
 
 export type Canvas = {
 	id: string
@@ -37,6 +38,6 @@ export type Notebook = {
 	createdAt: number
 	updatedAt: number
 	lastAccessedAt: number
-	color: string | null
+	color: Color
 	isDeleted: boolean
 }

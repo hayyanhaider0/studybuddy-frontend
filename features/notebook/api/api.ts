@@ -88,6 +88,11 @@ export const createNotebook = async (req: NotebookRequest): Promise<NotebookResp
 	return res.data.data!
 }
 
+export const editNotebook = async (id: string, req: NotebookRequest): Promise<NotebookResponse> => {
+	const res = await client.patch<ApiResponse<NotebookResponse>>(`/notebooks/${id}`, req)
+	return res.data.data!
+}
+
 export const fetchNotebooks = async (): Promise<NotebookResponse[]> => {
 	const res = await client.get<ApiResponse<NotebookResponse[]>>("/notebooks")
 	console.log("Notebooks:", JSON.stringify(res.data, null, 2))
@@ -107,6 +112,7 @@ export const mapToNotebook = (res: NotebookResponse): Notebook => {
 		updatedAt: new Date(res.updatedAt).getTime(),
 		lastAccessedAt: new Date(res.lastAccessedAt).getTime(),
 		chapters: res.chapters?.map(mapToChapter) || [],
+		color: res.color as Color,
 	}
 
 	return notebook

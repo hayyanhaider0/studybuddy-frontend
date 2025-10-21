@@ -6,7 +6,7 @@
 
 import { useFocusEffect } from "@react-navigation/native"
 import { AnimatePresence, MotiView } from "moti"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { BackHandler, View, Text, Pressable, TextInput } from "react-native"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useModal } from "../contexts/ModalContext"
@@ -19,7 +19,6 @@ import Swatch from "../../notebook/components/canvas/toolbar/Swatch"
 import ColorPicker, {
 	ColorFormatsObject,
 	LuminanceSlider,
-	OpacitySlider,
 	Panel3,
 	Preview,
 } from "reanimated-color-picker"
@@ -31,7 +30,7 @@ export default function Modal() {
 	const [input, setInput] = useState<string>("")
 	const [color, setColor] = useState<boolean>(false)
 	const [colorPicker, setColorPicker] = useState<boolean>(false)
-	const [colorInput, setColorInput] = useState<Color>()
+	const [colorInput, setColorInput] = useState<Color>(null)
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
@@ -42,7 +41,11 @@ export default function Modal() {
 		useCallback(() => {
 			const onBackPress = () => {
 				if (isVisible) {
-					closeModal()
+					if (colorPicker) {
+						setColorPicker(false)
+					} else {
+						closeModal()
+					}
 					return true
 				}
 				return false
@@ -53,6 +56,18 @@ export default function Modal() {
 			return () => subscription.remove()
 		}, [isVisible])
 	)
+
+	// Sets default values in the modal for editing.
+	useEffect(() => {
+		if (modalData?.type === "input") {
+			// Set the default input value
+			setInput(modalData.defaultValue ?? "")
+			// Set the default color value
+			setColorInput(modalData.defaultColor ?? null)
+			// Autoenable if a default color value exists
+			setColor(!!modalData.defaultColor)
+		}
+	}, [modalData])
 
 	// Don't render if no modal data
 	if (!modalData) return null
@@ -124,7 +139,7 @@ export default function Modal() {
 									</Pressable>
 									{color && (
 										<Swatch
-											color={colorInput || "#fff"}
+											color={colorInput || "#FFFFFF"}
 											onPress={() => {
 												setColorPicker(!colorPicker)
 											}}
@@ -138,7 +153,7 @@ export default function Modal() {
 									style={[styles.colorPickerContainer, { position: "absolute", zIndex: 100 }]}
 								>
 									<ColorPicker
-										value={colorInput || "#fff"}
+										value={(colorInput as string) || undefined}
 										style={{ gap: 16, width: 235 }}
 										onChangeJS={(value: ColorFormatsObject) => {
 											setColorInput(value.hex as Color)
@@ -149,24 +164,19 @@ export default function Modal() {
 										{/* Circular RGB panel */}
 										<Panel3 />
 										<LuminanceSlider />
-										<OpacitySlider />
 									</ColorPicker>
 
 									{/* Close color picker button */}
 									<CustomPressable
-										type='primary'
-										title='Confirm'
+										type='secondary'
+										title='Close'
 										onPress={() => setColorPicker(false)}
 									/>
 								</MotiView>
 							)}
 
 							{/* Close and Submit buttons */}
-							<View
-								style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}
-							>
-								{/* Close modal button */}
-								<CustomPressable type='secondary' title='Close' onPress={closeModal} />
+							<View style={{ gap: 8, width: "100%", justifyContent: "space-between" }}>
 								{/* Confirm button */}
 								<CustomPressable
 									type='primary'
@@ -179,6 +189,8 @@ export default function Modal() {
 										closeModal()
 									}}
 								/>
+								{/* Close modal button */}
+								<CustomPressable type='secondary' title='Close' onPress={closeModal} />
 							</View>
 						</MotiView>
 					</MotiView>
@@ -216,17 +228,15 @@ export default function Modal() {
 								{modalData.description}
 							</Text>
 							{/* Close and Submit buttons */}
-							<View
-								style={{ flexDirection: "row", width: "100%", justifyContent: "space-between" }}
-							>
-								{/* Close modal button */}
-								<CustomPressable type='secondary' title='Close' onPress={closeModal} />
+							<View style={{ gap: 8, width: "100%", justifyContent: "space-between" }}>
 								{/* Submit button */}
 								<CustomPressable
 									type={"delete"}
 									title={modalData.buttonText || "ERROR LOL"}
 									onPress={() => handleSubmit()}
 								/>
+								{/* Close modal button */}
+								<CustomPressable type='secondary' title='Close' onPress={closeModal} />
 							</View>
 						</MotiView>
 					</MotiView>
