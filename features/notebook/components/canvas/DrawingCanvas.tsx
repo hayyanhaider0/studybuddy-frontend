@@ -6,7 +6,7 @@
  */
 
 import { Canvas, Circle, Text as SkiaText, useFont } from "@shopify/react-native-skia"
-import { View } from "react-native"
+import { GestureResponderEvent, Pressable, View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import Background1 from "./Background1"
 import { useCanvasContext } from "../../contexts/CanvasStateContext"
@@ -18,11 +18,17 @@ import { useSettings } from "../../../common/contexts/SettingsContext"
 import { getCanvas, getChapter } from "../../../../utils/notebook"
 import PathRenderer from "../../../drawing/PathRenderer"
 import { PathType } from "../../../drawing/types/DrawingTypes"
+import useNotebookActions from "../../hooks/useNotebookActions"
+import { useContextMenu } from "../../../common/contexts/ContextMenuContext"
+import { Canvas as CanvasType } from "../../../../types/notebook"
+import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
 	const { current, layout } = useCanvasContext()
 	const { notebookState } = useNotebookContext()
+	const { handleDeleteCanvas } = useNotebookActions()
+	const { openMenu } = useContextMenu()
 	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
@@ -47,56 +53,94 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	const canvasPaths = canvas?.paths ?? []
 
 	// Font import for Skia -- used for page number.
-	const Roboto = useFont(require("../../../../assets/fonts/Roboto-Bold.ttf"), layout.height * 0.025)
+	const Roboto = useFont(
+		require("../../../../assets/fonts/Roboto-Medium.ttf"),
+		layout.height * 0.025
+	)
 
 	// Gesture.
 	const drawingGestures = useCanvasDrawingGestures(canvasId)
 
+	// Long press to open a context menu.
+	const handleCanvasMenu = (canvas: CanvasType, event: GestureResponderEvent) => {
+		const { pageX, pageY } = event.nativeEvent
+
+		openMenu({
+			position: { x: pageX, y: pageY },
+			options: [
+				{ label: "Change Background", onPress: () => console.log("Change Background") },
+				{ label: "Duplicate", onPress: () => console.log("Duplicate") },
+				{ label: "Export", onPress: () => console.log("Export") },
+				{ label: "Delete", onPress: () => handleDeleteCanvas(canvas) },
+			],
+		})
+	}
+
 	return (
 		<View style={{ flex: 1 }}>
-			{/* This View allows for gestures outside the canvas like pan and pinch */}
 			<GestureDetector gesture={drawingGestures}>
-				<Canvas style={{ height: layout.height, width: layout.width }}>
-					<Background1
-						width={layout.width}
-						height={layout.height}
-						backgroundColor={theme.colors.background}
-					/>
-					{/* Render page number on the top right if the show page number setting is enabled */}
-					{showPageNumber && (
-						<SkiaText
-							text={canvasNumber}
-							x={layout.width - layout.height * 0.05}
-							y={layout.width * 0.1}
-							font={Roboto}
-							color={theme.colors.textPrimary}
-						/>
-					)}
-
-					{canvasPaths.map((path: PathType) => (
-						<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
-					))}
-
-					{current[canvasId] && current[canvasId]!.points.length > 0 && (
-						<PathRenderer
-							key={`current-${canvasId}`}
-							path={current[canvasId]!}
+				{/* Container for Skia Canvas + Overlay UI */}
+				<View style={{ flex: 1 }}>
+					{/* The drawing canvas */}
+					<Canvas style={{ height: layout.height, width: layout.width }}>
+						<Background1
 							width={layout.width}
 							height={layout.height}
+							backgroundColor={theme.colors.background}
 						/>
-					)}
 
-					{tool === "eraser" && (
-						<Circle
-							cx={eraserPos.x}
-							cy={eraserPos.y}
-							r={toolSettings["eraser"].size / 2}
-							color={theme.colors.onPrimary}
-							strokeWidth={1}
-							style='stroke'
-						/>
-					)}
-				</Canvas>
+						{/* Render page number on the bottom of the canvas */}
+						{showPageNumber && (
+							<SkiaText
+								text={canvasNumber}
+								x={layout.width * 0.9}
+								y={layout.height - layout.width * 0.1}
+								font={Roboto}
+								color={theme.colors.textPrimary}
+							/>
+						)}
+
+						{canvasPaths.map((path: PathType) => (
+							<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
+						))}
+
+						{current[canvasId] && current[canvasId]!.points.length > 0 && (
+							<PathRenderer
+								key={`current-${canvasId}`}
+								path={current[canvasId]!}
+								width={layout.width}
+								height={layout.height}
+							/>
+						)}
+
+						{tool === "eraser" && (
+							<Circle
+								cx={eraserPos.x}
+								cy={eraserPos.y}
+								r={toolSettings["eraser"].size / 2}
+								color={theme.colors.onPrimary}
+								strokeWidth={1}
+								style='stroke'
+							/>
+						)}
+					</Canvas>
+
+					{/* The overlay menu icon */}
+					<Pressable
+						onPress={(e) => {
+							e.stopPropagation()
+							handleCanvasMenu(canvas!, e)
+						}}
+						style={{
+							position: "absolute",
+							top: 10,
+							right: 10,
+							padding: 8,
+						}}
+					>
+						<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
+					</Pressable>
+				</View>
 			</GestureDetector>
 		</View>
 	)

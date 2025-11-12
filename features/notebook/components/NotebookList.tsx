@@ -30,7 +30,12 @@ export default function NotebookList() {
 	const { sorts } = useSort()
 	const { openMenu } = useContextMenu()
 	const { handleEditNotebook, handleDeleteNotebook } = useNotebookActions()
-	const { handleGenerateAINotes } = useGenerate()
+	const {
+		handleGenerateAINotes,
+		handleGenerateFlashcards,
+		handleGenerateQuiz,
+		handleGenerateExam,
+	} = useGenerate()
 
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
@@ -91,9 +96,9 @@ export default function NotebookList() {
 					{ label: "Edit", onPress: () => handleEditNotebook(notebook) },
 					{ label: "Delete", onPress: () => handleDeleteNotebook(notebook) },
 					{ label: "Generate AI Notes", onPress: () => handleGenerateAINotes(notebook) },
-					{ label: "Generate Flashcards", onPress: () => console.log("Generate Flashcards") },
-					{ label: "Generate Quiz", onPress: () => console.log("Generate Quiz") },
-					{ label: "Generate Exam", onPress: () => console.log("Generate Exam") },
+					{ label: "Generate Flashcards", onPress: () => handleGenerateFlashcards(notebook) },
+					{ label: "Generate Quiz", onPress: () => handleGenerateQuiz(notebook) },
+					{ label: "Generate Exam", onPress: () => handleGenerateExam(notebook) },
 				],
 			})
 		})
@@ -118,7 +123,11 @@ export default function NotebookList() {
 							{n.color ? (
 								<NotebookIcon fill={n.color || "green"} width='100%' height='100%' />
 							) : (
-								<MiniCanvas id={n.id} />
+								<MiniCanvas
+									notebookId={n.id}
+									chapterId={n.chapters[0].id}
+									canvasId={n.chapters[0].canvases[0].id}
+								/>
 							)}
 							<Pressable
 								onPress={(e) => handleNotebookMenu(n, e)}

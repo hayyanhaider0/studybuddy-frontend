@@ -151,3 +151,16 @@ export const getCanvas = (
 	const chapter = getChapter(notebooks, notebookId, chapterId)
 	return chapter?.canvases.find((c) => c.id === canvasId)
 }
+
+export const getChapterById = (notebooks: Notebook[], chapterId: string): Chapter | undefined => {
+	return notebooks
+		.find((n) => n.chapters.some((ch) => ch.id === chapterId))
+		?.chapters.find((ch) => ch.id === chapterId)
+}
+
+export const getCanvasById = (notebooks: Notebook[], canvasId: string): Canvas | undefined => {
+	return notebooks
+		.find((n) => n.chapters.some((ch) => ch.canvases.some((cv) => cv.id === canvasId)))
+		?.chapters.find((ch) => ch.canvases.find((cv) => cv.id === canvasId))
+		?.canvases.find((cv) => cv.id === canvasId)
+}

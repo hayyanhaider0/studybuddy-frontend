@@ -9,9 +9,9 @@ export default function Background1({
 	height: number
 	backgroundColor: string
 }) {
-	const totalLines = 18
+	const totalLines = 24
 	const spacing = height / (totalLines - 1)
-	const strokeWidth = Math.max(1, height * 0.003)
+	const strokeWidth = Math.max(1, height * 0.001)
 
 	return (
 		<>

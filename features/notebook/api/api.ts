@@ -127,6 +127,11 @@ export const createChapter = async (req: ChapterRequest): Promise<ChapterRespons
 	return res.data.data!
 }
 
+export const editChapter = async (id: string, req: ChapterRequest): Promise<ChapterResponse> => {
+	const res = await client.patch<ApiResponse<ChapterResponse>>(`/chapters/${id}`, req)
+	return res.data.data!
+}
+
 export const fetchChapters = async (notebookIds: string[]): Promise<ChapterResponse[]> => {
 	if (!notebookIds) throw new Error("[fetchChapters]: No notebook ids provided.")
 	const res = await client.post<ApiResponse<ChapterResponse[]>>("/chapters/by-notebooks", {

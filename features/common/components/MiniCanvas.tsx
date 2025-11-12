@@ -6,26 +6,21 @@ import Background1 from "../../notebook/components/canvas/Background1"
 import { useThemeContext } from "../contexts/ThemeContext"
 import { View } from "react-native"
 import { useNotebookContext } from "../../notebook/contexts/NotebookContext"
+import { getCanvas } from "../../../utils/notebook"
 
-export default function MiniCanvas({ id }: { id: string }) {
+interface MiniCanvasProps {
+	notebookId: string
+	chapterId: string
+	canvasId: string
+}
+
+export default function MiniCanvas({ notebookId, chapterId, canvasId }: MiniCanvasProps) {
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
 	const { notebookState } = useNotebookContext()
 	const { theme } = useThemeContext()
 
-	const notebook = notebookState.notebooks.find((n) => n.id === id)
-
-	if (!notebook) throw new Error("Notebook not found!")
-	if (notebook.chapters && notebook.chapters.length === 0) {
-		return <Canvas style={{ height: "100%", aspectRatio: 9 / 16 }} />
-	}
-
-	const firstChapter = notebook.chapters?.[0]
-	const firstCanvas = firstChapter?.canvases?.[0]
-
-	if (!firstCanvas) {
-		return <Canvas style={{ height: "100%", aspectRatio: 9 / 16 }} />
-	}
+	const canvas = getCanvas(notebookState.notebooks, notebookId, chapterId, canvasId)!
 
 	return (
 		<View
@@ -40,7 +35,7 @@ export default function MiniCanvas({ id }: { id: string }) {
 					height={dimensions.height}
 					backgroundColor={theme.colors.background}
 				/>
-				{(firstCanvas.paths ?? []).map((p: PathType) => (
+				{(canvas.paths ?? []).map((p: PathType) => (
 					<PathRenderer key={p.id} path={p} width={dimensions.width} height={dimensions.height} />
 				))}
 			</Canvas>

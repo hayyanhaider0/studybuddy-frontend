@@ -11,7 +11,7 @@ import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Chapter, Notebook } from "../../../types/notebook"
 import { getCanvas } from "../../../utils/notebook"
 import { useNotebookMutations } from "./useNotebookMutations"
-import { mapToPathRequest, PathRequest } from "../api/api"
+import { ChapterRequest, mapToPathRequest, PathRequest } from "../api/api"
 import { Color } from "../../../types/global"
 
 export default function useNotebookActions() {
@@ -26,6 +26,7 @@ export default function useNotebookActions() {
 		editChapterServer,
 		deleteChapterServer,
 		createCanvasServer,
+		deleteCanvasServer,
 		createPathsServer,
 		deletePathsServer,
 	} = useNotebookMutations()
@@ -121,7 +122,8 @@ export default function useNotebookActions() {
 			description: "Change your chapter's name.",
 			placeholder: "Enter chapter name...",
 			buttonText: "Apply",
-			onSubmit: (input: string) => editChapterServer(chapter.id, input),
+			onSubmit: (input: string) =>
+				editChapterServer.mutate({ id: chapter.id, req: { title: input } as ChapterRequest }),
 		})
 	}
 
@@ -139,6 +141,11 @@ export default function useNotebookActions() {
 	// Helper function to create a new canvas.
 	const handleCreateCanvas = (order: number = 0) => {
 		createCanvasServer.mutate({ chapterId: notebookState.selectedChapterId!, order })
+	}
+
+	// Helper function to delete a canvas.
+	const handleDeleteCanvas = (canvas: Canvas) => {
+		deleteCanvasServer.mutate(canvas)
 	}
 
 	/////////////////////////////////////////
@@ -360,6 +367,7 @@ export default function useNotebookActions() {
 		handleEditChapter,
 		handleDeleteChapter,
 		handleCreateCanvas,
+		handleDeleteCanvas,
 		addPathToCanvas,
 		handleErase,
 		undo,

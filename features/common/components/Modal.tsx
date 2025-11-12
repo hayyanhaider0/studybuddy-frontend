@@ -282,6 +282,7 @@ export default function Modal() {
 									// Choices mapped
 									<Pressable
 										key={i}
+										onPress={() => handleSubmit(i)}
 										style={({ pressed }) => [
 											{
 												flexDirection: "row",

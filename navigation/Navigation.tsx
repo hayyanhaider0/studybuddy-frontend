@@ -18,6 +18,9 @@ import { useEffect } from "react"
 import { useAuthContext } from "../features/auth/contexts/AuthContext"
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen"
 import ResetPasswordScreen from "../screens/ResetPasswordScreen"
+import GenerateScreen from "../screens/GenerateScreen"
+import Header from "./Header"
+import { capitalize } from "../utils/formatters"
 
 export type RootStackParamList = {
 	// All available screens.
@@ -26,6 +29,7 @@ export type RootStackParamList = {
 	forgot: { login?: string | undefined }
 	reset: { email?: string }
 	main: undefined
+	generate: { taskType: "notes" | "flashcards" | "quizzes" | "exams"; notebookName: string }
 }
 
 // Stack navigation.
@@ -63,7 +67,19 @@ export default function Navigation() {
 			<NavigationContainer>
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
 					{authState.isLoggedIn ? (
-						<Stack.Screen name='main' component={DrawerNavigation} />
+						<>
+							<Stack.Screen name='main' component={DrawerNavigation} />
+							<Stack.Screen
+								name='generate'
+								component={GenerateScreen}
+								options={({ route }) => ({
+									headerShown: true,
+									header: () => (
+										<Header title={`Generate ${capitalize(route.params?.taskType)}`} menu={false} />
+									),
+								})}
+							/>
+						</>
 					) : (
 						<>
 							<Stack.Screen name='login' component={LoginScreen} />
