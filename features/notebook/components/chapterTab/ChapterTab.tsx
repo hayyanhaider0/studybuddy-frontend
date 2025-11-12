@@ -22,12 +22,16 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 
 export default function ChapterTab() {
 	// Get context values.
-	const { notebooks, selectedNotebookId, selectedChapterId } = useNotebookContext()
+	const { notebookState } = useNotebookContext()
 	const { handleCreateCanvas } = useNotebookActions()
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 
-	const notebook = getNotebook(notebooks, selectedNotebookId)
-	const chapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
+	const notebook = getNotebook(notebookState.notebooks, notebookState.selectedNotebookId)
+	const chapter = getChapter(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId
+	)
 
 	const [extended, setExtended] = useState<boolean>(chapter ? true : false) // Extended state for ChapterTab component.
 

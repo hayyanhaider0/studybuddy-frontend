@@ -81,10 +81,19 @@ export default function ContextMenu() {
 											borderBottomWidth: 1,
 											borderColor: theme.colors.onSecondary,
 										},
-										{ padding: 16, paddingRight: 32 },
+										{ padding: 16, paddingRight: 32, justifyContent: "center" },
 									]}
 								>
-									<Text style={{ textAlign: "left", color: theme.colors.textPrimary }}>
+									<Text
+										style={[
+											GlobalStyles.paragraph,
+											opt.label.startsWith("Generate")
+												? { color: "lightblue" }
+												: opt.label === "Delete"
+												? { color: theme.colors.error }
+												: {},
+										]}
+									>
 										{opt.label}
 									</Text>
 								</TouchableOpacity>

@@ -6,7 +6,7 @@
 
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { useNavigation } from "@react-navigation/native"
-import { Pressable, View, Text } from "react-native"
+import { Pressable, View, Text, GestureResponderEvent } from "react-native"
 import NotebookIcon from "../../../assets/svgs/NotebookIcon"
 import { DrawerParamList } from "../../../navigation/DrawerNavigation"
 import { Notebook } from "../../../types/notebook"
@@ -16,24 +16,48 @@ import MiniCanvas from "../../common/components/MiniCanvas"
 import { useSort } from "../../common/contexts/SortContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
+import { getChapter, getNotebook } from "../../../utils/notebook"
+import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
+import { useContextMenu } from "../../common/contexts/ContextMenuContext"
+import useNotebookActions from "../hooks/useNotebookActions"
+import useGenerate from "../../llm/hooks/useGenerate"
 
 export default function NotebookList() {
 	// Get context values.
-	const { notebooks, setSelectedNotebookId } = useNotebookContext()
-	const { sorts } = useSort()
-
+	const { notebookState, dispatch } = useNotebookContext()
 	// Theming
-	const { GlobalStyles } = useThemeContext()
+	const { GlobalStyles, theme } = useThemeContext()
+	const { sorts } = useSort()
+	const { openMenu } = useContextMenu()
+	const { handleEditNotebook, handleDeleteNotebook } = useNotebookActions()
+	const {
+		handleGenerateAINotes,
+		handleGenerateFlashcards,
+		handleGenerateQuiz,
+		handleGenerateExam,
+	} = useGenerate()
 
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
+
+	if (notebookState.notebooks.length === 0) {
+		return (
+			<Text style={[GlobalStyles.paragraph, { textAlign: "left", paddingHorizontal: 16 }]}>
+				No notebooks found. Add a notebook to get started!
+			</Text>
+		)
+	}
 
 	/**
 	 * Select and open the notebook to it's first chapter and its first canvas.
 	 * @param notebook - Notebook to navigate to.
 	 */
 	const selectNotebook = (notebookId: string) => {
-		setSelectedNotebookId(notebookId)
+		dispatch({ type: "SELECT_NOTEBOOK", payload: notebookId })
+		const notebook = getNotebook(notebookState.notebooks, notebookId)
+		dispatch({ type: "SELECT_CHAPTER", payload: notebook?.chapters[0].id! })
+		const chapter = getChapter(notebookState.notebooks, notebookId, notebookState.selectedChapterId)
+		dispatch({ type: "SELECT_CANVAS", payload: chapter?.canvases[0].id! })
 		nav.navigate("canvas")
 	}
 
@@ -64,8 +88,25 @@ export default function NotebookList() {
 		}
 	}
 
+	const handleNotebookMenu = (notebook: Notebook, event: GestureResponderEvent) => {
+		event.target.measure((_x, _y, _w, _h, pageX: number, pageY: number) => {
+			openMenu({
+				position: { x: pageX, y: pageY },
+				options: [
+					{ label: "Edit", onPress: () => handleEditNotebook(notebook) },
+					{ label: "Delete", onPress: () => handleDeleteNotebook(notebook) },
+					{ label: "Generate AI Notes", onPress: () => handleGenerateAINotes(notebook) },
+					{ label: "Generate Flashcards", onPress: () => handleGenerateFlashcards(notebook) },
+					{ label: "Generate Quiz", onPress: () => handleGenerateQuiz(notebook) },
+					{ label: "Generate Exam", onPress: () => handleGenerateExam(notebook) },
+				],
+			})
+		})
+	}
+
 	// Sorted array of notebooks without amending the original notebooks array.
-	const sortedNotebooks = [...notebooks].sort(getSortMethod())
+	const filteredNotebooks = [...notebookState.notebooks].filter((n) => !n.isDeleted)
+	const sortedNotebooks = filteredNotebooks.sort(getSortMethod())
 
 	return (
 		<Grid
@@ -78,12 +119,26 @@ export default function NotebookList() {
 				>
 					<View style={{ alignItems: "center", justifyContent: "center", width: "100%" }}>
 						{/* Icon/Canvas container */}
-						<View style={{ aspectRatio: 9 / 16, width: "80%" }}>
+						<View style={{ aspectRatio: 9 / 16, width: "80%", flexDirection: "row" }}>
 							{n.color ? (
 								<NotebookIcon fill={n.color || "green"} width='100%' height='100%' />
 							) : (
-								<MiniCanvas id={n.id} />
+								<MiniCanvas
+									notebookId={n.id}
+									chapterId={n.chapters[0].id}
+									canvasId={n.chapters[0].canvases[0].id}
+								/>
 							)}
+							<Pressable
+								onPress={(e) => handleNotebookMenu(n, e)}
+								style={{
+									position: "absolute",
+									top: 12,
+									right: -24,
+								}}
+							>
+								<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
+							</Pressable>
 						</View>
 
 						<View style={{ paddingTop: 8 }}>

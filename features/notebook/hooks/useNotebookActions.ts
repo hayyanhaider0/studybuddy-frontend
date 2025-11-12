@@ -6,119 +6,146 @@
  */
 
 import { PathType } from "../../drawing/types/DrawingTypes"
-import { useModal, ModalType } from "../../common/contexts/ModalContext"
+import { useModal } from "../../common/contexts/ModalContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import { Canvas, Notebook } from "../../../types/notebook"
+import { Canvas, Chapter, Notebook } from "../../../types/notebook"
 import { getCanvas } from "../../../utils/notebook"
-import useCreateNotebook from "./useCreateNotebook"
-import useCreateChapter from "./useCreateChapter"
-import useCreateCanvas from "./useCreateCanvas"
-import useCreatePath from "./useCreatePath"
+import { useNotebookMutations } from "./useNotebookMutations"
+import { ChapterRequest, mapToPathRequest, PathRequest } from "../api/api"
+import { Color } from "../../../types/global"
 
 export default function useNotebookActions() {
 	// Get context values.
-	const { notebooks, setNotebooks, selectedNotebookId, selectedChapterId, selectedCanvasId } =
-		useNotebookContext()
-	const { openModal, setInput } = useModal()
+	const { notebookState, dispatch } = useNotebookContext()
+	const { openModal } = useModal()
+	const {
+		createNotebookServer,
+		editNotebookServer,
+		deleteNotebookServer,
+		createChapterServer,
+		editChapterServer,
+		deleteChapterServer,
+		createCanvasServer,
+		deleteCanvasServer,
+		createPathsServer,
+		deletePathsServer,
+	} = useNotebookMutations()
 
 	// const activeNotebook = getNotebook(notebooks, selectedNotebookId)
 	// const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
-	const activeCanvas = getCanvas(notebooks, selectedNotebookId, selectedChapterId, selectedCanvasId)
+	const activeCanvas = getCanvas(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId,
+		notebookState.selectedCanvasId
+	)
 
 	const MAX_UNDO_HISTORY = 100
 	const MAX_REDO_HISTORY = 100
 
 	/////////////////////////////////////////
-	// Updater Functions
-	/////////////////////////////////////////
-	/**
-	 * Edits a notebook for the user.
-	 *
-	 * @param notebook - Notebook to be edited.
-	 * @param title - New chapter title, if any.
-	 * @param color - New cover icon color, if any.
-	 */
-	const editNotebook = (notebookId: string, title?: string, color?: string) => {
-		console.log("Editing notebook with ID:", notebookId, title, color)
-	}
-
-	/**
-	 * Deletes a notebook from the user's account.
-	 * @param notebook - Notebook to be deleted
-	 */
-	const deleteNotebook = (notebookId: string) => {
-		console.log("Deleting notebook with ID:", notebookId)
-	}
-
-	/////////////////////////////////////////
 	// UI Aware Functions
 	/////////////////////////////////////////
 	// Helper function to create a new notebook with a title.
-	const { mutate: createNotebookApi } = useCreateNotebook()
-
 	const handleCreateNotebook = () => {
 		openModal({
-			type: ModalType.INPUT,
+			type: "input",
 			title: "Add New Notebook",
 			description: "Give your notebook a title to start organizing your study materials.",
 			placeholder: "Enter notebook name...",
+			color: true,
 			buttonText: "Create",
-			onSubmit: (input: string) => {
-				createNotebookApi({ title: input })
+			onSubmit: (input: string, color: Color = null) => {
+				const title = input.trim() === "" ? `Notebook ${notebookState.notebooks.length + 1}` : input
+				createNotebookServer.mutate({ title, color })
 			},
 		})
 	}
 
 	// Helper function to edit a notebook's title and cover fill.
 	const handleEditNotebook = (notebook: Notebook) => {
-		setInput(notebook.title)
 		openModal({
-			type: ModalType.INPUT,
+			type: "input",
 			title: `Edit ${notebook.title}`,
 			description: "Change your notebook's name and cover icon color.",
-			setInput: notebook.title,
 			placeholder: "Enter notebook name...",
+			color: true,
+			defaultValue: notebook.title,
+			defaultColor: notebook.color,
 			buttonText: "Apply",
-			onSubmit: (input: string) => editNotebook(notebook.id, input),
+			onSubmit: (input: string, color?: Color) =>
+				editNotebookServer.mutate({ id: notebook.id, req: { title: input, color } }),
 		})
 	}
 
 	const handleDeleteNotebook = (notebook: Notebook) => {
 		openModal({
-			type: ModalType.CONFIRM,
+			type: "confirm",
 			title: `Delete ${notebook.title}?`,
-			description:
-				"Are you sure you want to delete this notebook? This action can not be undone, and all of your progress will be lost.",
+			description: "Are you sure you want to delete this notebook?",
 			buttonText: "Delete",
-			onConfirm: () => deleteNotebook(notebook.id),
+			onSubmit: () => deleteNotebookServer.mutate(notebook),
 		})
 	}
 
 	// Helper function to create a new chapter with a title.
-	const { mutate: createChapterApi } = useCreateChapter()
-
 	const handleCreateChapter = () => {
 		openModal({
-			type: ModalType.INPUT,
+			type: "input",
 			title: "Create New Chapter",
 			description: "Organize your content by adding a new chapter to this notebook.",
 			placeholder: "Enter chapter name...",
 			buttonText: "Create",
 			onSubmit: (input: string) => {
-				const notebook = notebooks.find((n) => n.id === selectedNotebookId)
+				const notebook = notebookState.notebooks.find(
+					(n) => n.id === notebookState.selectedNotebookId
+				)
 				if (!notebook) throw new Error("Notebook not found.")
 
 				const order = notebook.chapters.length
 
-				createChapterApi({ title: input, order, notebookId: selectedNotebookId })
+				// Create chapter here
+				createChapterServer.mutate({
+					title: input,
+					notebookId: notebookState.selectedNotebookId!,
+					order,
+				})
 			},
 		})
 	}
 
-	// Helper function to create a new canvas
-	const { mutate: createCanvasApi } = useCreateCanvas()
+	// Helper function to edit a chapter.
+	const handleEditChapter = (chapter: Chapter) => {
+		openModal({
+			type: "input",
+			title: `Edit ${chapter.title}`,
+			description: "Change your chapter's name.",
+			placeholder: "Enter chapter name...",
+			buttonText: "Apply",
+			onSubmit: (input: string) =>
+				editChapterServer.mutate({ id: chapter.id, req: { title: input } as ChapterRequest }),
+		})
+	}
+
+	// Helper function to delete a chapter.
+	const handleDeleteChapter = (chapter: Chapter) => {
+		openModal({
+			type: "confirm",
+			title: `Delete ${chapter.title}?`,
+			description: "Are you sure you want to delete this notebook?",
+			buttonText: "Delete",
+			onSubmit: () => deleteChapterServer.mutate(chapter),
+		})
+	}
+
+	// Helper function to create a new canvas.
 	const handleCreateCanvas = (order: number = 0) => {
-		createCanvasApi({ chapterId: selectedChapterId, order: order })
+		createCanvasServer.mutate({ chapterId: notebookState.selectedChapterId!, order })
+	}
+
+	// Helper function to delete a canvas.
+	const handleDeleteCanvas = (canvas: Canvas) => {
+		deleteCanvasServer.mutate(canvas)
 	}
 
 	/////////////////////////////////////////
@@ -133,7 +160,6 @@ export default function useNotebookActions() {
 		}
 	}
 
-	const { mutate: createPathApi } = useCreatePath()
 	/**
 	 * Helper function that adds a new path to the canvas.
 	 * @param newPath - The new path drawn by the user.
@@ -151,15 +177,8 @@ export default function useNotebookActions() {
 			updatedAt: Date.now(),
 		}
 
-		// Send path to DB
-		createPathApi({
-			canvasId: activeCanvas.id,
-			points: newPathObject.points,
-			brushType: newPathObject.brush.type.toUpperCase(),
-			baseWidth: newPathObject.brush.baseWidth,
-			color: newPathObject.brush.color,
-			opacity: newPathObject.brush.opacity,
-		})
+		// Create path here
+		createPathsServer.mutate([mapToPathRequest(newPathObject)])
 
 		updateCanvas(updatedCanvas)
 	}
@@ -180,8 +199,7 @@ export default function useNotebookActions() {
 				return
 
 			p.points.forEach((pt) => {
-				const dist = Math.sqrt(Math.pow(pt.x * width - x, 2) - Math.pow(pt.y * height - y, 2))
-				// if (pt.x * width <= x + r && pt.x * width >= x - r && pt.y * height <= y + r && pt.y * height >= y - r) {
+				const dist = Math.sqrt(Math.pow(pt.x * width - x, 2) + Math.pow(pt.y * height - y, 2))
 				if (dist <= r) {
 					const snapshot = createSnapshot()
 
@@ -221,6 +239,11 @@ export default function useNotebookActions() {
 			updatedAt: Date.now(),
 		}
 
+		// Previous and current paths arrays.
+		const currPaths = activeCanvas.paths
+		const prevPaths = [...lastItem.paths]
+		syncPaths(currPaths, prevPaths)
+
 		updateCanvas(updatedCanvas)
 	}
 
@@ -244,6 +267,11 @@ export default function useNotebookActions() {
 			updatedAt: Date.now(),
 		}
 
+		// Previous and current paths arrays.
+		const prevPaths = activeCanvas.paths
+		const currPaths = [...lastItem.paths]
+		syncPaths(prevPaths, currPaths)
+
 		updateCanvas(updatedCanvas)
 	}
 
@@ -253,12 +281,18 @@ export default function useNotebookActions() {
 
 		const snapshot = createSnapshot()
 
+		const pathIdsToDelete = activeCanvas.paths.map((path) => path.id)
+
 		const updatedCanvas = {
 			...activeCanvas,
 			paths: [],
 			undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
 			redoStack: [],
 			updatedAt: Date.now(),
+		}
+
+		if (pathIdsToDelete.length > 0) {
+			deletePathsServer.mutate(pathIdsToDelete)
 		}
 
 		updateCanvas(updatedCanvas)
@@ -268,28 +302,18 @@ export default function useNotebookActions() {
 	 * Helper function to update the canvas from the notebooks array.
 	 * @param newCanvas - The new canvas state
 	 */
-	const updateCanvas = (_newCanvas: Canvas) => {
+	const updateCanvas = (newCanvas: Canvas) => {
 		if (!activeCanvas) return
 
-		setNotebooks((prevNotebooks) =>
-			prevNotebooks.map((notebook) =>
-				notebook.id === selectedNotebookId
-					? {
-							...notebook,
-							chapters: notebook.chapters.map((chapter) =>
-								chapter.id === selectedChapterId
-									? {
-											...chapter,
-											canvases: chapter.canvases.map((canvas) =>
-												canvas.id === _newCanvas.id ? _newCanvas : canvas
-											),
-									  }
-									: chapter
-							),
-					  }
-					: notebook
-			)
-		)
+		dispatch({
+			type: "UPDATE_CANVAS",
+			payload: {
+				notebookId: notebookState.selectedNotebookId!,
+				chapterId: notebookState.selectedChapterId!,
+				id: activeCanvas.id,
+				updates: newCanvas,
+			},
+		})
 	}
 
 	// Helper to push items onto both undo and redo stacks.
@@ -299,7 +323,39 @@ export default function useNotebookActions() {
 	const limitStackSize = (stack: any[], max: number) =>
 		stack.length >= max ? stack.slice(stack.length - max + 1) : stack
 
-	// Helpers to allow for checking if undo and redo are enabled
+	// Helper to delete and add paths from the database.
+	const syncPaths = (prevPaths: PathType[], currPaths: PathType[]) => {
+		if (prevPaths.length === currPaths.length) {
+			// Intentionally left empty.
+			return
+		} else if (prevPaths.length > currPaths.length) {
+			// Delete the extra paths after operation.
+			let pathsToDelete: string[] = []
+			prevPaths.forEach((prevPath) => {
+				if (!currPaths.some((currPath) => currPath.id === prevPath.id)) {
+					pathsToDelete.push(prevPath.id)
+				}
+			})
+
+			if (pathsToDelete.length > 0) {
+				deletePathsServer.mutate(pathsToDelete)
+			}
+		} else if (prevPaths.length < currPaths.length) {
+			// Add back the previous paths after operation.
+			let pathsToAdd: PathRequest[] = []
+			currPaths.forEach((currPath) => {
+				if (!prevPaths.some((prevPath) => prevPath.id === currPath.id)) {
+					pathsToAdd.push(mapToPathRequest(currPath))
+				}
+			})
+
+			if (pathsToAdd.length > 0) {
+				createPathsServer.mutate(pathsToAdd)
+			}
+		}
+	}
+
+	// Helpers to allow for checking if undo and redo are enabled.
 	const canUndo = () => activeCanvas && activeCanvas.undoStack.length > 0
 	const canRedo = () => activeCanvas && activeCanvas.redoStack.length > 0
 
@@ -308,7 +364,10 @@ export default function useNotebookActions() {
 		handleEditNotebook,
 		handleDeleteNotebook,
 		handleCreateChapter,
+		handleEditChapter,
+		handleDeleteChapter,
 		handleCreateCanvas,
+		handleDeleteCanvas,
 		addPathToCanvas,
 		handleErase,
 		undo,

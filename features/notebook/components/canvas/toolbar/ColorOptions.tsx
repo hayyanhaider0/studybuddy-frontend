@@ -4,13 +4,13 @@
  * Contains colors used by the user and an RGB option.
  */
 
-import { TouchableOpacity, View } from "react-native"
+import { View } from "react-native"
 import { useToolContext } from "../../../contexts/ToolContext"
 import { getCanvasStyles } from "../../../../../styles/canvas"
 import { useThemeContext } from "../../../../common/contexts/ThemeContext"
-import Icon from "react-native-vector-icons/MaterialCommunityIcons"
-import tinycolor from "tinycolor2"
-import { BrushType } from "../../../../../enums/global"
+import { BrushType } from "../../../../drawing/types/DrawingTypes"
+import Swatch from "./Swatch"
+import { Color } from "../../../../../types/global"
 
 export default function ColorOptions({ tool }: { tool: BrushType }) {
 	const {
@@ -26,25 +26,14 @@ export default function ColorOptions({ tool }: { tool: BrushType }) {
 	const { theme } = useThemeContext()
 	const styles = getCanvasStyles(theme.colors)
 
-	/**
-	 * checkMarkColor Function
-	 *
-	 * Helper function to get the color of the check mark on the selected swatch.
-	 *
-	 * @param color - Color of the background
-	 * @returns White if background color is dark, black if light.
-	 */
-	const checkMarkColor = (color: string) => {
-		return tinycolor(color).isDark() ? "#fff" : "#000"
-	}
-
 	return (
 		<View style={styles.colorContainer}>
 			{/* Map all the colors */}
 			{swatches[tool]?.map((c, i) => (
-				<TouchableOpacity
+				<Swatch
 					key={i}
-					// Change the color on press and close the color picker.
+					color={c as Color}
+					selected={toolSettings[tool].activeSwatchIndex === i}
 					onPress={() => {
 						// Track the currently selected swatch.
 						const isSelected = toolSettings[tool].activeSwatchIndex === i
@@ -66,16 +55,7 @@ export default function ColorOptions({ tool }: { tool: BrushType }) {
 							setColorPicker(false)
 						}
 					}}
-					activeOpacity={0.2}
-				>
-					{/* Color Swatch */}
-					<View style={[styles.options, { backgroundColor: c }]}>
-						{/* Render a check mark within the selected swatch. */}
-						{i === toolSettings[tool].activeSwatchIndex && (
-							<Icon name='check-bold' size={16} color={checkMarkColor(c)} />
-						)}
-					</View>
-				</TouchableOpacity>
+				/>
 			))}
 		</View>
 	)

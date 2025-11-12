@@ -5,6 +5,7 @@
  */
 
 import { PathType } from "../features/drawing/types/DrawingTypes"
+import { Color } from "./global"
 
 export type Canvas = {
 	id: string
@@ -16,6 +17,7 @@ export type Canvas = {
 	createdAt: number
 	updatedAt: number
 	lastAccessedAt: number
+	isDeleted: boolean
 }
 
 export type Chapter = {
@@ -26,6 +28,7 @@ export type Chapter = {
 	order: number
 	createdAt: number
 	updatedAt: number
+	isDeleted: boolean
 }
 
 export type Notebook = {
@@ -35,5 +38,6 @@ export type Notebook = {
 	createdAt: number
 	updatedAt: number
 	lastAccessedAt: number
-	color: string | null
+	color: Color
+	isDeleted: boolean
 }

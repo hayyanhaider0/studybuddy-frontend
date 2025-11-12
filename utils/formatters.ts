@@ -37,3 +37,7 @@ export const formatEducationLevel = (edu: EducationLevel | null | undefined) => 
 	if (!edu) return "Unknown"
 	return educationLevelLabels[edu] ?? "Unknown"
 }
+
+export const capitalize = (str: string) => {
+	return str.charAt(0).toUpperCase() + str.slice(1)
+}

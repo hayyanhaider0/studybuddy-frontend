@@ -5,43 +5,60 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
+import { Color } from "../../../types/global"
 
 // Types
-export enum ModalType {
-	INPUT = "INPUT",
-	CONFIRM = "CONFIRM",
-	CHOICE = "CHOICE",
-}
-
-type Choice = {
+interface Choice {
 	label: string
-	onPress: () => void
-	selected: boolean
+	selected?: boolean
 }
-
-type ModalData = {
-	type: ModalType
+interface BaseModalType {
 	title: string
 	description: string
-	setInput?: string
-	placeholder?: string
-	choices?: Choice[]
-	buttonText?: string
-	onSubmit?: (input: string) => void
-	onConfirm?: () => void
 }
+export interface InputModalType extends BaseModalType {
+	type: "input"
+	placeholder: string
+	buttonText: string
+	defaultValue?: string
+	defaultColor?: Color
+	color?: boolean
+	onSubmit: (input: string, color?: Color) => void
+}
+
+export interface ConfirmModalType extends BaseModalType {
+	type: "confirm"
+	buttonText: string
+	onSubmit: () => void
+}
+
+export interface SingleChoiceModalType extends BaseModalType {
+	type: "single_choice"
+	choices: Choice[]
+	selectedIndex?: number
+	onSubmit: (selectedIndex: number) => void
+}
+export interface MultipleChoiceModalType extends BaseModalType {
+	type: "multiple_choice"
+	choices: Choice[]
+	selectedIndices?: number[]
+	onSubmit: (selectedIndices: number[]) => void
+}
+
+// Types
+export type ModalType =
+	| InputModalType
+	| ConfirmModalType
+	| SingleChoiceModalType
+	| MultipleChoiceModalType
 
 type ModalContextType = {
 	// Boolean to show whether the modal is currently visible.
-	showModal: boolean
-	// Current input value for INPUT type modals.
-	input: string
-	// Setter for the input value.
-	setInput: (input: string) => void
+	isVisible: boolean
 	// Current modal data containing all modal configuration.
-	modalData: ModalData | null
+	modalData: ModalType | null
 	// Function to open a modal with the provided configuration.
-	openModal: (props: ModalData) => void
+	openModal: (props: ModalType) => void
 	// Function to close the current modal.
 	closeModal: () => void
 	// Function to handle modal submission based on modal type.
@@ -60,25 +77,19 @@ const ModalContext = createContext<ModalContextType | null>(null)
  */
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
 	// Boolean to control modal visibility.
-	const [showModal, setShowModal] = useState(false)
-	// Current input value for INPUT type modals.
-	const [input, setInput] = useState("")
+	const [isVisible, setVisible] = useState(false)
 	// Current modal configuration data.
-	const [modalData, setModalData] = useState<ModalData | null>(null)
+	const [modalData, setModalData] = useState<ModalType | null>(null)
 
 	// Function to open a modal with configuration
-	const openModal = (props: ModalData) => {
+	const openModal = (props: ModalType) => {
 		setModalData(props)
-		if (props.setInput) {
-			setInput(props.setInput)
-		}
-		setShowModal(true)
+		setVisible(true)
 	}
 
 	// Function to close the modal and reset state
 	const closeModal = () => {
-		setShowModal(false)
-		setInput("")
+		setVisible(false)
 		// Clear modal data after animation completes
 		setTimeout(() => setModalData(null), 300)
 	}
@@ -87,34 +98,43 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 	const handleSubmit = (choiceIndex?: number) => {
 		if (!modalData) return
 
-		// Handle choice selection
-		if (modalData.type === ModalType.CHOICE && choiceIndex !== undefined) {
-			modalData.choices?.[choiceIndex]?.onPress()
-			closeModal()
-			return
-		}
-
-		// Handle confirm modal
-		if (modalData.onConfirm) {
-			modalData.onConfirm()
-			closeModal()
-			return
-		}
-
-		// Handle input modal
-		if (modalData.onSubmit) {
-			modalData.onSubmit(input)
-			closeModal()
-			return
+		switch (modalData.type) {
+			// Input modal case is managed within the modal component.
+			// Confirm modal case, just submits.
+			case "confirm":
+				modalData.onSubmit()
+				closeModal()
+				break
+			// Single choice modal case, submits with the selected choice.
+			case "single_choice":
+				if (choiceIndex === undefined) return
+				modalData.onSubmit(choiceIndex)
+				closeModal()
+				break
+			// Multiple choice modal case, allows user to selected/deselect,
+			// then submits an array of indices that they selected.
+			case "multiple_choice":
+				if (choiceIndex !== undefined) {
+					// Get the selected choices.
+					const newSelected = modalData.selectedIndices?.includes(choiceIndex)
+						? modalData.selectedIndices.filter((i) => i !== choiceIndex)
+						: [...(modalData.selectedIndices || []), choiceIndex]
+					setModalData(
+						(prev) => prev && ({ ...prev, selectedIndices: newSelected } as MultipleChoiceModalType)
+					)
+				} else {
+					// If nothing is selected, submit an empty array.
+					modalData.onSubmit(modalData.selectedIndices || [])
+					closeModal()
+				}
+				break
 		}
 	}
 
 	return (
 		<ModalContext.Provider
 			value={{
-				showModal,
-				input,
-				setInput,
+				isVisible,
 				modalData,
 				openModal,
 				closeModal,

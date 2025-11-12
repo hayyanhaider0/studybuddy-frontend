@@ -9,7 +9,7 @@ import { useThemeContext } from "../../features/common/contexts/ThemeContext"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import Settings from "../../features/settings/components/Settings"
 import { SettingsType } from "../../types/global"
-import { ModalType, useModal } from "../../features/common/contexts/ModalContext"
+import { useModal } from "../../features/common/contexts/ModalContext"
 import { useSettings } from "../../features/common/contexts/SettingsContext"
 import { FontScale, ThemeName } from "../../enums/global"
 import CustomScrollView from "../../features/common/components/CustomScrollView"
@@ -28,59 +28,58 @@ export default function DisplayScreen() {
 	// Opens a multiple choice modal to allow the user to select a theme.
 	const handleSelectTheme = () => {
 		openModal({
-			type: ModalType.CHOICE,
+			type: "single_choice",
 			title: "Select Theme",
 			description: "Choose a theme and personalize your Study Buddy experience.",
 			choices: [
-				{
-					label: "System Default",
-					onPress: () => {
-						if (!useSystemTheme) toggleSystemTheme()
-					},
-					selected: useSystemTheme,
-				},
-				{
-					label: "Light",
-					onPress: () => setTheme(ThemeName.LIGHT),
-					selected: !useSystemTheme && theme.name === ThemeName.LIGHT,
-				},
-				{
-					label: "Dark",
-					onPress: () => setTheme(ThemeName.DARK),
-					selected: !useSystemTheme && theme.name === ThemeName.DARK,
-				},
+				{ label: "System Default", selected: useSystemTheme },
+				{ label: "Light", selected: !useSystemTheme && theme.name === ThemeName.LIGHT },
+				{ label: "Dark", selected: !useSystemTheme && theme.name === ThemeName.DARK },
 			],
+			onSubmit: (selectedIndex: number) => {
+				switch (selectedIndex) {
+					case 0:
+						if (!useSystemTheme) toggleSystemTheme()
+						break
+					case 1:
+						setTheme(ThemeName.LIGHT)
+						break
+					case 2:
+						setTheme(ThemeName.DARK)
+						break
+				}
+			},
 		})
 	}
 
 	// Open a multiple choice modal that allows the user to select a font size.
 	const handleFontScale = () => {
 		openModal({
-			type: ModalType.CHOICE,
+			type: "single_choice",
 			title: "Font Size",
 			description: "Change your font size.",
 			choices: [
-				{
-					label: "Small",
-					onPress: () => setFontScale(FontScale.SMALL),
-					selected: fontScale === FontScale.SMALL,
-				},
-				{
-					label: "Medium",
-					onPress: () => setFontScale(FontScale.MEDIUM),
-					selected: fontScale === FontScale.MEDIUM,
-				},
-				{
-					label: "Large",
-					onPress: () => setFontScale(FontScale.LARGE),
-					selected: fontScale === FontScale.LARGE,
-				},
-				{
-					label: "X-Large",
-					onPress: () => setFontScale(FontScale.XLARGE),
-					selected: fontScale === FontScale.XLARGE,
-				},
+				{ label: "Small", selected: fontScale === FontScale.SMALL },
+				{ label: "Medium", selected: fontScale === FontScale.MEDIUM },
+				{ label: "Large", selected: fontScale === FontScale.LARGE },
+				{ label: "X-Large", selected: fontScale === FontScale.XLARGE },
 			],
+			onSubmit: (selectedIndex: number) => {
+				switch (selectedIndex) {
+					case 0:
+						setFontScale(FontScale.SMALL)
+						break
+					case 1:
+						setFontScale(FontScale.MEDIUM)
+						break
+					case 2:
+						setFontScale(FontScale.LARGE)
+						break
+					case 3:
+						setFontScale(FontScale.XLARGE)
+						break
+				}
+			},
 		})
 	}
 
