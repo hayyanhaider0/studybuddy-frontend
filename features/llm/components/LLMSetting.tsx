@@ -28,6 +28,10 @@ export default function LLMSetting({ type, sections }: LLMSettingProps) {
 		sections.map((s) => s.expanded)
 	)
 
+	/**
+	 * Toggles a section i.e. Basic, Personalize, Advanced.
+	 * @param index - 0 = Basic, 1 = Personalize, 2 = Advanced.
+	 */
 	const toggleSection = (index: number) => {
 		setExpandedSections((prev) => prev.map((val, i) => (i === index ? !val : val)))
 	}
@@ -37,6 +41,7 @@ export default function LLMSetting({ type, sections }: LLMSettingProps) {
 			{sections.map((section, sectionIndex) => (
 				<View key={section.title} style={{ gap: 8 }}>
 					<HorizontalRule />
+
 					{/* Section Header */}
 					<Pressable
 						onPress={() => toggleSection(sectionIndex)}

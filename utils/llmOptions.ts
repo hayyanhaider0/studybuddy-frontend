@@ -11,7 +11,7 @@ export interface llmSection {
 }
 
 export interface llmSettingsGroup {
-	type: "notes" | "flashcards" | "quizzes" | "exams"
+	type: "notes" | "flashcards" | "quiz" | "exam"
 	sections: llmSection[]
 }
 
@@ -136,6 +136,6 @@ export const EXAMS_SETTINGS: llmSection[] = [
 export const DEFAULT_LLM_SETTINGS: llmSettingsGroup[] = [
 	{ type: "notes", sections: NOTES_SETTINGS },
 	{ type: "flashcards", sections: FLASHCARDS_SETTINGS },
-	{ type: "quizzes", sections: QUIZZES_SETTINGS },
-	{ type: "exams", sections: EXAMS_SETTINGS },
+	{ type: "quiz", sections: QUIZZES_SETTINGS },
+	{ type: "exam", sections: EXAMS_SETTINGS },
 ]

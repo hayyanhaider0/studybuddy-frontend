@@ -5,7 +5,26 @@
  */
 
 import { createContext, ReactNode, useContext, useState } from "react"
-import { EducationLevel, Occupation } from "../../../enums/global"
+
+export type Occupation =
+	| "STUDENT"
+	| "PROFESSOR"
+	| "INSTRUCTOR"
+	| "EDUCATOR"
+	| "TEACHING_ASSISTANT"
+	| "RESEARCHER"
+	| "PARENT"
+	| "ALUMNI"
+	| "PROFESSIONAL"
+	| "OTHER"
+
+export type EducationLevel =
+	| "HIGH_SCHOOL"
+	| "UNDERGRAD_YEAR_ONE"
+	| "UNDERGRAD_YEAR_TWO"
+	| "UNDERGRAD_YEAR_THREE"
+	| "UNDERGRAD_YEAR_FOUR"
+	| "GRADUATE"
 
 type AuthStateType = {
 	// Checks access token to figure out whether user is authenticated.

@@ -26,6 +26,10 @@ export default function LLMSettingOption({ option, onChange }: LLMSettingOptionP
 	// Local value state
 	const [value, setValue] = useState<string | boolean>(option.selectedValue)
 
+	/**
+	 * Change a value in the option.
+	 * @param newValue - New selected value.
+	 */
 	const handleValueChange = (newValue: string | boolean) => {
 		setValue(newValue)
 		onChange(newValue)
@@ -50,9 +54,11 @@ export default function LLMSettingOption({ option, onChange }: LLMSettingOptionP
 				justifyContent: "space-between",
 			}}
 		>
+			{/* Option Label. */}
 			<Text style={GlobalStyles.paragraph}>{option.label}</Text>
 
 			{typeof value === "string" ? (
+				// Render a dropdown if the values are strings.
 				<Pressable
 					onPress={() => handleStringOption(option.values ?? [])}
 					style={{
@@ -66,10 +72,14 @@ export default function LLMSettingOption({ option, onChange }: LLMSettingOptionP
 						gap: 4,
 					}}
 				>
+					{/* Show selected value. */}
 					<Text style={GlobalStyles.paragraph}>{value}</Text>
+
+					{/* Menu down icon. */}
 					<MaterialC name='menu-down' size={16} color={theme.colors.textPrimary} />
 				</Pressable>
 			) : (
+				// Render a switch if the value is a boolean.
 				<Switch value={!!value} onValueChange={(newVal) => handleValueChange(newVal)} />
 			)}
 		</View>

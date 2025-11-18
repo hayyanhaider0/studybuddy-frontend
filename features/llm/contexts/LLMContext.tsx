@@ -1,21 +1,52 @@
+/**
+ * LLMContext Component
+ *
+ * Provides shared state for LLM options.
+ */
+
 import { createContext, ReactNode, useContext, useState } from "react"
 import { DEFAULT_LLM_SETTINGS, llmSettingsGroup } from "../../../utils/llmOptions"
 
 interface LLMContextType {
+	// User selected settings.
 	settings: llmSettingsGroup[]
+	// Update an option within a settings group.
 	updateOption: (
 		groupType: "notes" | "flashcards" | "quiz" | "exam",
 		sectionIndex: number,
 		optionIndex: number,
 		value: string | boolean
 	) => void
+	// Selected chapters from the ChapterSelector component.
+	// Holds chapter IDs.
+	selectedChapters: string[]
+	// Setter for the selected chapters.
+	setSelectedChapters: React.Dispatch<React.SetStateAction<string[]>>
 }
 
+// React context for LLM options.
 export const LLMContext = createContext<LLMContextType | null>(null)
 
+/**
+ * Wraps children components, providing LLM option values via context.
+ *
+ * @param children - Components that require access to canvas state values.
+ */
 export const LLMProvider = ({ children }: { children: ReactNode }) => {
+	// Settings for the selected task type.
 	const [settings, setSettings] = useState<llmSettingsGroup[]>(DEFAULT_LLM_SETTINGS)
+	// Chapters selected through the ChapterSelector component.
+	const [selectedChapters, setSelectedChapters] = useState<string[]>([])
 
+	/**
+	 * Updates an option within an LLM settings group.
+	 * e.g. updating "Detail Level" while generating Notes.
+	 *
+	 * @param groupType - Settings group (one of notes, flashcards, quiz, exam)/
+	 * @param sectionIndex - Index of one of the three sections in each settings group i.e. Basic, Personalize, Advanced.
+	 * @param optionIndex - Index of the option to update.
+	 * @param value - Value to set for the option.
+	 */
 	const updateOption: LLMContextType["updateOption"] = (
 		groupType,
 		sectionIndex,
@@ -43,9 +74,19 @@ export const LLMProvider = ({ children }: { children: ReactNode }) => {
 		)
 	}
 
-	return <LLMContext.Provider value={{ settings, updateOption }}>{children}</LLMContext.Provider>
+	return (
+		<LLMContext.Provider value={{ settings, updateOption, selectedChapters, setSelectedChapters }}>
+			{children}
+		</LLMContext.Provider>
+	)
 }
 
+/**
+ * Custom hook for accessing LLM option shared values.
+ *
+ * @throws Error if used outside of LLMProvider.
+ * @returns LLMContext providing shared values.
+ */
 export const useLLMContext = () => {
 	const ctx = useContext(LLMContext)
 	if (!ctx) throw new Error("useLLMContext must be used within an LLMProvider")

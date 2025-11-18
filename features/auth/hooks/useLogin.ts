@@ -11,7 +11,6 @@ import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../../types/global"
 import { useAuthContext } from "../contexts/AuthContext"
 import { useMutation } from "@tanstack/react-query"
-import { EducationLevel, Occupation } from "../../../enums/global"
 import { saveToken, saveRefreshToken } from "../../../utils/secureStore"
 import { AxiosError } from "axios"
 import { login } from "../api"
@@ -111,8 +110,8 @@ export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 				email: response.email,
 				username: response.username,
 				displayName: response.displayName,
-				occupation: response.occupation || Occupation.STUDENT,
-				educationLevel: response.educationLevel || EducationLevel.UNDERGRAD_YEAR_THREE,
+				occupation: response.occupation || "STUDENT",
+				educationLevel: response.educationLevel || "UNDERGRAD_YEAR_THREE",
 			})
 		},
 		onError: (e: AxiosError<{ data: any; error: string; message: string }>) => {

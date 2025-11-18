@@ -4,36 +4,36 @@
  * Holds formatting functions for Study Buddy.
  */
 
-import { Occupation, EducationLevel } from "../enums/global"
+import { Occupation, EducationLevel } from "../features/auth/contexts/AuthContext"
 
 export const occupationLabels: Record<Occupation, string> = {
-	[Occupation.STUDENT]: "Student",
-	[Occupation.PROFESSOR]: "Professor",
-	[Occupation.INSTRUCTOR]: "Instructor",
-	[Occupation.EDUCATOR]: "Educator",
-	[Occupation.TEACHING_ASSISTANT]: "Teaching Assistant",
-	[Occupation.RESEARCHER]: "Researcher",
-	[Occupation.PARENT]: "Parent",
-	[Occupation.ALUMNI]: "Alumni",
-	[Occupation.PROFESSIONAL]: "Professional",
-	[Occupation.OTHER]: "Other",
+	STUDENT: "Student",
+	PROFESSOR: "Professor",
+	INSTRUCTOR: "Instructor",
+	EDUCATOR: "Educator",
+	TEACHING_ASSISTANT: "Teaching Assistant",
+	RESEARCHER: "Researcher",
+	PARENT: "Parent",
+	ALUMNI: "Alumni",
+	PROFESSIONAL: "Professional",
+	OTHER: "Other",
 }
 
-export const formatOccupation = (occ: Occupation | null | undefined) => {
+export const formatOccupation = (occ: Occupation | null) => {
 	if (!occ) return "Unknown"
 	return occupationLabels[occ] ?? "Unknown"
 }
 
 export const educationLevelLabels: Record<EducationLevel, string> = {
-	[EducationLevel.HIGH_SCHOOL]: "High School",
-	[EducationLevel.UNDERGRAD_YEAR_ONE]: "University 1st Year",
-	[EducationLevel.UNDERGRAD_YEAR_TWO]: "University 2nd Year",
-	[EducationLevel.UNDERGRAD_YEAR_THREE]: "University 3rd Year",
-	[EducationLevel.UNDERGRAD_YEAR_FOUR]: "University 4th Year",
-	[EducationLevel.GRADUATE]: "Graduate Student",
+	HIGH_SCHOOL: "High School",
+	UNDERGRAD_YEAR_ONE: "University 1st Year",
+	UNDERGRAD_YEAR_TWO: "University 2nd Year",
+	UNDERGRAD_YEAR_THREE: "University 3rd Year",
+	UNDERGRAD_YEAR_FOUR: "University 4th Year",
+	GRADUATE: "Graduate Student",
 }
 
-export const formatEducationLevel = (edu: EducationLevel | null | undefined) => {
+export const formatEducationLevel = (edu: EducationLevel | null) => {
 	if (!edu) return "Unknown"
 	return educationLevelLabels[edu] ?? "Unknown"
 }
