@@ -29,7 +29,7 @@ export type RootStackParamList = {
 	forgot: { login?: string | undefined }
 	reset: { email?: string }
 	main: undefined
-	generate: { taskType: "notes" | "flashcards" | "quizzes" | "exams"; notebookName: string }
+	generate: { taskType: "notes" | "flashcards" | "quiz" | "exam"; notebookId: string }
 }
 
 // Stack navigation.
