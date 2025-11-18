@@ -3,7 +3,7 @@ import { ApiResponse } from "../../../types/global"
 import { Chapter } from "../../../types/notebook"
 import { EducationLevel, Occupation } from "../../auth/contexts/AuthContext"
 
-export interface NotesRequest {
+export interface GenerateRequest {
 	taskType: "notes" | "flashcards" | "quiz" | "exam"
 	occupation: Occupation | null
 	educationLevel: EducationLevel | null
@@ -12,12 +12,12 @@ export interface NotesRequest {
 	options: Record<string, string | boolean>
 }
 
-export interface NotesResponse {
+export interface GenerateResponse {
 	notebookName: string
 	chapters: Chapter[]
 }
 
-export const generate = async (req: NotesRequest): Promise<NotesResponse> => {
-	const res = await client.post<ApiResponse<NotesResponse>>("/ai/generate", req)
+export const generate = async (req: GenerateRequest): Promise<GenerateResponse> => {
+	const res = await client.post<ApiResponse<GenerateResponse>>("/ai/generate", req)
 	return res.data.data!
 }

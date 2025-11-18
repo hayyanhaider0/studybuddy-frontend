@@ -16,7 +16,7 @@ import { useLLMContext } from "../features/llm/contexts/LLMContext"
 import { llmSettingsGroup } from "../utils/llmOptions"
 import LLMSetting from "../features/llm/components/LLMSetting"
 import { useAuthContext } from "../features/auth/contexts/AuthContext"
-import { generate, NotesRequest } from "../features/llm/api/api"
+import { generate, GenerateRequest } from "../features/llm/api/api"
 import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
 import { getChapter, getNotebook } from "../utils/notebook"
 import { useEffect } from "react"
@@ -74,7 +74,7 @@ export default function GenerateScreen() {
 		if (chaptersWithCanvases.length === 0) return
 
 		// Create a request.
-		const req: NotesRequest = {
+		const req: GenerateRequest = {
 			taskType,
 			occupation: authState.occupation,
 			educationLevel: authState.educationLevel,
