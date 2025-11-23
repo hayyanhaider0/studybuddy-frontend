@@ -153,4 +153,20 @@ export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 			borderRadius: 8,
 			justifyContent: "center",
 		},
+		select: {
+			width: "100%",
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			padding: 16,
+		},
+		option: {
+			flexDirection: "row",
+			backgroundColor: colors.primary,
+			paddingVertical: 8,
+			paddingHorizontal: 16,
+			borderRadius: 99,
+			gap: 8,
+			maxWidth: "50%",
+		},
 	})

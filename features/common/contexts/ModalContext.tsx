@@ -8,7 +8,7 @@ import { createContext, ReactNode, useContext, useState } from "react"
 import { Color } from "../../../types/global"
 
 // Types
-interface Choice {
+export interface Choice {
 	label: string
 	selected?: boolean
 }

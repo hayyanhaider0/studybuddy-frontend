@@ -5,7 +5,7 @@
  */
 
 import { createDrawerNavigator, DrawerContentComponentProps } from "@react-navigation/drawer"
-import React from "react"
+import React, { useEffect } from "react"
 import { CanvasProvider } from "../providers/CanvasProvider"
 import CanvasScreen from "../screens/CanvasScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
@@ -14,6 +14,10 @@ import Header from "./Header"
 import { SCREENS } from "../utils/drawer"
 import CustomDrawer from "./CustomDrawer"
 import SettingsNavigation from "./SettingsNavigation"
+import { useNavigation } from "@react-navigation/native"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { RootStackParamList } from "./Navigation"
+import { useAuthContext } from "../features/auth/contexts/AuthContext"
 
 export type DrawerParamList = {
 	// All available screens on the sidebar menu.
@@ -31,7 +35,16 @@ export type DrawerParamList = {
 const Drawer = createDrawerNavigator<DrawerParamList>()
 
 export default function DrawerNavigation() {
+	const { authState } = useAuthContext()
+	const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+
 	const DRAWER_WIDTH = 252 // Set the drawer width
+
+	useEffect(() => {
+		if (!authState.occupation || !authState.educationLevel) {
+			nav.navigate("accountPreferences")
+		}
+	}, [authState])
 
 	return (
 		<Drawer.Navigator
