@@ -84,7 +84,6 @@ export interface PathCreateResponse {
 // Notebooks
 export const createNotebook = async (req: NotebookRequest): Promise<NotebookResponse> => {
 	const res = await client.post<ApiResponse<NotebookResponse>>("/notebooks", req)
-	console.log("Creating notebook:", JSON.stringify(res.data, null, 2))
 	return res.data.data!
 }
 
@@ -95,7 +94,6 @@ export const editNotebook = async (id: string, req: NotebookRequest): Promise<No
 
 export const fetchNotebooks = async (): Promise<NotebookResponse[]> => {
 	const res = await client.get<ApiResponse<NotebookResponse[]>>("/notebooks")
-	console.log("Notebooks:", JSON.stringify(res.data, null, 2))
 	return res.data.data!
 }
 
@@ -145,7 +143,6 @@ export const deleteChapter = async (id: string): Promise<void> => {
 	console.log("Deleing chapter with id:", id)
 	if (!id || id.startsWith("temp")) return
 	const res = await client.delete<ApiResponse<void>>(`/chapters/${id}`)
-	console.log("Deleted chapter:", res.data.data)
 	return res.data.data!
 }
 
@@ -171,7 +168,6 @@ export const fetchCanvases = async (chapterIds: string[]): Promise<CanvasRespons
 	const res = await client.post<ApiResponse<CanvasResponse[]>>("/canvases/by-chapters", {
 		chapterIds,
 	})
-	console.log("Canvas:", JSON.stringify(res.data, null, 2))
 	return res.data.data!
 }
 

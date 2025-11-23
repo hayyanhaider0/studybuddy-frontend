@@ -21,10 +21,12 @@ import ResetPasswordScreen from "../screens/ResetPasswordScreen"
 import GenerateScreen from "../screens/GenerateScreen"
 import Header from "./Header"
 import { capitalize } from "../utils/formatters"
+import AccountPreferencesScreen from "../screens/AccountPreferencesScreen"
 
 export type RootStackParamList = {
 	// All available screens.
 	login: { email?: string | undefined }
+	accountPreferences: undefined
 	verify: { email: string }
 	forgot: { login?: string | undefined }
 	reset: { email?: string }
@@ -69,6 +71,7 @@ export default function Navigation() {
 					{authState.isLoggedIn ? (
 						<>
 							<Stack.Screen name='main' component={DrawerNavigation} />
+							<Stack.Screen name='accountPreferences' component={AccountPreferencesScreen} />
 							<Stack.Screen
 								name='generate'
 								component={GenerateScreen}

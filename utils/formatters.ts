@@ -8,15 +8,15 @@ import { Occupation, EducationLevel } from "../features/auth/contexts/AuthContex
 
 export const occupationLabels: Record<Occupation, string> = {
 	STUDENT: "Student",
-	PROFESSOR: "Professor",
-	INSTRUCTOR: "Instructor",
-	EDUCATOR: "Educator",
-	TEACHING_ASSISTANT: "Teaching Assistant",
-	RESEARCHER: "Researcher",
-	PARENT: "Parent",
-	ALUMNI: "Alumni",
-	PROFESSIONAL: "Professional",
+	TEACHER: "Teacher / Professor",
+	INSTRUCTOR: "Instructor / Coach / Mentor",
+	RESEARCHER: "Researcher / Scientist",
+	PARENT_CAREGIVER: "Parent / Caregiver",
+	PROFESSIONAL: "Professional / Worker",
+	UNEMPLOYED: "Unemployed / Seeking work",
+	RETIRED: "Retired",
 	OTHER: "Other",
+	NA: "Prefer not to say",
 }
 
 export const formatOccupation = (occ: Occupation | null) => {
@@ -25,12 +25,16 @@ export const formatOccupation = (occ: Occupation | null) => {
 }
 
 export const educationLevelLabels: Record<EducationLevel, string> = {
+	NONE: "No formal education",
+	PRIMARY: "Primary / Elementary School",
+	MIDDLE: "Middle School",
 	HIGH_SCHOOL: "High School",
-	UNDERGRAD_YEAR_ONE: "University 1st Year",
-	UNDERGRAD_YEAR_TWO: "University 2nd Year",
-	UNDERGRAD_YEAR_THREE: "University 3rd Year",
-	UNDERGRAD_YEAR_FOUR: "University 4th Year",
-	GRADUATE: "Graduate Student",
+	VOCATIONAL: "Vocational / Technical Training",
+	UNDERGRAD: "Undergraduate / College",
+	GRADUATE: "Graduate / Master’s",
+	POSTGRAD: "Postgraduate / PhD",
+	OTHER: "Other",
+	NA: "Prefer not to say",
 }
 
 export const formatEducationLevel = (edu: EducationLevel | null) => {

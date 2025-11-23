@@ -8,23 +8,27 @@ import { createContext, ReactNode, useContext, useState } from "react"
 
 export type Occupation =
 	| "STUDENT"
-	| "PROFESSOR"
+	| "TEACHER"
 	| "INSTRUCTOR"
-	| "EDUCATOR"
-	| "TEACHING_ASSISTANT"
 	| "RESEARCHER"
-	| "PARENT"
-	| "ALUMNI"
+	| "PARENT_CAREGIVER"
 	| "PROFESSIONAL"
+	| "UNEMPLOYED"
+	| "RETIRED"
 	| "OTHER"
+	| "NA"
 
 export type EducationLevel =
+	| "NONE"
+	| "PRIMARY"
+	| "MIDDLE"
 	| "HIGH_SCHOOL"
-	| "UNDERGRAD_YEAR_ONE"
-	| "UNDERGRAD_YEAR_TWO"
-	| "UNDERGRAD_YEAR_THREE"
-	| "UNDERGRAD_YEAR_FOUR"
+	| "VOCATIONAL"
+	| "UNDERGRAD"
 	| "GRADUATE"
+	| "POSTGRAD"
+	| "OTHER"
+	| "NA"
 
 type AuthStateType = {
 	// Checks access token to figure out whether user is authenticated.

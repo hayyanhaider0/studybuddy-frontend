@@ -105,13 +105,14 @@ export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 			}
 
 			// Set the user auth state.
+			console.log("Login Response:", JSON.stringify(response, null, 2))
 			setAuthState({
 				isLoggedIn: true,
 				email: response.email,
 				username: response.username,
 				displayName: response.displayName,
-				occupation: response.occupation || "STUDENT",
-				educationLevel: response.educationLevel || "UNDERGRAD_YEAR_THREE",
+				occupation: response.occupation || null,
+				educationLevel: response.educationLevel || null,
 			})
 		},
 		onError: (e: AxiosError<{ data: any; error: string; message: string }>) => {
