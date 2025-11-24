@@ -8,12 +8,14 @@ import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import CustomScrollView from "../features/common/components/CustomScrollView"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import HorizontalRule from "../features/common/components/HorizontalRule"
+import { useModal } from "../features/common/contexts/ModalContext"
 
 type QuizScreenRouteProp = RouteProp<QuizStackParamList, "quiz">
 
 export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 	const { id } = route.params
 	const { quizState } = useLLMContext()
+	const { openModal } = useModal()
 	const [questionIndex, setQuestionIndex] = useState<number>(0)
 
 	const { theme, GlobalStyles } = useThemeContext()
@@ -23,6 +25,9 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 
 	const [selectedIndeces, setSelectedIndeces] = useState<number[]>(
 		new Array(quiz.items.length).fill(-1)
+	)
+	const [showExplanation, setShowExplanation] = useState<boolean[]>(
+		new Array(quiz.items.length).fill(false)
 	)
 
 	const currentQuestion = quiz.items[questionIndex]
@@ -37,20 +42,37 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 	}
 
 	const submit = () => {
-		console.log("Answers:", selectedIndeces)
-		let correct = 0
-		selectedIndeces.forEach((selected, i) => {
-			if (quiz.items[i].answer === quiz.items[i].options[selected]) correct++
+		let missing = 0
+		selectedIndeces.forEach((i) => (i === -1 ? missing++ : 0))
+
+		openModal({
+			type: "confirm",
+			title: "Submit Quiz",
+			description: `Are you sure you want to submit your quiz?${
+				missing > 0 ? ` You did not answer ${missing} questions.` : ""
+			}`,
+			buttonText: "Submit",
+			onSubmit: () => {
+				let correct = 0
+				selectedIndeces.forEach((selected, i) => {
+					if (quiz.items[i].answer === quiz.items[i].options[selected]) correct++
+				})
+				console.log("Score:", correct, "/", quiz.items.length)
+				setSelectedIndeces(new Array(quiz.items.length).fill(-1))
+				setShowExplanation(new Array(quiz.items.length).fill(true))
+			},
 		})
-		console.log(correct + "/" + quiz.items.length)
-		setSelectedIndeces(new Array(quiz.items.length).fill(-1))
+	}
+
+	const toggleAnswer = () => {
+		setShowExplanation((prev) => prev.map((val, i) => (i === questionIndex ? !val : val)))
 	}
 
 	return (
 		<View style={[GlobalStyles.container, { padding: 16 }]}>
 			<CustomScrollView contentStyle={{ minHeight: "100%", gap: 8 }}>
 				<Text style={[GlobalStyles.subheading, { textAlign: "left" }]}>
-					Q{questionIndex + 1}) {currentQuestion.question}
+					{questionIndex + 1}. {currentQuestion.question}
 				</Text>
 				<HorizontalRule />
 				<View style={{ gap: 8 }}>
@@ -78,8 +100,33 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 						)
 					})}
 				</View>
-				<View style={{ marginTop: "auto", flexDirection: "row", justifyContent: "space-between" }}>
+				{showExplanation[questionIndex] && (
+					<>
+						<HorizontalRule />
+						<Text style={GlobalStyles.paragraph}>{currentQuestion.explanation}</Text>
+					</>
+				)}
+				<CustomPressable
+					type='secondary'
+					title={showExplanation[questionIndex] ? "Hide Answer" : "Reveal Answer"}
+					onPress={toggleAnswer}
+					style={{
+						alignSelf: "flex-start",
+						marginTop: "auto",
+						marginBottom: 8,
+					}}
+				/>
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "space-between",
+						alignItems: "center",
+					}}
+				>
 					<CustomPressable type='secondary' title='Back' onPress={decrementQuestion} />
+					<Text style={GlobalStyles.paragraph}>
+						{questionIndex + 1} / {quiz.items.length}
+					</Text>
 					{questionIndex === quiz.items.length - 1 ? (
 						<CustomPressable type='primary' title='Submit' onPress={submit} />
 					) : (
