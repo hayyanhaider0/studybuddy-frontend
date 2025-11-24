@@ -12,6 +12,7 @@ import { SettingsProvider } from "../features/common/contexts/SettingsContext"
 import { AuthProvider } from "../features/auth/contexts/AuthContext"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "../api/queryClient"
+import { GenerateProvider } from "../features/llm/contexts/GenerateContext"
 import { LLMProvider } from "../features/llm/contexts/LLMContext"
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -19,13 +20,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 		<QueryClientProvider client={queryClient}>
 			<AuthProvider>
 				<NotebookProvider>
-					<ThemeProvider>
-						<SettingsProvider>
-							<SortProvider>
-								<LLMProvider>{children}</LLMProvider>
-							</SortProvider>
-						</SettingsProvider>
-					</ThemeProvider>
+					<LLMProvider>
+						<ThemeProvider>
+							<SettingsProvider>
+								<SortProvider>
+									<GenerateProvider>{children}</GenerateProvider>
+								</SortProvider>
+							</SettingsProvider>
+						</ThemeProvider>
+					</LLMProvider>
 				</NotebookProvider>
 			</AuthProvider>
 		</QueryClientProvider>

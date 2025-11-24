@@ -11,7 +11,7 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import HorizontalRule from "../../common/components/HorizontalRule"
 import { llmSection } from "../../../utils/llmOptions"
-import { useLLMContext } from "../contexts/LLMContext"
+import { useGenerate } from "../contexts/GenerateContext"
 import LLMSettingOption from "./LLMSettingOption"
 
 interface LLMSettingProps {
@@ -21,7 +21,7 @@ interface LLMSettingProps {
 
 export default function LLMSetting({ type, sections }: LLMSettingProps) {
 	const { theme, GlobalStyles } = useThemeContext()
-	const { updateOption } = useLLMContext()
+	const { updateOption } = useGenerate()
 
 	// Local state to track expanded sections
 	const [expandedSections, setExpandedSections] = useState<boolean[]>(

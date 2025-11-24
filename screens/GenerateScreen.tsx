@@ -12,7 +12,7 @@ import { RouteProp, useRoute } from "@react-navigation/native"
 import { RootStackParamList } from "../navigation/Navigation"
 import { capitalize } from "../utils/formatters"
 import CustomPressable from "../features/common/components/CustomPressable"
-import { useLLMContext } from "../features/llm/contexts/LLMContext"
+import { useGenerate } from "../features/llm/contexts/GenerateContext"
 import { llmSettingsGroup } from "../utils/llmOptions"
 import LLMSetting from "../features/llm/components/LLMSetting"
 import { useAuthContext } from "../features/auth/contexts/AuthContext"
@@ -27,7 +27,7 @@ import { toSkiaPath } from "../features/drawing/processors/PathProcessor"
 export default function GenerateScreen() {
 	// Get values from context.
 	const { authState } = useAuthContext()
-	const { settings, selectedChapters, setSelectedChapters } = useLLMContext()
+	const { settings, selectedChapters, setSelectedChapters } = useGenerate()
 	const { notebookState } = useNotebookContext()
 
 	// Get values from route.
