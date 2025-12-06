@@ -23,7 +23,6 @@ export default function FlashcardScreen({ route }: { route: FlashcardScreenRoute
 	const { id } = route.params
 	const { flashcardState } = useLLMContext()
 	const flashcard = flashcardState.flashcards.find((f) => f.id === id)
-	if (!flashcard) return
 
 	const [questionIndex, setQuestionIndex] = useState<number>(0) // Tracks the question index.
 	const [flipped, setFlipped] = useState<boolean[]>( // Tracks which of the cards are flipped.
@@ -33,7 +32,7 @@ export default function FlashcardScreen({ route }: { route: FlashcardScreenRoute
 	// Theming.
 	const { theme, GlobalStyles } = useThemeContext()
 
-	const currentQuestion = flashcard.items[questionIndex] // Tracks the current question.
+	const currentQuestion = flashcard.items[questionIndex]
 
 	// Increments the question.
 	const incrementQuestion = () =>
