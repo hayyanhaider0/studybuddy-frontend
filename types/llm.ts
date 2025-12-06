@@ -1,4 +1,15 @@
-type Notes = {}
+export interface FlashcardItem {
+	id: string
+	question: string
+	answer: string
+	explanation: string
+}
+
+export interface Flashcards {
+	id: string
+	name: string
+	items: FlashcardItem[]
+}
 
 export interface Quiz {
 	id: string

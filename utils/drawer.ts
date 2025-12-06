@@ -4,11 +4,11 @@
  * Contains screen config that goes in the DrawerNavigation component.
  */
 
+import FlashcardStackNavigator from "../navigation/FlashcardStackNavigator"
 import QuizStackNavigator from "../navigation/QuizStackNavigator"
 import AccountScreen from "../screens/AccountScreen"
 import AINotesScreen from "../screens/AINotesScreen"
 import ExamsScreen from "../screens/ExamsScreen"
-import FlashcardsScreen from "../screens/FlashcardsScreen"
 import NotebooksScreen from "../screens/NotebooksScreen"
 
 // All screens except Canvas and Settings.
@@ -31,7 +31,7 @@ export const SCREENS = [
 		name: "flashcards",
 		title: "Flashcards",
 		icon: "cards-outline",
-		component: FlashcardsScreen,
+		component: FlashcardStackNavigator,
 		sort: true,
 	},
 	{

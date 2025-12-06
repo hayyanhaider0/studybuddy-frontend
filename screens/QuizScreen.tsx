@@ -9,6 +9,8 @@ import CustomScrollView from "../features/common/components/CustomScrollView"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import HorizontalRule from "../features/common/components/HorizontalRule"
 import { useModal } from "../features/common/contexts/ModalContext"
+import GradientText from "../features/common/components/GradientText"
+import { MotiView } from "moti"
 
 type QuizScreenRouteProp = RouteProp<QuizStackParamList, "quiz">
 
@@ -70,7 +72,7 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 
 	return (
 		<View style={[GlobalStyles.container, { padding: 16 }]}>
-			<CustomScrollView contentStyle={{ minHeight: "100%", gap: 8 }}>
+			<CustomScrollView contentStyle={{ minHeight: "100%", gap: 16 }}>
 				<Text style={[GlobalStyles.subheading, { textAlign: "left" }]}>
 					{questionIndex + 1}. {currentQuestion.question}
 				</Text>
@@ -79,6 +81,7 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 					{currentQuestion.options.map((opt, i) => {
 						return (
 							<Pressable
+								key={i}
 								onPress={() => selectOption(i)}
 								style={{
 									flexDirection: "row",
@@ -100,22 +103,7 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 						)
 					})}
 				</View>
-				{showExplanation[questionIndex] && (
-					<>
-						<HorizontalRule />
-						<Text style={GlobalStyles.paragraph}>{currentQuestion.explanation}</Text>
-					</>
-				)}
-				<CustomPressable
-					type='secondary'
-					title={showExplanation[questionIndex] ? "Hide Answer" : "Reveal Answer"}
-					onPress={toggleAnswer}
-					style={{
-						alignSelf: "flex-start",
-						marginTop: "auto",
-						marginBottom: 8,
-					}}
-				/>
+
 				<View
 					style={{
 						flexDirection: "row",
@@ -133,6 +121,28 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 						<CustomPressable type='primary' title='Next' onPress={incrementQuestion} />
 					)}
 				</View>
+
+				<CustomPressable
+					type='secondary'
+					title={showExplanation[questionIndex] ? "Hide Answer" : "Reveal Answer"}
+					onPress={toggleAnswer}
+					style={{
+						marginTop: "auto",
+						marginBottom: 8,
+					}}
+				/>
+
+				<MotiView
+					from={{ opacity: 0 }}
+					animate={{ opacity: showExplanation[questionIndex] ? 1 : 0 }}
+					exit={{ opacity: 0 }}
+					style={{ gap: 16, marginBottom: 8 }}
+				>
+					<HorizontalRule />
+					<GradientText text={currentQuestion.answer} style={GlobalStyles.subheading} />
+					<Text style={GlobalStyles.paragraph}>{currentQuestion.explanation}</Text>
+					<HorizontalRule />
+				</MotiView>
 			</CustomScrollView>
 		</View>
 	)

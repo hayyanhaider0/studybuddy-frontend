@@ -1,7 +1,14 @@
 import { createContext, ReactNode, useContext, useReducer } from "react"
 import quizReducer, { QUIZ_INITIAL_STATE, QuizAction, QuizState } from "../reducers/quizReducer"
+import flashcardsReducer, {
+	FLASHCARDS_INITIAL_STATE,
+	FlashcardAction,
+	FlashcardState as FlashcardState,
+} from "../reducers/flashcardsReducer"
 
 interface LLMContextType {
+	flashcardState: FlashcardState
+	flashcardsDispatch: React.ActionDispatch<[action: FlashcardAction]>
 	quizState: QuizState
 	quizDispatch: React.ActionDispatch<[action: QuizAction]>
 }
@@ -9,9 +16,19 @@ interface LLMContextType {
 const LLMContext = createContext<LLMContextType | null>(null)
 
 export const LLMProvider = ({ children }: { children: ReactNode }) => {
+	const [flashcardsState, flashcardsDispatch] = useReducer(
+		flashcardsReducer,
+		FLASHCARDS_INITIAL_STATE
+	)
 	const [quizState, quizDispatch] = useReducer(quizReducer, QUIZ_INITIAL_STATE)
 
-	return <LLMContext.Provider value={{ quizState, quizDispatch }}>{children}</LLMContext.Provider>
+	return (
+		<LLMContext.Provider
+			value={{ flashcardState: flashcardsState, flashcardsDispatch, quizState, quizDispatch }}
+		>
+			{children}
+		</LLMContext.Provider>
+	)
 }
 
 export const useLLMContext = () => {
