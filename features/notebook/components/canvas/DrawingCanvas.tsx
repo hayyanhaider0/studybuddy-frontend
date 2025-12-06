@@ -22,6 +22,7 @@ import useNotebookActions from "../../hooks/useNotebookActions"
 import { useContextMenu } from "../../../common/contexts/ContextMenuContext"
 import { Canvas as CanvasType } from "../../../../types/notebook"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
+import { useMemo } from "react"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
@@ -51,6 +52,12 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 		canvasId
 	)
 	const canvasPaths = canvas?.paths ?? []
+
+	const memoizedPaths = useMemo(() => {
+		return canvasPaths.map((path: PathType) => (
+			<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
+		))
+	}, [canvasPaths, layout.width, layout.height])
 
 	// Font import for Skia -- used for page number.
 	const Roboto = useFont(
@@ -100,9 +107,7 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							/>
 						)}
 
-						{canvasPaths.map((path: PathType) => (
-							<PathRenderer key={path.id} path={path} width={layout.width} height={layout.height} />
-						))}
+						{memoizedPaths}
 
 						{current[canvasId] && current[canvasId]!.points.length > 0 && (
 							<PathRenderer
