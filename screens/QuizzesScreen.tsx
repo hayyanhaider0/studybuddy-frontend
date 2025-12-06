@@ -1,3 +1,9 @@
+/**
+ * QuizzesScreen Component
+ *
+ * Lists all the user's quizzes in a sortable grid.
+ */
+
 import { Pressable, Text } from "react-native"
 import Grid from "../features/common/components/Grid"
 import { useThemeContext } from "../features/common/contexts/ThemeContext"
@@ -8,8 +14,12 @@ import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { QuizStackParamList } from "../navigation/QuizStackNavigator"
 
 export default function QuizzesScreen() {
+	// Get context values.
 	const { quizState } = useLLMContext()
+
+	// Theming
 	const { GlobalStyles } = useThemeContext()
+
 	// Navigation
 	const nav = useNavigation<DrawerNavigationProp<QuizStackParamList>>()
 

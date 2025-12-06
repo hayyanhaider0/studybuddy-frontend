@@ -1,3 +1,9 @@
+/**
+ * GradientText Component
+ *
+ * Allows writing text with a gradient overlay.
+ */
+
 import { StyleProp, Text, TextStyle } from "react-native"
 import { useThemeContext } from "../contexts/ThemeContext"
 import MaskedView from "@react-native-masked-view/masked-view"
