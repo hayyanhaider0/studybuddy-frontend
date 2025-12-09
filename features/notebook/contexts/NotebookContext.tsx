@@ -7,11 +7,11 @@
 
 import React, { createContext, ReactNode, useContext, useReducer } from "react"
 import {
-	INITIAL_STATE,
+	NotebookState,
 	NOTEBOOK_ACTION,
 	notebookReducer,
-	NotebookState,
-} from "../reducers/NotebookReducer"
+	INITIAL_STATE,
+} from "../reducers/notebookReducer"
 
 // Types for the notebook context.
 type NotebookContextType = {
