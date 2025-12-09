@@ -7,6 +7,27 @@
 import { Skia, SkPath } from "@shopify/react-native-skia"
 import { BrushSettings, PathPoint } from "../types/DrawingTypes"
 
+// Smooth a vertex array with quadratic curves
+const quadToPoints = (path: SkPath, verts: { x: number; y: number }[]) => {
+	if (verts.length < 2) return
+
+	for (let i = 0; i < verts.length - 1; i++) {
+		const curr = verts[i]
+		const next = verts[i + 1]
+
+		// Midpoint for smooth curve
+		const mx = (curr.x + next.x) / 2
+		const my = (curr.y + next.y) / 2
+
+		path.quadTo(curr.x, curr.y, mx, my)
+	}
+
+	// Connect to the final vertex exactly
+	const last = verts[verts.length - 1]
+	const secondLast = verts[verts.length - 2]
+	path.quadTo(secondLast.x, secondLast.y, last.x, last.y)
+}
+
 export const toSkiaPath = (
 	points: PathPoint[],
 	brush: BrushSettings,
@@ -21,7 +42,7 @@ export const toSkiaPath = (
 	if (points.length < 2) {
 		const p = points[0]
 		const w = brush.minWidth * width + p.pressure * (brush.maxWidth - brush.minWidth) * width
-		path.addCircle(p.x * width, p.y * height, w / 2)
+		path.addCircle(p.x * width, p.y * height, w / 4)
 		return path
 	}
 
@@ -64,13 +85,13 @@ export const toSkiaPath = (
 		rightVerts.push({ x: p.x * width + nx * w, y: p.y * height + ny * w })
 	}
 
-	// Build polygon path.
+	// Build polygon path
 	path.moveTo(leftVerts[0].x, leftVerts[0].y)
-	leftVerts.forEach((p) => path.lineTo(p.x, p.y))
-	rightVerts
-		.slice()
-		.reverse()
-		.forEach((p) => path.lineTo(p.x, p.y))
+	quadToPoints(path, leftVerts)
+
+	const reversed = rightVerts.slice().reverse()
+	quadToPoints(path, reversed)
+
 	path.close()
 
 	// Create circles to cap off the ends.

@@ -1,20 +1,40 @@
-import { Text, View } from "react-native"
+/**
+ * QuizzesScreen Component
+ *
+ * Lists all the user's quizzes in a sortable grid.
+ */
+
+import { Pressable, Text } from "react-native"
 import Grid from "../features/common/components/Grid"
 import { useThemeContext } from "../features/common/contexts/ThemeContext"
 import CustomScrollView from "../features/common/components/CustomScrollView"
+import { useLLMContext } from "../features/llm/contexts/LLMContext"
+import { useNavigation } from "@react-navigation/native"
+import { DrawerNavigationProp } from "@react-navigation/drawer"
+import { QuizStackParamList } from "../navigation/QuizStackNavigator"
 
 export default function QuizzesScreen() {
+	// Get context values.
+	const { quizState } = useLLMContext()
+
+	// Theming
 	const { GlobalStyles } = useThemeContext()
 
-	const notes = [{ text: "Quiz 1" }, { text: "Quiz 2" }]
+	// Navigation
+	const nav = useNavigation<DrawerNavigationProp<QuizStackParamList>>()
 
 	return (
 		<CustomScrollView>
 			<Grid
-				data={notes.map((n, i) => (
-					<View key={i}>
-						<Text style={GlobalStyles.paragraph}>{n.text}</Text>
-					</View>
+				data={quizState.quizzes.map((q, i) => (
+					<Pressable
+						key={i}
+						onPress={() => {
+							nav.navigate("quiz", { id: q.id })
+						}}
+					>
+						<Text style={GlobalStyles.paragraph}>{q.name}</Text>
+					</Pressable>
 				))}
 				cols={3}
 			/>

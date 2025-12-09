@@ -231,7 +231,7 @@ export default function Modal() {
 							<View style={{ gap: 8, width: "100%", justifyContent: "space-between" }}>
 								{/* Submit button */}
 								<CustomPressable
-									type={"delete"}
+									type={modalData.buttonText === "Delete" ? "delete" : "primary"}
 									title={modalData.buttonText || "ERROR LOL"}
 									onPress={() => handleSubmit()}
 								/>

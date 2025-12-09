@@ -9,12 +9,12 @@ import MiniCanvas from "../../common/components/MiniCanvas"
 import { useNotebookContext } from "../../notebook/contexts/NotebookContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import { useLLMContext } from "../contexts/LLMContext"
+import { useGenerate } from "../contexts/GenerateContext"
 
 export default function ChapterSelector() {
 	// Get values from contexts.
 	const { notebookState } = useNotebookContext()
-	const { selectedChapters, setSelectedChapters } = useLLMContext()
+	const { selectedChapters, setSelectedChapters } = useGenerate()
 
 	// Theming.
 	const { theme, GlobalStyles } = useThemeContext()
