@@ -7,7 +7,7 @@
 
 import { useMutation } from "@tanstack/react-query"
 import { AxiosError } from "axios"
-import { resend } from "../api"
+import { resend } from "../api/api"
 
 export default function useResend(setError: React.Dispatch<React.SetStateAction<string | null>>) {
 	return useMutation({
