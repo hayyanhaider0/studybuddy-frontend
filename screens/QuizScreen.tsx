@@ -98,7 +98,7 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 				<Text style={[GlobalStyles.subheading, { textAlign: "left" }]}>
 					{questionIndex + 1}. {currentQuestion.question}
 				</Text>
-				<HorizontalRule />
+				<HorizontalRule width='100%' />
 
 				{/* Options */}
 				<View style={{ gap: 8 }}>
@@ -173,14 +173,14 @@ export default function QuizScreen({ route }: { route: QuizScreenRouteProp }) {
 					exit={{ opacity: 0 }}
 					style={{ gap: 16, marginBottom: 8 }}
 				>
-					<HorizontalRule />
+					<HorizontalRule width='100%' />
 
 					{/* Answer */}
 					<GradientText text={currentQuestion.answer} style={GlobalStyles.subheading} />
 
 					{/* Explanation */}
 					<Text style={GlobalStyles.paragraph}>{currentQuestion.explanation}</Text>
-					<HorizontalRule />
+					<HorizontalRule width='100%' />
 				</MotiView>
 			</CustomScrollView>
 		</View>

@@ -13,6 +13,8 @@ import { getCanvas } from "../../../utils/notebook"
 import { useNotebookMutations } from "./useNotebookMutations"
 import { ChapterRequest, mapToPathRequest, PathRequest } from "../api/api"
 import { Color } from "../../../types/global"
+import CanvasBackgroundModal from "../components/CanvasBackgroundModal"
+import React from "react"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -141,6 +143,20 @@ export default function useNotebookActions() {
 	// Helper function to create a new canvas.
 	const handleCreateCanvas = (order: number = 0) => {
 		createCanvasServer.mutate({ chapterId: notebookState.selectedChapterId!, order })
+	}
+
+	// Helper function to change canvas pattern.
+	const handleChangeBackground = (canvas: Canvas) => {
+		openModal({
+			type: "CUSTOM",
+			title: "Change Background",
+			description: "Select a background for this canvas.",
+			children: React.createElement(CanvasBackgroundModal, {
+				notebookId: notebookState.selectedNotebookId!,
+				chapterId: canvas.chapterId,
+				canvasId: canvas.id,
+			}),
+		})
 	}
 
 	// Helper function to delete a canvas.
@@ -367,6 +383,7 @@ export default function useNotebookActions() {
 		handleEditChapter,
 		handleDeleteChapter,
 		handleCreateCanvas,
+		handleChangeBackground,
 		handleDeleteCanvas,
 		addPathToCanvas,
 		handleErase,

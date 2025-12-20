@@ -8,9 +8,10 @@ import { RootStackParamList } from "../navigation/Navigation"
 import { useEffect, useRef, useState } from "react"
 import { getLoginStyles } from "../styles/login"
 import CustomScrollView from "../features/common/components/CustomScrollView"
-import { LoginRequest } from "../types/auth"
 import useVerifyReset from "../features/auth/hooks/useVerifyReset"
 import useForgotPassword from "../features/auth/hooks/useForgotPassword"
+import { LoginRequest } from "../features/auth/api/api"
+import { ApiResponse } from "../types/global"
 
 export default function ForgotPasswordScreen() {
 	const ENABLE_RESEND_TIMER = 60000 // 1m
@@ -52,9 +53,9 @@ export default function ForgotPasswordScreen() {
 		resetPasswordMutation.mutate(
 			{ login },
 			{
-				onSuccess: (data) => {
+				onSuccess: (data: ApiResponse<{ email: string }>) => {
 					clearErrors("login")
-					setEmail(data.data.email)
+					setEmail(data.data!.email)
 					setDisableSend(true)
 					setTimeout(() => setDisableSend(false), ENABLE_RESEND_TIMER)
 				},

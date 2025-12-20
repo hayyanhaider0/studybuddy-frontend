@@ -7,10 +7,10 @@
  */
 
 import Slider from "@react-native-community/slider"
-import { useToolContext } from "../../../contexts/ToolContext"
+import { useToolContext } from "../contexts/ToolContext"
 import { Text, View } from "react-native"
-import { useThemeContext } from "../../../../common/contexts/ThemeContext"
-import { getCanvasStyles } from "../../../../../styles/canvas"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { getCanvasStyles } from "../../../styles/canvas"
 
 /**
  * ToolTip Component

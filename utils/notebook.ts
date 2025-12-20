@@ -112,6 +112,8 @@ export const addCanvas = (chapterId: string, order: number, now: number): Canvas
 		chapterId,
 		order,
 		paths: [],
+		color: null,
+		pattern: "solid",
 		undoStack: [],
 		redoStack: [],
 		createdAt: now,

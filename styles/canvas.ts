@@ -25,6 +25,15 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 			paddingBottom: 112,
 			gap: 16,
 		},
+		addCanvasButton: {
+			position: "absolute",
+			top: 8,
+			left: 8,
+			alignItems: "center",
+			justifyContent: "center",
+			gap: 16,
+			backgroundColor: "#00000050",
+		},
 		// Toolbar styles
 		toolbarContainer: {
 			position: "absolute",

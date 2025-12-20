@@ -4,13 +4,13 @@
  * Shows the current scale value in percentage. Allows for long pressing
  * which resets the canvas scale and translations to the default.
  */
-import { useThemeContext } from "../../../common/contexts/ThemeContext"
 import { Text, Pressable } from "react-native"
-import { useTransformContext } from "../../contexts/TransformContext"
 import { useEffect, useState } from "react"
 import { runOnJS, useAnimatedReaction } from "react-native-reanimated"
 import { AnimatePresence, MotiView } from "moti"
-import { getCanvasStyles } from "../../../../styles/canvas"
+import { getCanvasStyles } from "../../../styles/canvas"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { useTransformContext } from "../contexts/TransformContext"
 
 export default function ZoomIndicator() {
 	// Get values from context.

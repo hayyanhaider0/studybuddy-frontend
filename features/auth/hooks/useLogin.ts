@@ -6,14 +6,13 @@
  */
 
 import { UseFormSetError } from "react-hook-form"
-import { LoginRequest } from "../../../types/auth"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../../types/global"
 import { EducationLevel, Occupation, useAuthContext } from "../contexts/AuthContext"
 import { useMutation } from "@tanstack/react-query"
 import { saveToken, saveRefreshToken } from "../../../utils/secureStore"
 import { AxiosError } from "axios"
-import { login } from "../api/api"
+import { login, LoginRequest } from "../api/api"
 import { queryClient } from "../../../api/queryClient"
 import {
 	CanvasResponse,

@@ -1,12 +1,12 @@
 import { View } from "react-native"
 import ToolOptions from "./ToolOptions"
 import CanvasOptions from "./CanvasOptions"
-import { useThemeContext } from "../../../../common/contexts/ThemeContext"
-import { getCanvasStyles } from "../../../../../styles/canvas"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { getCanvasStyles } from "../../../styles/canvas"
 import ColorPickerComponent from "./ColorPickerComponent"
 import ToolMenu from "./ToolMenu"
 import { MotiView } from "moti"
-import { useToolContext } from "../../../contexts/ToolContext"
+import { useToolContext } from "../contexts/ToolContext"
 
 export default function Toolbar() {
 	const { collapsed } = useToolContext()
