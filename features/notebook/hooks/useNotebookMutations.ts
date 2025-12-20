@@ -14,8 +14,8 @@ import {
 	deleteChapter,
 	deleteNotebook,
 	deletePaths,
-	editChapter,
-	editNotebook,
+	updateChapter,
+	updateNotebook,
 	mapToCanvas,
 	mapToChapter,
 	mapToNotebook,
@@ -23,11 +23,13 @@ import {
 	PathCreateResponse,
 	PathRequest,
 	sync,
+	updateCanvas,
 } from "../api/api"
 import {
 	addCanvas,
 	addChapter,
 	addNotebook,
+	getCanvas,
 	getChapterById,
 	getNotebook,
 } from "../../../utils/notebook"
@@ -85,10 +87,10 @@ export const useNotebookMutations = () => {
 		},
 	})
 
-	// Edit a notebook.
-	const editNotebookServer = useMutation({
-		mutationFn: ({ id, req }: { id: string; req: NotebookRequest }) => editNotebook(id, req),
-		onMutate: ({ id, req }: { id: string; req: NotebookRequest }) => {
+	// Update a notebook.
+	const updateNotebookServer = useMutation({
+		mutationFn: ({ id, req }: { id: string; req: Partial<Notebook> }) => updateNotebook(id, req),
+		onMutate: ({ id, req }: { id: string; req: Partial<Notebook> }) => {
 			// Optimistically update notebook.
 			dispatch({ type: "UPDATE_NOTEBOOK", payload: { id, updates: req } })
 		},
@@ -150,8 +152,8 @@ export const useNotebookMutations = () => {
 		},
 	})
 
-	const editChapterServer = useMutation({
-		mutationFn: ({ id, req }: { id: string; req: ChapterRequest }) => editChapter(id, req),
+	const updateChapterServer = useMutation({
+		mutationFn: ({ id, req }: { id: string; req: ChapterRequest }) => updateChapter(id, req),
 		onMutate: async ({ id, req }: { id: string; req: ChapterRequest }) => {
 			// Optimistically update chapter.
 			dispatch({
@@ -210,7 +212,7 @@ export const useNotebookMutations = () => {
 	const createCanvasServer = useMutation({
 		mutationFn: (req: CanvasRequest) => createCanvas(req),
 		onMutate: (req: CanvasRequest) => {
-			const optimisticCanvas = addCanvas(req.chapterId, req.order, Date.now())
+			const optimisticCanvas = addCanvas(req.chapterId, req.notebookId, req.order, Date.now())
 			const tempId = optimisticCanvas.id
 
 			const notebook = notebookState.notebooks.find((n) =>
@@ -241,6 +243,21 @@ export const useNotebookMutations = () => {
 		},
 	})
 
+	const updateCanvasServer = useMutation({
+		mutationFn: ({ id, req }: { id: string; req: Partial<Canvas> }) => updateCanvas(id, req),
+		onMutate: async ({ id, req }: { id: string; req: Partial<Canvas> }) => {
+			const canvas = getCanvas(notebookState.notebooks, req.notebookId, req.chapterId, id)!
+
+			dispatch({
+				type: "UPDATE_CANVAS",
+				payload: { notebookId: canvas.notebookId, chapterId: canvas.chapterId, id, updates: req },
+			})
+		},
+		onError: (err) => {
+			console.error("[useNotebookMutations.ts/UPDATE_CANVAS_SERVER]: Mutation failed.", err)
+		},
+	})
+
 	const deleteCanvasServer = useMutation({
 		mutationFn: (canvas: Canvas) => deleteCanvas(canvas.id),
 		onMutate: (canvas: Canvas) => {
@@ -260,9 +277,13 @@ export const useNotebookMutations = () => {
 			} else {
 				createCanvasServer.mutate({
 					chapterId: chapter.id,
+					notebookId: chapter.notebookId,
 					order: 0,
 				})
 			}
+		},
+		onError: (err) => {
+			console.error("[useNotebookMutations.ts//DELETE_CANVAS_SERVER]: Mutation failed.", err)
 		},
 	})
 
@@ -310,12 +331,13 @@ export const useNotebookMutations = () => {
 
 	return {
 		createNotebookServer,
-		editNotebookServer,
+		updateNotebookServer,
 		deleteNotebookServer,
 		createChapterServer,
-		editChapterServer,
+		updateChapterServer,
 		deleteChapterServer,
 		createCanvasServer,
+		updateCanvasServer,
 		deleteCanvasServer,
 		createPathsServer,
 		deletePathsServer,

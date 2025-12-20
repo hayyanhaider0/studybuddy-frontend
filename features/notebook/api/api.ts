@@ -3,6 +3,7 @@ import client from "../../../api/client"
 import { ApiResponse, Color } from "../../../types/global"
 import { Canvas, Chapter, Notebook } from "../../../types/notebook"
 import { BrushType, PathPoint, PathType } from "../../drawing/types/DrawingTypes"
+import { CanvasPattern } from "../components/CanvasBackground"
 
 // Notebooks
 export interface NotebookRequest {
@@ -42,12 +43,16 @@ export interface ChapterResponse {
 // Canvases
 export interface CanvasRequest {
 	chapterId: string
+	notebookId: string
 	order: number
 }
 
 export interface CanvasResponse {
 	id: string
 	chapterId: string
+	notebookId: string
+	color: string
+	pattern: string
 	order: number
 	createdAt: string
 	updatedAt: string
@@ -87,7 +92,10 @@ export const createNotebook = async (req: NotebookRequest): Promise<NotebookResp
 	return res.data.data!
 }
 
-export const editNotebook = async (id: string, req: NotebookRequest): Promise<NotebookResponse> => {
+export const updateNotebook = async (
+	id: string,
+	req: NotebookRequest
+): Promise<NotebookResponse> => {
 	const res = await client.patch<ApiResponse<NotebookResponse>>(`/notebooks/${id}`, req)
 	return res.data.data!
 }
@@ -125,8 +133,8 @@ export const createChapter = async (req: ChapterRequest): Promise<ChapterRespons
 	return res.data.data!
 }
 
-export const editChapter = async (id: string, req: ChapterRequest): Promise<ChapterResponse> => {
-	const res = await client.patch<ApiResponse<ChapterResponse>>(`/chapters/${id}`, req)
+export const updateChapter = async (id: string, req: Partial<Canvas>): Promise<ChapterResponse> => {
+	const res = await client.patch<ApiResponse<void>>(`/chapters/${id}`, req)
 	return res.data.data!
 }
 
@@ -164,10 +172,16 @@ export const createCanvas = async (req: CanvasRequest): Promise<CanvasResponse> 
 }
 
 export const fetchCanvases = async (chapterIds: string[]): Promise<CanvasResponse[]> => {
-	if (!chapterIds) throw new Error("[fetchCanvases]: No chapter ids provided.")
+	if (!chapterIds) throw new Error("[fetchCanvases]: No chapter IDs provided.")
 	const res = await client.post<ApiResponse<CanvasResponse[]>>("/canvases/by-chapters", {
 		chapterIds,
 	})
+	return res.data.data!
+}
+
+export const updateCanvas = async (id: string, req: Partial<Canvas>): Promise<void> => {
+	if (!id) throw new Error("[updateCanvas]: No canvas ID provided.")
+	const res = await client.patch<ApiResponse<void>>(`/canvases/${id}`, req)
 	return res.data.data!
 }
 
@@ -180,6 +194,8 @@ export const deleteCanvas = async (id: string): Promise<void> => {
 export const mapToCanvas = (res: CanvasResponse): Canvas => {
 	const canvas = {
 		...res,
+		color: res.color as Color,
+		pattern: res.pattern as CanvasPattern,
 		createdAt: new Date(res.createdAt).getTime(),
 		updatedAt: new Date(res.updatedAt).getTime(),
 		lastAccessedAt: new Date(res.lastAccessedAt).getTime(),

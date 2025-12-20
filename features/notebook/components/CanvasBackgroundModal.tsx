@@ -2,7 +2,7 @@ import { Pressable, ScrollView, Text, View } from "react-native"
 import { Color } from "../../../types/global"
 import Swatch from "./Swatch"
 import MiniCanvas from "../../common/components/MiniCanvas"
-import { CanvasPattern, canvasPatterns } from "./CanvasBackground"
+import { canvasPatterns } from "./CanvasBackground"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import HorizontalRule from "../../common/components/HorizontalRule"
@@ -21,7 +21,7 @@ export default function CanvasBackgroundModal({
 	const { notebookState, dispatch } = useNotebookContext()
 	const { theme, GlobalStyles } = useThemeContext()
 
-	// always get the latest canvas from state
+	// Always get the latest canvas from state
 	const canvas = getCanvas(notebookState.notebooks, notebookId, chapterId, canvasId)
 	if (!canvas) return null
 

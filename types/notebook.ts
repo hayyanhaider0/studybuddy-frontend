@@ -11,6 +11,7 @@ import { Color } from "./global"
 export type Canvas = {
 	id: string
 	chapterId: string
+	notebookId: string
 	order: number
 	paths: PathType[]
 	color: Color

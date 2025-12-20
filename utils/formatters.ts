@@ -5,7 +5,6 @@
  */
 
 import { Occupation, EducationLevel } from "../features/auth/contexts/AuthContext"
-import { CanvasPattern } from "../features/notebook/components/CanvasBackground"
 
 export const occupationLabels: Record<Occupation, string> = {
 	STUDENT: "Student",
