@@ -17,6 +17,7 @@ import tinycolor from "tinycolor2"
 import CustomScrollView from "../features/common/components/CustomScrollView"
 import useResend from "../features/auth/hooks/useResend"
 import useVerifyEmail from "../features/auth/hooks/useVerifyEmail"
+import { ApiResponse } from "../types/global"
 
 type VerificationScreenProps = {
 	route: RouteProp<RootStackParamList, "verify">
@@ -60,7 +61,7 @@ export default function VerificationScreen({ route }: VerificationScreenProps) {
 		resendMutation.mutate(
 			{ email },
 			{
-				onSuccess: (data) => {
+				onSuccess: (data: ApiResponse<void>) => {
 					if (data.success) {
 						setError(null)
 						setCountdown(COUNTDOWN_TIMER)

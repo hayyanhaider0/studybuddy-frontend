@@ -6,11 +6,11 @@
  */
 
 import { Image, TouchableOpacity } from "react-native"
-import { useToolDefinitions } from "../../../../../utils/tools"
-import { useToolContext } from "../../../contexts/ToolContext"
+import { useToolDefinitions } from "../../../utils/tools"
+import { useToolContext } from "../contexts/ToolContext"
 import { AnimatePresence, MotiImage, MotiView } from "moti"
-import { useThemeContext } from "../../../../common/contexts/ThemeContext"
-import { getCanvasStyles } from "../../../../../styles/canvas"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { getCanvasStyles } from "../../../styles/canvas"
 
 export default function ToolOptions() {
 	// Get context values.

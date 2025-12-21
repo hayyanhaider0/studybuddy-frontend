@@ -14,7 +14,7 @@ export interface Choice {
 }
 interface BaseModalType {
 	title: string
-	description: string
+	description?: string
 }
 export interface InputModalType extends BaseModalType {
 	type: "input"
@@ -45,12 +45,18 @@ export interface MultipleChoiceModalType extends BaseModalType {
 	onSubmit: (selectedIndices: number[]) => void
 }
 
+export interface CustomModalType extends BaseModalType {
+	type: "CUSTOM"
+	children: ReactNode
+}
+
 // Types
 export type ModalType =
 	| InputModalType
 	| ConfirmModalType
 	| SingleChoiceModalType
 	| MultipleChoiceModalType
+	| CustomModalType
 
 type ModalContextType = {
 	// Boolean to show whether the modal is currently visible.

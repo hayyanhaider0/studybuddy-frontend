@@ -19,7 +19,7 @@ export default function ThirdPartyLogin() {
 	return (
 		<View style={{ gap: 16 }}>
 			{/* Horizontal rule to separate StudyBuddy and third party login UI */}
-			<HorizontalRule>OR</HorizontalRule>
+			<HorizontalRule text='OR' width='100%' />
 
 			{/* Google login */}
 			<CustomPressable

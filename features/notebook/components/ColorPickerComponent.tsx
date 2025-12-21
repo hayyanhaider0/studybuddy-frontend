@@ -12,10 +12,10 @@ import ColorPicker, {
 	Panel3,
 	Preview,
 } from "reanimated-color-picker"
-import { useToolContext } from "../../../contexts/ToolContext"
-import { getCanvasStyles } from "../../../../../styles/canvas"
-import { useThemeContext } from "../../../../common/contexts/ThemeContext"
-import { saveItemToStorage } from "../../../../../utils/storage"
+import { useToolContext } from "../contexts/ToolContext"
+import { getCanvasStyles } from "../../../styles/canvas"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { saveItemToStorage } from "../../../utils/storage"
 
 export default function ColorPickerComponent() {
 	const {

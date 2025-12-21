@@ -15,7 +15,7 @@ import CustomPressable from "./CustomPressable"
 import Handle from "./Handle"
 import { ScrollView } from "react-native-gesture-handler"
 import { Color } from "../../../types/global"
-import Swatch from "../../notebook/components/canvas/toolbar/Swatch"
+import Swatch from "../../notebook/components/Swatch"
 import ColorPicker, {
 	ColorFormatsObject,
 	LuminanceSlider,
@@ -303,7 +303,11 @@ export default function Modal() {
 										/>
 
 										{/* Label */}
-										<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>{m.label}</Text>
+										{typeof m.label === "string" ? (
+											<Text style={[GlobalStyles.paragraph, { textAlign: "left" }]}>{m.label}</Text>
+										) : (
+											m.label
+										)}
 									</Pressable>
 								))}
 							</ScrollView>
@@ -384,6 +388,40 @@ export default function Modal() {
 
 							{/* Submit Button */}
 							<CustomPressable type='primary' title='Confirm' onPress={() => handleSubmit()} />
+						</MotiView>
+					</MotiView>
+				)}
+			</AnimatePresence>
+		)
+	}
+
+	// Confirmation modal
+	if (modalData.type === "CUSTOM") {
+		return (
+			<AnimatePresence>
+				{isVisible && (
+					// Dim background behind the modal
+					<MotiView
+						from={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ type: "timing", duration: 128 }}
+						style={GlobalStyles.dimBackground}
+					>
+						<MotiView
+							from={{ translateY: 256, opacity: 0 }}
+							animate={{ translateY: 0, opacity: 1 }}
+							exit={{ translateY: 128, opacity: 0 }}
+							transition={{ type: "spring", duration: 128 }}
+							style={GlobalStyles.modalContainer}
+						>
+							<Handle close={closeModal} />
+							{/* Title */}
+							<Text style={[GlobalStyles.paragraph, { fontWeight: "bold" }]}>
+								{modalData.title}
+							</Text>
+							{/* React Components */}
+							{modalData.children}
 						</MotiView>
 					</MotiView>
 				)}

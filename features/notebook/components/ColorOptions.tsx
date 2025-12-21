@@ -5,12 +5,12 @@
  */
 
 import { View } from "react-native"
-import { useToolContext } from "../../../contexts/ToolContext"
-import { getCanvasStyles } from "../../../../../styles/canvas"
-import { useThemeContext } from "../../../../common/contexts/ThemeContext"
-import { BrushType } from "../../../../drawing/types/DrawingTypes"
+import { useToolContext } from "../contexts/ToolContext"
+import { getCanvasStyles } from "../../../styles/canvas"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { BrushType } from "../../drawing/types/DrawingTypes"
 import Swatch from "./Swatch"
-import { Color } from "../../../../../types/global"
+import { Color } from "../../../types/global"
 
 export default function ColorOptions({ tool }: { tool: BrushType }) {
 	const {

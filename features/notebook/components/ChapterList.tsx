@@ -5,23 +5,25 @@
  * within the same notebook.
  */
 
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 import { FlatList, Pressable, View, Text, GestureResponderEvent } from "react-native"
-import { getChapterTabStyles } from "../../../../styles/chapterTab"
-import { fontSizes } from "../../../../styles/scales"
-import { getNotebook, getChapter } from "../../../../utils/notebook"
-import CustomPressable from "../../../common/components/CustomPressable"
-import { useThemeContext } from "../../../common/contexts/ThemeContext"
-import { useNotebookContext } from "../../contexts/NotebookContext"
-import useNotebookActions from "../../hooks/useNotebookActions"
+import { getChapterTabStyles } from "../../../styles/chapterTab"
+import { fontSizes } from "../../../styles/scales"
+import { getNotebook, getChapter } from "../../../utils/notebook"
+import CustomPressable from "../../common/components/CustomPressable"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { useNotebookContext } from "../contexts/NotebookContext"
+import useNotebookActions from "../hooks/useNotebookActions"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
-import { useContextMenu } from "../../../common/contexts/ContextMenuContext"
+import { useContextMenu } from "../../common/contexts/ContextMenuContext"
 
 export default function ChapterList() {
 	// Get context values
 	const { notebookState, dispatch } = useNotebookContext()
 	const { handleCreateChapter, handleEditChapter, handleDeleteChapter } = useNotebookActions()
 	const { openMenu } = useContextMenu()
+
+	const prevChapterIdRef = useRef<string | null>(null)
 
 	// Currently selected notebook
 	const notebook = getNotebook(notebookState.notebooks, notebookState.selectedNotebookId)!
@@ -54,10 +56,11 @@ export default function ChapterList() {
 
 	// Sets the active canvas to the last canvas in a chapter upon chapter change.
 	useEffect(() => {
-		if (chapter && chapter.canvases.length > 0) {
+		if (chapter && chapter.canvases.length > 0 && prevChapterIdRef.current !== chapter.id) {
 			dispatch({ type: "SELECT_CANVAS", payload: chapter.canvases[chapter.canvases.length - 1].id })
+			prevChapterIdRef.current = chapter.id
 		}
-	}, [chapter])
+	}, [chapter, dispatch])
 
 	if (!chapter) return null
 

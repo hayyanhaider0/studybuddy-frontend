@@ -6,11 +6,11 @@
  */
 
 import { Pressable } from "react-native"
-import { useOptionDefinitions } from "../../../../../utils/options"
+import { useOptionDefinitions } from "../../../utils/options"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
-import { useThemeContext } from "../../../../common/contexts/ThemeContext"
-import { getCanvasStyles } from "../../../../../styles/canvas"
-import { useToolContext } from "../../../contexts/ToolContext"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { getCanvasStyles } from "../../../styles/canvas"
+import { useToolContext } from "../contexts/ToolContext"
 import { MotiView } from "moti"
 
 export default function CanvasOptions() {

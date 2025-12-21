@@ -111,6 +111,7 @@ export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 			gap: 8,
 		},
 		modalContainer: {
+			maxHeight: "90%",
 			width: 292,
 			backgroundColor: colors.primary,
 			alignItems: "center",
@@ -162,7 +163,7 @@ export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 		},
 		option: {
 			flexDirection: "row",
-			backgroundColor: colors.primary,
+			backgroundColor: colors.primary as string,
 			paddingVertical: 8,
 			paddingHorizontal: 16,
 			borderRadius: 99,

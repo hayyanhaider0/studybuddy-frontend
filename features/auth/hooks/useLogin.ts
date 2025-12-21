@@ -6,14 +6,13 @@
  */
 
 import { UseFormSetError } from "react-hook-form"
-import { LoginRequest } from "../../../types/auth"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../../types/global"
-import { useAuthContext } from "../contexts/AuthContext"
+import { EducationLevel, Occupation, useAuthContext } from "../contexts/AuthContext"
 import { useMutation } from "@tanstack/react-query"
 import { saveToken, saveRefreshToken } from "../../../utils/secureStore"
 import { AxiosError } from "axios"
-import { login } from "../api"
+import { login, LoginRequest } from "../api/api"
 import { queryClient } from "../../../api/queryClient"
 import {
 	CanvasResponse,
@@ -39,12 +38,10 @@ export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 	return useMutation({
 		mutationFn: login,
 		onSuccess: async (data) => {
-			const response = data.data
-
 			// Save the access token.
-			saveToken(response.accessToken)
+			saveToken(data.accessToken)
 			// Save the refresh token.
-			saveRefreshToken(response.refreshToken)
+			saveRefreshToken(data.refreshToken)
 
 			const notebooks = await queryClient.fetchQuery({
 				queryKey: ["notebooks"],
@@ -105,14 +102,13 @@ export default function useLogin(setError: UseFormSetError<LoginRequest>) {
 			}
 
 			// Set the user auth state.
-			console.log("Login Response:", JSON.stringify(response, null, 2))
 			setAuthState({
 				isLoggedIn: true,
-				email: response.email,
-				username: response.username,
-				displayName: response.displayName,
-				occupation: response.occupation || null,
-				educationLevel: response.educationLevel || null,
+				email: data.email,
+				username: data.username,
+				displayName: data.displayName,
+				occupation: (data.occupation as Occupation) || null,
+				educationLevel: (data.educationLevel as EducationLevel) || null,
 			})
 		},
 		onError: (e: AxiosError<{ data: any; error: string; message: string }>) => {

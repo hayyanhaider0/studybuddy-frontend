@@ -9,21 +9,23 @@ import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { useNavigation } from "@react-navigation/native"
 import { AnimatePresence, MotiView } from "moti"
 import React, { useState } from "react"
-import { Pressable, Text, TouchableOpacity, View } from "react-native"
-import { DrawerParamList } from "../../../../navigation/DrawerNavigation"
-import { getChapterTabStyles } from "../../../../styles/chapterTab"
-import { getNotebook, getChapter } from "../../../../utils/notebook"
-import CustomPressable from "../../../common/components/CustomPressable"
-import { useThemeContext } from "../../../common/contexts/ThemeContext"
-import { useNotebookContext } from "../../contexts/NotebookContext"
-import useNotebookActions from "../../hooks/useNotebookActions"
+import { GestureResponderEvent, Pressable, Text, TouchableOpacity, View } from "react-native"
+import { DrawerParamList } from "../../../navigation/DrawerNavigation"
+import { getChapterTabStyles } from "../../../styles/chapterTab"
+import { getNotebook, getChapter, getCanvas } from "../../../utils/notebook"
+import { Canvas as CanvasType } from "../../../types/notebook"
+import { useThemeContext } from "../../common/contexts/ThemeContext"
+import { useNotebookContext } from "../contexts/NotebookContext"
+import useNotebookActions from "../hooks/useNotebookActions"
 import ChapterList from "./ChapterList"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
+import { useContextMenu } from "../../common/contexts/ContextMenuContext"
 
 export default function ChapterTab() {
 	// Get context values.
 	const { notebookState } = useNotebookContext()
-	const { handleCreateCanvas } = useNotebookActions()
+	const { handleChangeBackground, handleDeleteCanvas } = useNotebookActions()
+	const { openMenu } = useContextMenu()
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 
 	const notebook = getNotebook(notebookState.notebooks, notebookState.selectedNotebookId)
@@ -32,12 +34,33 @@ export default function ChapterTab() {
 		notebookState.selectedNotebookId,
 		notebookState.selectedChapterId
 	)
+	const canvas = getCanvas(
+		notebookState.notebooks,
+		notebookState.selectedNotebookId,
+		notebookState.selectedChapterId,
+		notebookState.selectedCanvasId
+	)
 
-	const [extended, setExtended] = useState<boolean>(chapter ? true : false) // Extended state for ChapterTab component.
+	const [extended, setExtended] = useState<boolean>(false) // Extended state for ChapterTab component.
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
 	const styles = getChapterTabStyles(theme.colors)
+
+	// Open a context menu for the current canvas.
+	const handleCanvasMenu = (canvas: CanvasType, event: GestureResponderEvent) => {
+		const { pageX, pageY } = event.nativeEvent
+
+		openMenu({
+			position: { x: pageX, y: pageY },
+			options: [
+				{ label: "Change Background", onPress: () => handleChangeBackground(canvas) },
+				{ label: "Duplicate", onPress: () => console.log("Duplicate") },
+				{ label: "Export", onPress: () => console.log("Export") },
+				{ label: "Delete", onPress: () => handleDeleteCanvas(canvas) },
+			],
+		})
+	}
 
 	return (
 		<View style={styles.container}>
@@ -73,14 +96,10 @@ export default function ChapterTab() {
 							/>
 						</Pressable>
 						{/* Add a new canvas/page */}
-						{chapter && (
-							<CustomPressable
-								type='primary'
-								onPress={() => handleCreateCanvas(chapter.canvases.length)}
-								circle
-							>
-								<MaterialC name='plus' size={28} color={theme.accent.onAccent} />
-							</CustomPressable>
+						{chapter && canvas && (
+							<Pressable onPress={(e) => handleCanvasMenu(canvas, e)}>
+								<MaterialC name='dots-vertical' size={28} color={theme.accent.onAccent} />
+							</Pressable>
 						)}
 					</>
 				)}

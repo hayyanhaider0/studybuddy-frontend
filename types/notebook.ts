@@ -5,13 +5,17 @@
  */
 
 import { PathType } from "../features/drawing/types/DrawingTypes"
+import { CanvasPattern } from "../features/notebook/components/CanvasBackground"
 import { Color } from "./global"
 
 export type Canvas = {
 	id: string
 	chapterId: string
+	notebookId: string
 	order: number
 	paths: PathType[]
+	color: Color
+	pattern: CanvasPattern
 	undoStack: any[]
 	redoStack: any[]
 	createdAt: number

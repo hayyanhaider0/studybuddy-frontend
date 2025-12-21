@@ -13,6 +13,8 @@ import { getCanvas } from "../../../utils/notebook"
 import { useNotebookMutations } from "./useNotebookMutations"
 import { ChapterRequest, mapToPathRequest, PathRequest } from "../api/api"
 import { Color } from "../../../types/global"
+import CanvasBackgroundModal from "../components/CanvasBackgroundModal"
+import React from "react"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -20,10 +22,10 @@ export default function useNotebookActions() {
 	const { openModal } = useModal()
 	const {
 		createNotebookServer,
-		editNotebookServer,
+		updateNotebookServer,
 		deleteNotebookServer,
 		createChapterServer,
-		editChapterServer,
+		updateChapterServer,
 		deleteChapterServer,
 		createCanvasServer,
 		deleteCanvasServer,
@@ -74,7 +76,7 @@ export default function useNotebookActions() {
 			defaultColor: notebook.color,
 			buttonText: "Apply",
 			onSubmit: (input: string, color?: Color) =>
-				editNotebookServer.mutate({ id: notebook.id, req: { title: input, color } }),
+				updateNotebookServer.mutate({ id: notebook.id, req: { title: input, color } }),
 		})
 	}
 
@@ -123,7 +125,7 @@ export default function useNotebookActions() {
 			placeholder: "Enter chapter name...",
 			buttonText: "Apply",
 			onSubmit: (input: string) =>
-				editChapterServer.mutate({ id: chapter.id, req: { title: input } as ChapterRequest }),
+				updateChapterServer.mutate({ id: chapter.id, req: { title: input } as ChapterRequest }),
 		})
 	}
 
@@ -140,7 +142,25 @@ export default function useNotebookActions() {
 
 	// Helper function to create a new canvas.
 	const handleCreateCanvas = (order: number = 0) => {
-		createCanvasServer.mutate({ chapterId: notebookState.selectedChapterId!, order })
+		createCanvasServer.mutate({
+			chapterId: notebookState.selectedChapterId!,
+			notebookId: notebookState.selectedNotebookId!,
+			order,
+		})
+	}
+
+	// Helper function to change canvas pattern.
+	const handleChangeBackground = (canvas: Canvas) => {
+		openModal({
+			type: "CUSTOM",
+			title: "Change Background",
+			description: "Select a background for this canvas.",
+			children: React.createElement(CanvasBackgroundModal, {
+				notebookId: canvas.notebookId,
+				chapterId: canvas.chapterId,
+				canvasId: canvas.id,
+			}),
+		})
 	}
 
 	// Helper function to delete a canvas.
@@ -367,6 +387,7 @@ export default function useNotebookActions() {
 		handleEditChapter,
 		handleDeleteChapter,
 		handleCreateCanvas,
+		handleChangeBackground,
 		handleDeleteCanvas,
 		addPathToCanvas,
 		handleErase,

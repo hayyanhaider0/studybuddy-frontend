@@ -6,12 +6,11 @@
  */
 
 import { UseFormSetError } from "react-hook-form"
-import { SignupRequest } from "../../../types/auth"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigation } from "@react-navigation/native"
 import { NavProp } from "../../../types/global"
 import { AxiosError } from "axios"
-import { signup } from "../api"
+import { signup, SignupRequest } from "../api/api"
 
 export default function useSignup(setError: UseFormSetError<SignupRequest>) {
 	const nav = useNavigation<NavProp<"verify">>()

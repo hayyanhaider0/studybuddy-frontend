@@ -96,7 +96,7 @@ export const addChapter = (
 		id,
 		notebookId,
 		title: title || `Chapter ${order + 1}`,
-		canvases: [addCanvas(id, 0, now)],
+		canvases: [addCanvas(id, notebookId, 0, now)],
 		order,
 		createdAt: now,
 		updatedAt: now,
@@ -106,12 +106,20 @@ export const addChapter = (
 	return chapter
 }
 
-export const addCanvas = (chapterId: string, order: number, now: number): Canvas => {
+export const addCanvas = (
+	chapterId: string,
+	notebookId: string,
+	order: number,
+	now: number
+): Canvas => {
 	const canvas: Canvas = {
 		id: `temp-${uuid.v4()}`,
 		chapterId,
+		notebookId,
 		order,
 		paths: [],
+		color: null,
+		pattern: "solid",
 		undoStack: [],
 		redoStack: [],
 		createdAt: now,
