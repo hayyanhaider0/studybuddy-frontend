@@ -24,6 +24,7 @@ import {
 	PathRequest,
 	sync,
 	updateCanvas,
+	CanvasUpdateRequest,
 } from "../api/api"
 import {
 	addCanvas,
@@ -89,8 +90,8 @@ export const useNotebookMutations = () => {
 
 	// Update a notebook.
 	const updateNotebookServer = useMutation({
-		mutationFn: ({ id, req }: { id: string; req: Partial<Notebook> }) => updateNotebook(id, req),
-		onMutate: ({ id, req }: { id: string; req: Partial<Notebook> }) => {
+		mutationFn: ({ id, req }: { id: string; req: NotebookRequest }) => updateNotebook(id, req),
+		onMutate: ({ id, req }: { id: string; req: NotebookRequest }) => {
 			// Optimistically update notebook.
 			dispatch({ type: "UPDATE_NOTEBOOK", payload: { id, updates: req } })
 		},
@@ -244,13 +245,18 @@ export const useNotebookMutations = () => {
 	})
 
 	const updateCanvasServer = useMutation({
-		mutationFn: ({ id, req }: { id: string; req: Partial<Canvas> }) => updateCanvas(id, req),
-		onMutate: async ({ id, req }: { id: string; req: Partial<Canvas> }) => {
+		mutationFn: ({ id, req }: { id: string; req: CanvasUpdateRequest }) => updateCanvas(id, req),
+		onMutate: async ({ id, req }: { id: string; req: CanvasUpdateRequest }) => {
 			const canvas = getCanvas(notebookState.notebooks, req.notebookId, req.chapterId, id)!
 
 			dispatch({
 				type: "UPDATE_CANVAS",
-				payload: { notebookId: canvas.notebookId, chapterId: canvas.chapterId, id, updates: req },
+				payload: {
+					notebookId: canvas.notebookId,
+					chapterId: canvas.chapterId,
+					id,
+					updates: req.updates,
+				},
 			})
 		},
 		onError: (err) => {

@@ -8,6 +8,9 @@ import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import HorizontalRule from "../../common/components/HorizontalRule"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { getCanvas } from "../../../utils/notebook"
+import { useNotebookMutations } from "../hooks/useNotebookMutations"
+import { Canvas } from "../../../types/notebook"
+import { CanvasUpdateRequest } from "../api/api"
 
 export default function CanvasBackgroundModal({
 	notebookId,
@@ -18,7 +21,8 @@ export default function CanvasBackgroundModal({
 	chapterId: string
 	canvasId: string
 }) {
-	const { notebookState, dispatch } = useNotebookContext()
+	const { notebookState } = useNotebookContext()
+	const { updateCanvasServer } = useNotebookMutations()
 	const { theme, GlobalStyles } = useThemeContext()
 
 	// Always get the latest canvas from state
@@ -29,28 +33,34 @@ export default function CanvasBackgroundModal({
 		theme.colors.primary as Color,
 		"#E6E6E6", // Default (light)
 		"#1A1A1A", // Default (dark)
-		"#F7E9D7", // Warm Beige (light)
-		"#FFF7CC", // Pastel Yellow (light)
-		"#B8E1FF", // Sky Blue (light)
-		"#E5D4EF", // Lavender (light)
-		"#FFD8C2", // Peach (light)
-		"#5A4630", // Warm Beige (dark)
-		"#5C5225", // Pastel Yellow (dark)
-		"#274861", // Sky Blue (dark)
-		"#3E2F49", // Lavender (dark)
-		"#714C3A", // Peach (dark)
+
+		// Light colors
+		"#FFE4D6", // Coral Blush (Red/Orange)
+		"#FFF9F0", // Soft Cream (Orange)
+		"#FFF4E6", // Warm Sand (Yellow)
+		"#F1F8F4", // Sage Green (Green)
+		"#E3F2FD", // Powder Blue (Blue)
+		"#E8EAF6", // Periwinkle (Indigo)
+		"#F3E5F5", // Lavender Mist (Violet)
+
+		// Dark colors
+		"#5C4239", // Coral Blush (dark)
+		"#4A3F35", // Soft Cream (dark)
+		"#5A4A3C", // Warm Sand (dark)
+		"#3A4D42", // Sage Green (dark)
+		"#2C4A5E", // Powder Blue (dark)
+		"#3A3D52", // Periwinkle (dark)
+		"#4A3A52", // Lavender Mist (dark)
 	]
 
-	const updateCanvas = (updates: Partial<typeof canvas>) => {
-		dispatch({
-			type: "UPDATE_CANVAS",
-			payload: {
-				notebookId,
-				chapterId,
-				id: canvasId,
-				updates,
-			},
-		})
+	const updateCanvas = (updates: Partial<Canvas>) => {
+		const req: CanvasUpdateRequest = {
+			updates,
+			chapterId: canvas.chapterId,
+			notebookId: canvas.notebookId,
+			order: -1,
+		}
+		updateCanvasServer.mutate({ id: canvas.id, req })
 	}
 
 	const selectedColor = canvas.color ?? null

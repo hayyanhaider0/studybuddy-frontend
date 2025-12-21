@@ -47,6 +47,10 @@ export interface CanvasRequest {
 	order: number
 }
 
+export interface CanvasUpdateRequest extends CanvasRequest {
+	updates: Partial<Canvas>
+}
+
 export interface CanvasResponse {
 	id: string
 	chapterId: string
@@ -148,7 +152,6 @@ export const fetchChapters = async (notebookIds: string[]): Promise<ChapterRespo
 }
 
 export const deleteChapter = async (id: string): Promise<void> => {
-	console.log("Deleing chapter with id:", id)
 	if (!id || id.startsWith("temp")) return
 	const res = await client.delete<ApiResponse<void>>(`/chapters/${id}`)
 	return res.data.data!
@@ -179,7 +182,7 @@ export const fetchCanvases = async (chapterIds: string[]): Promise<CanvasRespons
 	return res.data.data!
 }
 
-export const updateCanvas = async (id: string, req: Partial<Canvas>): Promise<void> => {
+export const updateCanvas = async (id: string, req: CanvasUpdateRequest): Promise<void> => {
 	if (!id) throw new Error("[updateCanvas]: No canvas ID provided.")
 	const res = await client.patch<ApiResponse<void>>(`/canvases/${id}`, req)
 	return res.data.data!
