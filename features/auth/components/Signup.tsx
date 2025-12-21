@@ -12,8 +12,8 @@ import ThirdPartyLogin from "./ThirdPartyLogin"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { getLoginStyles } from "../../../styles/login"
 import CustomPressable from "../../common/components/CustomPressable"
-import { SignupRequest } from "../../../types/auth"
 import useSignup from "../hooks/useSignup"
+import { SignupRequest } from "../api/api"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -173,7 +173,7 @@ export default function Signup({ setForm }: SignupProps) {
 			/>
 
 			{/* Other backend errors */}
-			{errors.root && (
+			{errors.root && errors.root.message && (
 				<Text style={[GlobalStyles.error, { textAlign: "center" }]}>{errors.root.message}</Text>
 			)}
 
