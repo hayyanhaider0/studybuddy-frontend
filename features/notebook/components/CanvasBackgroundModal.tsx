@@ -2,7 +2,7 @@ import { Pressable, ScrollView, Text, View } from "react-native"
 import { Color } from "../../../types/global"
 import Swatch from "./Swatch"
 import MiniCanvas from "../../common/components/MiniCanvas"
-import { canvasPatterns } from "./CanvasBackground"
+import { CanvasPattern, canvasPatterns } from "./CanvasBackground"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import HorizontalRule from "../../common/components/HorizontalRule"
@@ -55,9 +55,11 @@ export default function CanvasBackgroundModal({
 
 	const updateCanvas = (updates: Partial<Canvas>) => {
 		const req: CanvasUpdateRequest = {
-			updates,
+			id: canvasId,
 			chapterId: canvas.chapterId,
 			notebookId: canvas.notebookId,
+			...(updates.color !== undefined && { color: updates.color as Color }),
+			...(updates.pattern !== undefined && { pattern: updates.pattern as CanvasPattern }),
 			order: -1,
 		}
 		updateCanvasServer.mutate({ id: canvas.id, req })

@@ -36,6 +36,8 @@ import {
 } from "../../../utils/notebook"
 import { useNotebookContext } from "../contexts/NotebookContext"
 import { Canvas, Chapter, Notebook } from "../../../types/notebook"
+import { CanvasPattern } from "../components/CanvasBackground"
+import { Color } from "../../../types/global"
 
 export const useNotebookMutations = () => {
 	const { notebookState, dispatch } = useNotebookContext()
@@ -255,7 +257,11 @@ export const useNotebookMutations = () => {
 					notebookId: canvas.notebookId,
 					chapterId: canvas.chapterId,
 					id,
-					updates: req.updates,
+					updates: {
+						...(req.color !== undefined && { color: req.color as Color }),
+						...(req.pattern !== undefined && { pattern: req.pattern as CanvasPattern }),
+						...(req.order !== -1 && { order: req.order }),
+					},
 				},
 			})
 		},

@@ -47,8 +47,13 @@ export interface CanvasRequest {
 	order: number
 }
 
-export interface CanvasUpdateRequest extends CanvasRequest {
-	updates: Partial<Canvas>
+export interface CanvasUpdateRequest {
+	id: string
+	chapterId: string
+	notebookId: string
+	color?: Color
+	pattern?: CanvasPattern
+	order?: number
 }
 
 export interface CanvasResponse {
@@ -147,7 +152,6 @@ export const fetchChapters = async (notebookIds: string[]): Promise<ChapterRespo
 	const res = await client.post<ApiResponse<ChapterResponse[]>>("/chapters/by-notebooks", {
 		notebookIds,
 	})
-	console.log("Chapters:", JSON.stringify(res.data, null, 2))
 	return res.data.data!
 }
 
