@@ -182,8 +182,8 @@ export default function Modal() {
 									type='primary'
 									title={modalData.buttonText || "ERROR LOL"}
 									onPress={() => {
-										if (!color) setColorInput(null)
-										modalData.onSubmit(input, colorInput)
+										const finalColor = color ? colorInput : null
+										modalData.onSubmit(input, finalColor)
 										setInput("")
 										setColorInput("" as Color)
 										closeModal()

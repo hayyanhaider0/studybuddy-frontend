@@ -98,7 +98,6 @@ export const useNotebookMutations = () => {
 			dispatch({ type: "UPDATE_NOTEBOOK", payload: { id, updates: req } })
 		},
 		onError: (err) => console.log("Error updating notebook:", err),
-		onSuccess: () => console.log("Notebook updated successfully."),
 	})
 
 	// Delete a notebook.

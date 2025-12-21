@@ -73,7 +73,7 @@ export default function ChapterTab() {
 			>
 				{/* Opens the sidebar drawer */}
 				<TouchableOpacity onPress={() => nav.toggleDrawer()} style={{ padding: 8 }}>
-					<MaterialC name='chevron-right' size={24} color={theme.colors.onPrimary} />
+					<MaterialC name='chevron-right' size={24} color={theme.colors.textPrimary} />
 				</TouchableOpacity>
 				{/* Renders only when there's an active notebook */}
 				{notebook && (
@@ -98,7 +98,7 @@ export default function ChapterTab() {
 						{/* Add a new canvas/page */}
 						{chapter && canvas && (
 							<Pressable onPress={(e) => handleCanvasMenu(canvas, e)}>
-								<MaterialC name='dots-vertical' size={28} color={theme.accent.onAccent} />
+								<MaterialC name='dots-vertical' size={28} color={theme.colors.textPrimary} />
 							</Pressable>
 						)}
 					</>

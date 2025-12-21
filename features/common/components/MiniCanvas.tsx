@@ -7,11 +7,13 @@ import { DimensionValue, View } from "react-native"
 import { useNotebookContext } from "../../notebook/contexts/NotebookContext"
 import { getCanvas } from "../../../utils/notebook"
 import CanvasBackground, { CanvasPattern } from "../../notebook/components/CanvasBackground"
+import { Color } from "../../../types/global"
 
 interface MiniCanvasProps {
 	notebookId: string
 	chapterId: string
 	canvasId: string
+	backgroundColor?: Color
 	pattern?: CanvasPattern
 	width?: DimensionValue
 }
@@ -20,6 +22,7 @@ export default function MiniCanvas({
 	notebookId,
 	chapterId,
 	canvasId,
+	backgroundColor,
 	pattern,
 	width = "100%",
 }: MiniCanvasProps) {
@@ -42,7 +45,7 @@ export default function MiniCanvas({
 				<CanvasBackground
 					width={dimensions.width}
 					height={dimensions.height}
-					backgroundColor={theme.colors.primary}
+					backgroundColor={backgroundColor ?? theme.colors.primary}
 					pattern={pattern}
 					patternColor={theme.colors.textSecondary}
 				/>

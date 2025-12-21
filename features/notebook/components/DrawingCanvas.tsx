@@ -77,7 +77,7 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							height={layout.height}
 							backgroundColor={canvas.color ?? theme.colors.primary}
 							pattern={canvas.pattern}
-							patternColor={theme.colors.textSecondary}
+							patternColor={theme.colors.textPrimary}
 						/>
 
 						{/* Render page number on the bottom of the canvas */}
@@ -85,7 +85,7 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							<PageNumber
 								number={canvasNumber}
 								position='top-right'
-								color={theme.colors.textPrimary}
+								backgroundColor={(canvas.color as string) ?? theme.colors.primary}
 								width={layout.width}
 								height={layout.height}
 							/>

@@ -20,7 +20,7 @@ import { useContextMenu } from "../../common/contexts/ContextMenuContext"
 export default function ChapterList() {
 	// Get context values
 	const { notebookState, dispatch } = useNotebookContext()
-	const { handleCreateChapter, handleEditChapter, handleDeleteChapter } = useNotebookActions()
+	const { handleCreateChapter, handleUpdateChapter, handleDeleteChapter } = useNotebookActions()
 	const { openMenu } = useContextMenu()
 
 	const prevChapterIdRef = useRef<string | null>(null)
@@ -46,7 +46,7 @@ export default function ChapterList() {
 				openMenu({
 					position: { x: pageX, y: pageY },
 					options: [
-						{ label: "Edit", onPress: () => handleEditChapter(currentChapter) },
+						{ label: "Edit", onPress: () => handleUpdateChapter(currentChapter) },
 						{ label: "Delete", onPress: () => handleDeleteChapter(currentChapter) },
 					],
 				})

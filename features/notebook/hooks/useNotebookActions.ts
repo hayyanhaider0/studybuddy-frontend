@@ -64,8 +64,8 @@ export default function useNotebookActions() {
 		})
 	}
 
-	// Helper function to edit a notebook's title and cover fill.
-	const handleEditNotebook = (notebook: Notebook) => {
+	// Helper function to update a notebook's title and cover fill.
+	const handleUpdateNotebook = (notebook: Notebook) => {
 		openModal({
 			type: "input",
 			title: `Edit ${notebook.title}`,
@@ -76,7 +76,10 @@ export default function useNotebookActions() {
 			defaultColor: notebook.color,
 			buttonText: "Apply",
 			onSubmit: (input: string, color?: Color) =>
-				updateNotebookServer.mutate({ id: notebook.id, req: { title: input, color } }),
+				updateNotebookServer.mutate({
+					id: notebook.id,
+					req: { title: input, color: color ?? null },
+				}),
 		})
 	}
 
@@ -116,8 +119,8 @@ export default function useNotebookActions() {
 		})
 	}
 
-	// Helper function to edit a chapter.
-	const handleEditChapter = (chapter: Chapter) => {
+	// Helper function to update a chapter.
+	const handleUpdateChapter = (chapter: Chapter) => {
 		openModal({
 			type: "input",
 			title: `Edit ${chapter.title}`,
@@ -381,10 +384,10 @@ export default function useNotebookActions() {
 
 	return {
 		handleCreateNotebook,
-		handleEditNotebook,
+		handleUpdateNotebook,
 		handleDeleteNotebook,
 		handleCreateChapter,
-		handleEditChapter,
+		handleUpdateChapter,
 		handleDeleteChapter,
 		handleCreateCanvas,
 		handleChangeBackground,

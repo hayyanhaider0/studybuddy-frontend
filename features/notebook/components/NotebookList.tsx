@@ -16,7 +16,7 @@ import MiniCanvas from "../../common/components/MiniCanvas"
 import { useSort } from "../../common/contexts/SortContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import { getChapter, getNotebook } from "../../../utils/notebook"
+import { getCanvas, getChapter, getNotebook } from "../../../utils/notebook"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useContextMenu } from "../../common/contexts/ContextMenuContext"
 import useNotebookActions from "../hooks/useNotebookActions"
@@ -29,7 +29,7 @@ export default function NotebookList() {
 	const { GlobalStyles, theme } = useThemeContext()
 	const { sorts } = useSort()
 	const { openMenu } = useContextMenu()
-	const { handleEditNotebook, handleDeleteNotebook } = useNotebookActions()
+	const { handleUpdateNotebook, handleDeleteNotebook } = useNotebookActions()
 	const {
 		handleGenerateAINotes,
 		handleGenerateFlashcards,
@@ -93,7 +93,7 @@ export default function NotebookList() {
 			openMenu({
 				position: { x: pageX, y: pageY },
 				options: [
-					{ label: "Edit", onPress: () => handleEditNotebook(notebook) },
+					{ label: "Edit", onPress: () => handleUpdateNotebook(notebook) },
 					{ label: "Delete", onPress: () => handleDeleteNotebook(notebook) },
 					{ label: "Generate AI Notes", onPress: () => handleGenerateAINotes(notebook) },
 					{ label: "Generate Flashcards", onPress: () => handleGenerateFlashcards(notebook) },
@@ -110,55 +110,66 @@ export default function NotebookList() {
 
 	return (
 		<Grid
-			data={sortedNotebooks.map((n) => (
-				// Clickable icon that navigates to the canvas after selecting the notebook.
-				<Pressable
-					key={n.id}
-					onPress={() => selectNotebook(n.id)}
-					onLongPress={() => console.log("Editing Mode")}
-				>
-					<View style={{ alignItems: "center", justifyContent: "center", width: "100%" }}>
-						{/* Icon/Canvas container */}
-						<View style={{ aspectRatio: 9 / 16, width: "80%", flexDirection: "row" }}>
-							{n.color ? (
-								<NotebookIcon fill={n.color || "green"} width='100%' height='100%' />
-							) : (
-								<MiniCanvas
-									notebookId={n.id}
-									chapterId={n.chapters[0].id}
-									canvasId={n.chapters[0].canvases[0].id}
-								/>
-							)}
-							<Pressable
-								onPress={(e) => handleNotebookMenu(n, e)}
-								style={{
-									position: "absolute",
-									top: 12,
-									right: -24,
-								}}
-							>
-								<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
-							</Pressable>
-						</View>
+			data={sortedNotebooks.map((n) => {
+				const chapterId = n.chapters[0].id
+				const canvasId = n.chapters[0].canvases[0].id
 
-						<View style={{ paddingTop: 8 }}>
-							<Text
-								style={[GlobalStyles.paragraph, { paddingVertical: 4, textAlign: "center" }]}
-								ellipsizeMode='middle'
-								numberOfLines={1}
-							>
-								{n.title}
-							</Text>
-							<Text style={[GlobalStyles.subtext, { textAlign: "center" }]}>
-								{`${timeAgo(new Date(n.updatedAt).getTime())}`}
-							</Text>
-							<Text style={[GlobalStyles.subtext, { textAlign: "center" }]}>
-								{`Created ${formatDate(new Date(n.createdAt).getTime())}`}
-							</Text>
+				const canvas = getCanvas(notebookState.notebooks, n.id, chapterId, canvasId)
+
+				if (!canvas) return
+
+				return (
+					// Clickable icon that navigates to the canvas after selecting the notebook.
+					<Pressable
+						key={n.id}
+						onPress={() => selectNotebook(n.id)}
+						onLongPress={() => console.log("Editing Mode")}
+					>
+						<View style={{ alignItems: "center", justifyContent: "center", width: "100%" }}>
+							{/* Icon/Canvas container */}
+							<View style={{ aspectRatio: 9 / 16, width: "80%", flexDirection: "row" }}>
+								{n.color ? (
+									<NotebookIcon fill={n.color} width='100%' height='100%' />
+								) : (
+									<MiniCanvas
+										notebookId={n.id}
+										chapterId={chapterId}
+										canvasId={canvasId}
+										backgroundColor={canvas.color}
+										pattern={canvas.pattern}
+									/>
+								)}
+								<Pressable
+									onPress={(e) => handleNotebookMenu(n, e)}
+									style={{
+										position: "absolute",
+										top: 0,
+										right: -24,
+									}}
+								>
+									<MaterialC name='dots-vertical' size={24} color={theme.colors.textPrimary} />
+								</Pressable>
+							</View>
+
+							<View style={{ paddingTop: 8 }}>
+								<Text
+									style={[GlobalStyles.paragraph, { paddingVertical: 4, textAlign: "center" }]}
+									ellipsizeMode='middle'
+									numberOfLines={1}
+								>
+									{n.title}
+								</Text>
+								<Text style={[GlobalStyles.subtext, { textAlign: "center" }]}>
+									{`${timeAgo(new Date(n.updatedAt).getTime())}`}
+								</Text>
+								<Text style={[GlobalStyles.subtext, { textAlign: "center" }]}>
+									{`Created ${formatDate(new Date(n.createdAt).getTime())}`}
+								</Text>
+							</View>
 						</View>
-					</View>
-				</Pressable>
-			))}
+					</Pressable>
+				)
+			})}
 			cols={3}
 		/>
 	)
