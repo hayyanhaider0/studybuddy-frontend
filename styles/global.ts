@@ -120,6 +120,13 @@ export const getGlobalStyles = (colors: ThemeColors, fontScale: number) =>
 			borderRadius: 28,
 			gap: 16,
 		},
+		colorSelectorContainer: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			width: "100%",
+			paddingHorizontal: 8,
+		},
 		choiceModalContainer: {
 			position: "absolute",
 			bottom: 0,

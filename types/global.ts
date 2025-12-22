@@ -6,10 +6,8 @@
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "../navigation/Navigation"
-import { ImageSourcePropType } from "react-native"
 import { DrawerNavigationProp } from "@react-navigation/drawer"
 import { DrawerParamList } from "../navigation/DrawerNavigation"
-import { BrushType } from "../features/drawing/types/DrawingTypes"
 
 // Api
 export interface ApiResponse<T> {
@@ -53,26 +51,6 @@ export type Color = Hex3 | Hex6 | null
 /**
  * Canvas Types
  */
-// Tool Types
-export type ToolType = {
-	name: string
-	icon: string
-	image: ImageSourcePropType
-	action: () => void
-}
-
-export type ToolSwatches = {
-	[toolName in BrushType]: string[]
-}
-
-// Options
-export type OptionType = {
-	name: string
-	icon: string
-	action: () => void
-	disabled?: boolean
-}
-
 // Sorting
 
 // All different sorting types.

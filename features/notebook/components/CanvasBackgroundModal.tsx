@@ -84,6 +84,7 @@ export default function CanvasBackgroundModal({
 				{/* Default Swatch */}
 				<Swatch
 					color={colors[0]}
+					width={30}
 					selected={!selectedColor}
 					onPress={() => updateCanvas({ color: null })}
 					isDefault
@@ -94,6 +95,7 @@ export default function CanvasBackgroundModal({
 					<Swatch
 						key={i}
 						color={c}
+						width={30}
 						selected={c === selectedColor}
 						onPress={() => updateCanvas({ color: c })}
 					/>

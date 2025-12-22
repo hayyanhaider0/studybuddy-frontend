@@ -111,15 +111,7 @@ export default function Modal() {
 
 							{/* Color options */}
 							{modalData.color && (
-								<View
-									style={{
-										flexDirection: "row",
-										justifyContent: "space-between",
-										alignItems: "center",
-										width: "100%",
-										paddingHorizontal: 8,
-									}}
-								>
+								<View style={GlobalStyles.colorSelectorContainer}>
 									<Pressable
 										onPress={() => setColor(!color)}
 										style={{

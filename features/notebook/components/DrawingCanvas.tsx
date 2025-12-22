@@ -5,7 +5,7 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import { Canvas, Circle } from "@shopify/react-native-skia"
+import { Canvas } from "@shopify/react-native-skia"
 import { View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import { getChapter, getCanvas } from "../../../utils/notebook"
@@ -13,7 +13,6 @@ import { useSettings } from "../../common/contexts/SettingsContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import { useToolContext } from "../contexts/ToolContext"
 import useCanvasDrawingGestures from "../hooks/useCanvasDrawingGestures"
 import CanvasBackground from "./CanvasBackground"
 import PageNumber from "./PageNumber"
@@ -24,7 +23,6 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
 	const { current, layout } = useCanvasContext()
 	const { notebookState } = useNotebookContext()
-	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
 
@@ -100,17 +98,6 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							width={layout.width}
 							height={layout.height}
 						/>
-
-						{tool === "eraser" && (
-							<Circle
-								cx={eraserPos.x}
-								cy={eraserPos.y}
-								r={toolSettings["eraser"].size / 2}
-								color={theme.colors.onPrimary}
-								strokeWidth={1}
-								style='stroke'
-							/>
-						)}
 					</Canvas>
 				</View>
 			</GestureDetector>

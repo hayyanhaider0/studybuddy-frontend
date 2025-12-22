@@ -6,13 +6,17 @@
  */
 
 import { useNotebookContext } from "../features/notebook/contexts/NotebookContext"
-import { useToolContext } from "../features/notebook/contexts/ToolContext"
 import useNotebookActions from "../features/notebook/hooks/useNotebookActions"
-import { OptionType } from "../types/global"
 import { getCanvas } from "./notebook"
 
+type OptionDefinitionType = {
+	name: string
+	icon: string
+	action: () => void
+	disabled: boolean
+}
+
 export function useOptionDefinitions() {
-	const { collapsed, setCollapsed } = useToolContext() // To check whether toolbar is collapsed.
 	const { undo, canUndo, redo, canRedo, clearCanvas } = useNotebookActions()
 	const { notebookState } = useNotebookContext()
 
@@ -24,7 +28,7 @@ export function useOptionDefinitions() {
 	)!
 
 	// Object array that contains all objects that are shown in the toolbar.
-	const options: OptionType[] = [
+	const options: OptionDefinitionType[] = [
 		// Undo last action.
 		{ name: "undo", icon: "undo-variant", action: undo, disabled: !canUndo() },
 		// Redo the last undone action.
@@ -40,12 +44,6 @@ export function useOptionDefinitions() {
 			icon: "delete-off-outline",
 			action: clearCanvas,
 			disabled: activeCanvas?.paths.length === 0,
-		},
-		// Open the sidebar menu.
-		{
-			name: "collapse",
-			icon: collapsed ? "arrow-expand-horizontal" : "arrow-collapse-horizontal",
-			action: () => setCollapsed((prev) => !prev),
 		},
 	]
 

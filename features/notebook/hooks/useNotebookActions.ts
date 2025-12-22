@@ -15,10 +15,15 @@ import { ChapterRequest, mapToPathRequest, PathRequest } from "../api/api"
 import { Color } from "../../../types/global"
 import CanvasBackgroundModal from "../components/CanvasBackgroundModal"
 import React from "react"
+import { DrawingToolSettings, isDrawingTool, getDrawingSizePreset } from "../../../types/tools"
+import { useTool } from "../contexts/ToolContext"
+import { useCanvasContext } from "../contexts/CanvasStateContext"
 
 export default function useNotebookActions() {
 	// Get context values.
 	const { notebookState, dispatch } = useNotebookContext()
+	const { layout } = useCanvasContext()
+	const { activeTool } = useTool()
 	const { openModal } = useModal()
 	const {
 		createNotebookServer,
@@ -33,8 +38,6 @@ export default function useNotebookActions() {
 		deletePathsServer,
 	} = useNotebookMutations()
 
-	// const activeNotebook = getNotebook(notebooks, selectedNotebookId)
-	// const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
 	const activeCanvas = getCanvas(
 		notebookState.notebooks,
 		notebookState.selectedNotebookId,
@@ -171,6 +174,37 @@ export default function useNotebookActions() {
 		deleteCanvasServer.mutate(canvas)
 	}
 
+	// Helper function to create a path on some canvas.
+	const handleCreatePath = (
+		x: number,
+		y: number,
+		pressure: number,
+		canvasId: string,
+		toolSettings: DrawingToolSettings
+	): PathType | undefined => {
+		if (!isDrawingTool(activeTool)) return
+
+		const preset = getDrawingSizePreset(activeTool, toolSettings.activeSizePreset)
+		const normBaseWidth = preset.base / layout.width
+		const normMinWidth = preset.minWidth / layout.width
+		const normMaxWidth = preset.minWidth / layout.width
+
+		return {
+			id: `temp-${Date.now()}`,
+			canvasId,
+			points: [{ x, y, pressure }],
+			brush: {
+				type: activeTool,
+				color: toolSettings.color as string,
+				baseWidth: normBaseWidth,
+				minWidth: normMinWidth,
+				maxWidth: normMaxWidth,
+				opacity: toolSettings.opacity,
+			},
+			bbox: { minX: x, maxX: x, minY: y, maxY: y },
+		}
+	}
+
 	/////////////////////////////////////////
 	// Canvas State Management
 	/////////////////////////////////////////
@@ -206,23 +240,20 @@ export default function useNotebookActions() {
 		updateCanvas(updatedCanvas)
 	}
 
-	const handleErase = (x: number, y: number, size: number, width: number, height: number) => {
+	const handleErase = (x: number, y: number, size: number) => {
 		if (!activeCanvas) return
 
 		const paths = activeCanvas.paths
 
 		if (!paths || paths.length === 0) return
 
-		const normX = x / width
-		const normY = y / height
 		const r = size / 2
 
 		paths.forEach((p) => {
-			if (p.bbox.minX > normX || p.bbox.maxX < normX || p.bbox.minY > normY || p.bbox.maxY < normY)
-				return
+			if (p.bbox.minX > x || p.bbox.maxX < x || p.bbox.minY > y || p.bbox.maxY < y) return
 
 			p.points.forEach((pt) => {
-				const dist = Math.sqrt(Math.pow(pt.x * width - x, 2) + Math.pow(pt.y * height - y, 2))
+				const dist = Math.sqrt(Math.pow(pt.x - x, 2) + Math.pow(pt.y - y, 2))
 				if (dist <= r) {
 					const snapshot = createSnapshot()
 
@@ -392,6 +423,7 @@ export default function useNotebookActions() {
 		handleCreateCanvas,
 		handleChangeBackground,
 		handleDeleteCanvas,
+		handleCreatePath,
 		addPathToCanvas,
 		handleErase,
 		undo,

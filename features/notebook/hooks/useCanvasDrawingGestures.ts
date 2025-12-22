@@ -1,80 +1,69 @@
 import { Gesture } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
-import { useToolContext } from "../contexts/ToolContext"
 import useNotebookActions from "./useNotebookActions"
-import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
-import { BrushType, PathType } from "../../drawing/types/DrawingTypes"
+import { PathType } from "../../drawing/types/DrawingTypes"
+import { useTool } from "../contexts/ToolContext"
+import {
+	canDraw,
+	DrawingTool,
+	getEraserSizePreset,
+	isDrawingTool,
+	isEraserTool,
+} from "../../../types/tools"
+import { useDrawingSettings } from "../contexts/DrawingSettingsContext"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
 	// Get context values.
 	const { current, setCurrentPath, updateCurrentPath, clearCurrentPath, layout } =
 		useCanvasContext()
-	const { tool, toolSettings, eraserPos, setEraserPos } = useToolContext()
-	const { addPathToCanvas, handleErase } = useNotebookActions()
-
-	// Check whether the selected tool can draw.
-	const isDrawingTool = (t: BrushType) =>
-		t === "pen" || t === "pencil" || t === "highlighter" || t === "eraser"
+	const { activeTool } = useTool()
+	const { settings } = useDrawingSettings()
+	const { handleCreatePath, addPathToCanvas, handleErase } = useNotebookActions()
 
 	// Draw gesture: Allows user to draw on the canvas.
 	const drawGesture = Gesture.Pan()
-		.enabled(isDrawingTool(tool))
+		.enabled(canDraw(activeTool))
 		.minPointers(1)
 		.maxPointers(1)
 		.onBegin((e) => {
-			if (!isDrawingTool(tool)) return
-
-			if (tool === "eraser") {
-				setEraserPos({ x: e.x, y: e.y })
-				return
-			}
-
 			const normX = e.x / layout.width
 			const normY = e.y / layout.height
 			const pressure = e.stylusData?.pressure ?? 1
 
-			const settings = toolSettings[tool]
+			if (isDrawingTool(activeTool)) {
+				const toolSettings = settings[activeTool]
+				const newPath = handleCreatePath(normX, normY, pressure, canvasId, toolSettings)
 
-			const normBaseWidth = settings.size / layout.width
-			const normMinWidth = settings.minWidth! / layout.width
-			const normMaxWidth = settings.maxWidth! / layout.width
+				if (!newPath) return
 
-			const newPath: PathType = {
-				id: `temp-${Date.now()}`,
-				canvasId,
-				points: [{ x: normX, y: normY, pressure }],
-				brush: {
-					type: tool,
-					color: settings.color,
-					baseWidth: normBaseWidth,
-					minWidth: normMinWidth,
-					maxWidth: normMaxWidth,
-					opacity: settings.opacity ?? 1,
-					strokeCap: settings.strokeCap ?? StrokeCap.Round,
-					strokeJoin: settings.strokeJoin ?? StrokeJoin.Round,
-				},
-				bbox: { minX: normX, maxX: normX, minY: normY, maxY: normY },
+				setCurrentPath(canvasId, newPath)
+			} else if (isEraserTool(activeTool)) {
+				const toolSettings = settings.eraser
+				const size = getEraserSizePreset(toolSettings.activeSizePreset)
+
+				const normSize = size / layout.width
+
+				handleErase(normX, normY, normSize)
 			}
-
-			setCurrentPath(canvasId, newPath)
 		})
 		.onUpdate((e) => {
-			if (!isDrawingTool(tool)) return
-
-			if (tool === "eraser") {
-				setEraserPos({ x: e.x, y: e.y })
-				handleErase(eraserPos.x, eraserPos.y, toolSettings[tool].size, layout.width, layout.height)
-				return
-			}
-
 			const normX = e.x / layout.width
 			const normY = e.y / layout.height
 			const pressure = e.stylusData?.pressure ?? 0.5
 
-			updateCurrentPath(canvasId, { x: normX, y: normY, pressure })
+			if (isDrawingTool(activeTool)) {
+				updateCurrentPath(canvasId, { x: normX, y: normY, pressure })
+			} else if (isEraserTool(activeTool)) {
+				const toolSettings = settings.eraser
+				const size = getEraserSizePreset(toolSettings.activeSizePreset)
+
+				const normSize = size / layout.width
+
+				handleErase(normX, normY, normSize)
+			}
 		})
 		.onEnd(() => {
-			if (!isDrawingTool(tool) || tool === "eraser") return
+			if (!isDrawingTool(activeTool)) return
 
 			const finishedPath = current[canvasId]
 			if (finishedPath) {
@@ -97,36 +86,17 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 
 	const tapGesture = Gesture.Tap()
 		.maxDuration(200)
-		.enabled(isDrawingTool(tool))
+		.enabled(isDrawingTool(activeTool))
 		.onEnd((e) => {
-			if (!isDrawingTool(tool)) return
-
 			const normX = e.x / layout.width
 			const normY = e.y / layout.height
 			const pressure = 1
 
-			const settings = toolSettings[tool]
+			const toolSettings = settings[activeTool as DrawingTool]
 
-			const normBaseWidth = settings.size / layout.width
-			const normMinWidth = settings.minWidth! / layout.width
-			const normMaxWidth = settings.maxWidth! / layout.width
+			const dotPath = handleCreatePath(normX, normY, pressure, canvasId, toolSettings)
 
-			const dotPath: PathType = {
-				id: `temp-${Date.now()}`,
-				canvasId,
-				points: [{ x: normX, y: normY, pressure }],
-				brush: {
-					type: tool,
-					color: settings.color,
-					baseWidth: normBaseWidth,
-					minWidth: normMinWidth,
-					maxWidth: normMaxWidth,
-					opacity: settings.opacity ?? 1,
-					strokeCap: settings.strokeCap || StrokeCap.Butt,
-					strokeJoin: settings.strokeJoin || StrokeJoin.Miter,
-				},
-				bbox: { minX: normX, maxX: normX, minY: normY, maxY: normY },
-			}
+			if (!dotPath) return
 
 			addPathToCanvas(dotPath)
 		})
