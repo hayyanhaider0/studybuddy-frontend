@@ -15,8 +15,8 @@ import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { getLoginStyles } from "../../../styles/login"
 import CustomPressable from "../../common/components/CustomPressable"
 import { useEffect } from "react"
-import { LoginRequest } from "../../../types/auth"
 import useLogin from "../hooks/useLogin"
+import { LoginRequest } from "../api/api"
 
 /**
  * Sets the type for setForm to boolean in component props
@@ -145,7 +145,7 @@ export default function Login({ setForm, prefillEmail }: LoginProps) {
 			/>
 
 			{/* Other backend errors */}
-			{errors.root && (
+			{errors.root && errors.root.message && (
 				<Text style={[GlobalStyles.error, { textAlign: "center" }]}>{errors.root.message}</Text>
 			)}
 

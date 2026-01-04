@@ -111,15 +111,7 @@ export default function Modal() {
 
 							{/* Color options */}
 							{modalData.color && (
-								<View
-									style={{
-										flexDirection: "row",
-										justifyContent: "space-between",
-										alignItems: "center",
-										width: "100%",
-										paddingHorizontal: 8,
-									}}
-								>
+								<View style={GlobalStyles.colorSelectorContainer}>
 									<Pressable
 										onPress={() => setColor(!color)}
 										style={{
@@ -182,8 +174,8 @@ export default function Modal() {
 									type='primary'
 									title={modalData.buttonText || "ERROR LOL"}
 									onPress={() => {
-										if (!color) setColorInput(null)
-										modalData.onSubmit(input, colorInput)
+										const finalColor = color ? colorInput : null
+										modalData.onSubmit(input, finalColor)
 										setInput("")
 										setColorInput("" as Color)
 										closeModal()

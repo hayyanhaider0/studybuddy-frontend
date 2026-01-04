@@ -15,10 +15,16 @@ import { ChapterRequest, mapToPathRequest, PathRequest } from "../api/api"
 import { Color } from "../../../types/global"
 import CanvasBackgroundModal from "../components/CanvasBackgroundModal"
 import React from "react"
+import { DrawingToolSettings, isDrawingTool, EraserSettings, canDraw } from "../../../types/tools"
+import { useTool } from "../contexts/ToolContext"
+import { useCanvasContext } from "../contexts/CanvasStateContext"
+import EraserProcessor from "../../drawing/processors/EraserProcessor"
 
 export default function useNotebookActions() {
 	// Get context values.
 	const { notebookState, dispatch } = useNotebookContext()
+	const { layout } = useCanvasContext()
+	const { activeTool } = useTool()
 	const { openModal } = useModal()
 	const {
 		createNotebookServer,
@@ -33,8 +39,6 @@ export default function useNotebookActions() {
 		deletePathsServer,
 	} = useNotebookMutations()
 
-	// const activeNotebook = getNotebook(notebooks, selectedNotebookId)
-	// const activeChapter = getChapter(notebooks, selectedNotebookId, selectedChapterId)
 	const activeCanvas = getCanvas(
 		notebookState.notebooks,
 		notebookState.selectedNotebookId,
@@ -64,8 +68,8 @@ export default function useNotebookActions() {
 		})
 	}
 
-	// Helper function to edit a notebook's title and cover fill.
-	const handleEditNotebook = (notebook: Notebook) => {
+	// Helper function to update a notebook's title and cover fill.
+	const handleUpdateNotebook = (notebook: Notebook) => {
 		openModal({
 			type: "input",
 			title: `Edit ${notebook.title}`,
@@ -76,7 +80,10 @@ export default function useNotebookActions() {
 			defaultColor: notebook.color,
 			buttonText: "Apply",
 			onSubmit: (input: string, color?: Color) =>
-				updateNotebookServer.mutate({ id: notebook.id, req: { title: input, color } }),
+				updateNotebookServer.mutate({
+					id: notebook.id,
+					req: { title: input, color: color ?? null },
+				}),
 		})
 	}
 
@@ -116,8 +123,8 @@ export default function useNotebookActions() {
 		})
 	}
 
-	// Helper function to edit a chapter.
-	const handleEditChapter = (chapter: Chapter) => {
+	// Helper function to update a chapter.
+	const handleUpdateChapter = (chapter: Chapter) => {
 		openModal({
 			type: "input",
 			title: `Edit ${chapter.title}`,
@@ -168,6 +175,47 @@ export default function useNotebookActions() {
 		deleteCanvasServer.mutate(canvas)
 	}
 
+	// Helper function to create a path on some canvas.
+	const handleCreatePath = (
+		x: number,
+		y: number,
+		pressure: number,
+		canvasId: string,
+		toolSettings: DrawingToolSettings | EraserSettings
+	): PathType | undefined => {
+		if (!canDraw(activeTool)) return
+
+		if (isDrawingTool(activeTool)) {
+			const drawingSettings = toolSettings as DrawingToolSettings
+
+			return {
+				id: `temp-${Date.now()}`,
+				canvasId,
+				points: [{ x, y, pressure }],
+				brush: {
+					type: activeTool,
+					color: drawingSettings.color as string,
+					sizePresetIndex: drawingSettings.activeSizePreset,
+					opacity: drawingSettings.opacity,
+				},
+				bbox: { minX: x, maxX: x, minY: y, maxY: y },
+			}
+		} else if (activeTool === "eraser") {
+			return {
+				id: `temp-${Date.now()}`,
+				canvasId,
+				points: [{ x, y, pressure }],
+				brush: {
+					type: activeTool,
+					color: "#FFFFFF50",
+					sizePresetIndex: toolSettings.activeSizePreset,
+					opacity: 0.5,
+				},
+				bbox: { minX: x, maxX: x, minY: y, maxY: y },
+			}
+		}
+	}
+
 	/////////////////////////////////////////
 	// Canvas State Management
 	/////////////////////////////////////////
@@ -203,40 +251,40 @@ export default function useNotebookActions() {
 		updateCanvas(updatedCanvas)
 	}
 
-	const handleErase = (x: number, y: number, size: number, width: number, height: number) => {
-		if (!activeCanvas) return
+	const handleErase = (normX: number, normY: number, normSize: number, canvasId: string) => {
+		const canvas = getCanvas(
+			notebookState.notebooks,
+			notebookState.selectedNotebookId,
+			notebookState.selectedChapterId,
+			canvasId
+		)
 
-		const paths = activeCanvas.paths
+		if (!activeCanvas || !canvas) return
 
-		if (!paths || paths.length === 0) return
-
-		const normX = x / width
-		const normY = y / height
-		const r = size / 2
-
-		paths.forEach((p) => {
-			if (p.bbox.minX > normX || p.bbox.maxX < normX || p.bbox.minY > normY || p.bbox.maxY < normY)
-				return
-
-			p.points.forEach((pt) => {
-				const dist = Math.sqrt(Math.pow(pt.x * width - x, 2) + Math.pow(pt.y * height - y, 2))
-				if (dist <= r) {
-					const snapshot = createSnapshot()
-
-					const updatedCanvas = {
-						...activeCanvas,
-						paths: paths.filter((path) => path.id !== p.id),
-						undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
-						redoStack: [],
-						updatedAt: Date.now(),
-					}
-
-					updateCanvas(updatedCanvas)
-				}
-			})
-
-			return
+		// Get updated paths after erasing
+		const updatedPaths = EraserProcessor({
+			eraserX: normX,
+			eraserY: normY,
+			eraserSize: normSize,
+			canvasPaths: canvas.paths,
+			width: layout.width,
+			height: layout.height,
 		})
+
+		if (updatedPaths.length === canvas.paths.length) return
+
+		// Update the canvas with new paths
+		const snapshot = createSnapshot()
+
+		const updatedCanvas = {
+			...activeCanvas,
+			paths: updatedPaths,
+			undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
+			redoStack: [],
+			updatedAt: Date.now(),
+		}
+
+		updateCanvas(updatedCanvas)
 	}
 
 	// Undo the last action by the user.
@@ -381,14 +429,15 @@ export default function useNotebookActions() {
 
 	return {
 		handleCreateNotebook,
-		handleEditNotebook,
+		handleUpdateNotebook,
 		handleDeleteNotebook,
 		handleCreateChapter,
-		handleEditChapter,
+		handleUpdateChapter,
 		handleDeleteChapter,
 		handleCreateCanvas,
 		handleChangeBackground,
 		handleDeleteCanvas,
+		handleCreatePath,
 		addPathToCanvas,
 		handleErase,
 		undo,

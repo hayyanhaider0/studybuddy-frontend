@@ -1,5 +1,6 @@
 import { Text as SkiaText, useFont } from "@shopify/react-native-skia"
 import React from "react"
+import tinycolor from "tinycolor2"
 
 type PositionType =
 	| "top-left"
@@ -14,12 +15,18 @@ type PositionType =
 interface PageNumberProps {
 	number: string
 	position: PositionType
-	color: string
+	backgroundColor: string
 	width: number
 	height: number
 }
 
-export default function PageNumber({ number, position, color, width, height }: PageNumberProps) {
+export default function PageNumber({
+	number,
+	position,
+	backgroundColor,
+	width,
+	height,
+}: PageNumberProps) {
 	const calculatePosition = (position: PositionType) => {
 		let x = width / 2 // Center
 		let y = width / 2 // Center
@@ -35,6 +42,8 @@ export default function PageNumber({ number, position, color, width, height }: P
 	const { x, y } = calculatePosition(position)
 
 	const Roboto = useFont(require("../../../assets/fonts/Roboto-Medium.ttf"), height * 0.025)
+
+	const color = tinycolor(backgroundColor).isDark() ? "#E0E0E0" : "#1A1A1A"
 
 	return <SkiaText text={number} x={x} y={y} font={Roboto} color={color} />
 }

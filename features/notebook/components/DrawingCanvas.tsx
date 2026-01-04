@@ -5,7 +5,7 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import { Canvas, Circle } from "@shopify/react-native-skia"
+import { Canvas } from "@shopify/react-native-skia"
 import { View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import { getChapter, getCanvas } from "../../../utils/notebook"
@@ -13,18 +13,17 @@ import { useSettings } from "../../common/contexts/SettingsContext"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import { useToolContext } from "../contexts/ToolContext"
 import useCanvasDrawingGestures from "../hooks/useCanvasDrawingGestures"
 import CanvasBackground from "./CanvasBackground"
 import PageNumber from "./PageNumber"
 import CanvasPaths from "./CanvasPaths"
 import CurrentPathRenderer from "./CurrentPathRenderer"
+import tinycolor from "tinycolor2"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
 	const { current, layout } = useCanvasContext()
 	const { notebookState } = useNotebookContext()
-	const { tool, toolSettings, eraserPos } = useToolContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
 
@@ -64,6 +63,12 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Gesture.
 	const drawingGestures = useCanvasDrawingGestures(canvasId)
 
+	// Background and pattern colors.
+	const backgroundColor = canvas.color ?? theme.colors.primary
+	const patternColor = tinycolor(backgroundColor).isDark()
+		? theme.colors.textPrimary
+		: theme.colors.textSecondary
+
 	return (
 		<View style={{ flex: 1 }}>
 			<GestureDetector gesture={drawingGestures}>
@@ -75,9 +80,9 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 						<CanvasBackground
 							width={layout.width}
 							height={layout.height}
-							backgroundColor={canvas.color ?? theme.colors.primary}
+							backgroundColor={backgroundColor}
 							pattern={canvas.pattern}
-							patternColor={theme.colors.textSecondary}
+							patternColor={patternColor}
 						/>
 
 						{/* Render page number on the bottom of the canvas */}
@@ -85,7 +90,7 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							<PageNumber
 								number={canvasNumber}
 								position='top-right'
-								color={theme.colors.textPrimary}
+								backgroundColor={(canvas.color as string) ?? theme.colors.primary}
 								width={layout.width}
 								height={layout.height}
 							/>
@@ -100,17 +105,6 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							width={layout.width}
 							height={layout.height}
 						/>
-
-						{tool === "eraser" && (
-							<Circle
-								cx={eraserPos.x}
-								cy={eraserPos.y}
-								r={toolSettings["eraser"].size / 2}
-								color={theme.colors.onPrimary}
-								strokeWidth={1}
-								style='stroke'
-							/>
-						)}
 					</Canvas>
 				</View>
 			</GestureDetector>

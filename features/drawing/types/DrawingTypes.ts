@@ -1,4 +1,4 @@
-import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
+import { SizePresetIndex, ToolType } from "../../../types/tools"
 
 // Single point in a drawing stroke.
 export interface PathPoint {
@@ -9,14 +9,10 @@ export interface PathPoint {
 
 // Settings for how a brush draws.
 export interface BrushSettings {
-	type: BrushType // type of brush.
+	type: ToolType // type of brush.
 	color: string // hex color.
-	baseWidth: number // base stroke width in pixels.
-	minWidth: number // thinnest width (light pressure).
-	maxWidth: number // thicket width (high pressure).
+	sizePresetIndex: SizePresetIndex // size preset index.
 	opacity: number // 0-1 transparency.
-	strokeCap: StrokeCap // sets the cap to the path.
-	strokeJoin: StrokeJoin // Sets how the paths join.
 }
 
 // A complete drawing stroke.
@@ -35,6 +31,3 @@ export interface BoundingBox {
 	minY: number
 	maxY: number
 }
-
-// Brush type
-export type BrushType = "pen" | "pencil" | "highlighter" | "eraser" | "text" | "pointer"

@@ -10,7 +10,6 @@ import Toolbar from "../features/notebook/components/Toolbar"
 import ChapterTab from "../features/notebook/components/ChapterTab"
 import Material from "react-native-vector-icons/MaterialCommunityIcons"
 import useNotebookActions from "../features/notebook/hooks/useNotebookActions"
-import ZoomIndicator from "../features/notebook/components/ZoomIndicator"
 import CanvasList from "../features/notebook/components/CanvasList"
 import { getCanvasStyles } from "../styles/canvas"
 import { GestureDetector } from "react-native-gesture-handler"
@@ -33,7 +32,6 @@ export default function CanvasScreen() {
 			<ChapterTab />
 			{notebookState.notebooks.length > 0 ? (
 				<>
-					<ZoomIndicator />
 					<Toolbar />
 					<GestureDetector gesture={translateGesture}>
 						<View style={{ flex: 1, position: "relative" }}>

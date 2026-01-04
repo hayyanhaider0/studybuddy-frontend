@@ -14,7 +14,7 @@ import { useTransformContext } from "../contexts/TransformContext"
 
 export default function ZoomIndicator() {
 	// Get values from context.
-	const { scale, translateX, translateY } = useTransformContext()
+	const { scale, savedScale, translateX, translateY, offsetX, offsetY } = useTransformContext()
 
 	// Theming
 	const { theme, GlobalStyles } = useThemeContext()
@@ -51,8 +51,12 @@ export default function ZoomIndicator() {
 	 */
 	const resetTransformations = () => {
 		scale.value = 1
+		savedScale.value = 1
+
 		translateX.value = 0
 		translateY.value = 0
+		offsetX.value = 0
+		offsetY.value = 0
 	}
 
 	return (

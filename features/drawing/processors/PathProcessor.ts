@@ -6,6 +6,14 @@
 
 import { Skia, SkPath } from "@shopify/react-native-skia"
 import { BrushSettings, PathPoint } from "../types/DrawingTypes"
+import {
+	DrawingTool,
+	getDrawingSizePreset,
+	getEraserSizePreset,
+	isDrawingTool,
+	isEraserTool,
+	ToolType,
+} from "../../../types/tools"
 
 // Smooth a vertex array with quadratic curves
 const quadToPoints = (path: SkPath, verts: { x: number; y: number }[]) => {
@@ -38,18 +46,31 @@ export const toSkiaPath = (
 
 	const path = Skia.Path.Make()
 
+	const tool: ToolType = brush.type
+
+	let minWidth: number = 0
+	let maxWidth: number = 0
+
+	if (isDrawingTool(tool)) {
+		const preset = getDrawingSizePreset(tool as DrawingTool, brush.sizePresetIndex)
+		minWidth = preset.minWidth
+		maxWidth = preset.maxWidth
+	} else if (isEraserTool(tool)) {
+		const size = getEraserSizePreset(brush.sizePresetIndex)
+		minWidth = size
+		maxWidth = size
+	}
+
 	// Simulate a dot using a tiny line.
 	if (points.length < 2) {
 		const p = points[0]
-		const w = brush.minWidth * width + p.pressure * (brush.maxWidth - brush.minWidth) * width
+		const w = minWidth * width + p.pressure * (maxWidth - minWidth) * width
 		path.addCircle(p.x * width, p.y * height, w / 4)
 		return path
 	}
 
 	// Width per point.
-	const widths = points.map(
-		(p) => brush.minWidth * width + p.pressure * (brush.maxWidth - brush.minWidth) * width
-	)
+	const widths = points.map((p) => minWidth * width + p.pressure * (maxWidth - minWidth) * width)
 
 	// Create empty arrays for left and right vertices to create a polygon.
 	const leftVerts: { x: number; y: number }[] = []
