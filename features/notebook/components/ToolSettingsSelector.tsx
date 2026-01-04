@@ -5,21 +5,32 @@ import { canDraw, DrawingTool, isDrawingTool, SizePresetIndex } from "../../../t
 import Swatch from "./Swatch"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 
-export default function ToolSettingsSelector() {
+export default function ToolSettingsSelector({
+	colorPickerState,
+	setColorPickerState,
+}: {
+	colorPickerState: { isVisible: boolean; index: number }
+	setColorPickerState: (state: { isVisible: boolean; index: number }) => void
+}) {
 	const { activeTool } = useTool()
 	const { settings, swatches, updateDrawingToolSetting } = useDrawingSettings()
 	const { theme } = useThemeContext()
 
 	return (
-		<View style={{ gap: 8 }}>
+		<View style={{ flexGrow: 1, flexDirection: "row", gap: 16 }}>
 			{isDrawingTool(activeTool) && (
 				<View style={{ flexDirection: "row", gap: 8 }}>
 					{swatches[activeTool as DrawingTool].map((c, i) => (
 						<Swatch
 							key={i}
 							color={c}
-							onPress={() => updateDrawingToolSetting(activeTool as DrawingTool, "color", c)}
+							onPress={() => {
+								if (colorPickerState.isVisible) setColorPickerState({ isVisible: false, index: -1 })
+								updateDrawingToolSetting(activeTool as DrawingTool, "color", c)
+							}}
+							onLongPress={() => setColorPickerState({ isVisible: true, index: i })}
 							selected={settings[activeTool as DrawingTool].color === c}
+							width={24}
 						/>
 					))}
 				</View>

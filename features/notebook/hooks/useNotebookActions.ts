@@ -15,9 +15,10 @@ import { ChapterRequest, mapToPathRequest, PathRequest } from "../api/api"
 import { Color } from "../../../types/global"
 import CanvasBackgroundModal from "../components/CanvasBackgroundModal"
 import React from "react"
-import { DrawingToolSettings, isDrawingTool, getDrawingSizePreset } from "../../../types/tools"
+import { DrawingToolSettings, isDrawingTool, EraserSettings, canDraw } from "../../../types/tools"
 import { useTool } from "../contexts/ToolContext"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
+import EraserProcessor from "../../drawing/processors/EraserProcessor"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -180,28 +181,38 @@ export default function useNotebookActions() {
 		y: number,
 		pressure: number,
 		canvasId: string,
-		toolSettings: DrawingToolSettings
+		toolSettings: DrawingToolSettings | EraserSettings
 	): PathType | undefined => {
-		if (!isDrawingTool(activeTool)) return
+		if (!canDraw(activeTool)) return
 
-		const preset = getDrawingSizePreset(activeTool, toolSettings.activeSizePreset)
-		const normBaseWidth = preset.base / layout.width
-		const normMinWidth = preset.minWidth / layout.width
-		const normMaxWidth = preset.minWidth / layout.width
+		if (isDrawingTool(activeTool)) {
+			const drawingSettings = toolSettings as DrawingToolSettings
 
-		return {
-			id: `temp-${Date.now()}`,
-			canvasId,
-			points: [{ x, y, pressure }],
-			brush: {
-				type: activeTool,
-				color: toolSettings.color as string,
-				baseWidth: normBaseWidth,
-				minWidth: normMinWidth,
-				maxWidth: normMaxWidth,
-				opacity: toolSettings.opacity,
-			},
-			bbox: { minX: x, maxX: x, minY: y, maxY: y },
+			return {
+				id: `temp-${Date.now()}`,
+				canvasId,
+				points: [{ x, y, pressure }],
+				brush: {
+					type: activeTool,
+					color: drawingSettings.color as string,
+					sizePresetIndex: drawingSettings.activeSizePreset,
+					opacity: drawingSettings.opacity,
+				},
+				bbox: { minX: x, maxX: x, minY: y, maxY: y },
+			}
+		} else if (activeTool === "eraser") {
+			return {
+				id: `temp-${Date.now()}`,
+				canvasId,
+				points: [{ x, y, pressure }],
+				brush: {
+					type: activeTool,
+					color: "#FFFFFF50",
+					sizePresetIndex: toolSettings.activeSizePreset,
+					opacity: 0.5,
+				},
+				bbox: { minX: x, maxX: x, minY: y, maxY: y },
+			}
 		}
 	}
 
@@ -240,37 +251,40 @@ export default function useNotebookActions() {
 		updateCanvas(updatedCanvas)
 	}
 
-	const handleErase = (x: number, y: number, size: number) => {
-		if (!activeCanvas) return
+	const handleErase = (normX: number, normY: number, normSize: number, canvasId: string) => {
+		const canvas = getCanvas(
+			notebookState.notebooks,
+			notebookState.selectedNotebookId,
+			notebookState.selectedChapterId,
+			canvasId
+		)
 
-		const paths = activeCanvas.paths
+		if (!activeCanvas || !canvas) return
 
-		if (!paths || paths.length === 0) return
-
-		const r = size / 2
-
-		paths.forEach((p) => {
-			if (p.bbox.minX > x || p.bbox.maxX < x || p.bbox.minY > y || p.bbox.maxY < y) return
-
-			p.points.forEach((pt) => {
-				const dist = Math.sqrt(Math.pow(pt.x - x, 2) + Math.pow(pt.y - y, 2))
-				if (dist <= r) {
-					const snapshot = createSnapshot()
-
-					const updatedCanvas = {
-						...activeCanvas,
-						paths: paths.filter((path) => path.id !== p.id),
-						undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
-						redoStack: [],
-						updatedAt: Date.now(),
-					}
-
-					updateCanvas(updatedCanvas)
-				}
-			})
-
-			return
+		// Get updated paths after erasing
+		const updatedPaths = EraserProcessor({
+			eraserX: normX,
+			eraserY: normY,
+			eraserSize: normSize,
+			canvasPaths: canvas.paths,
+			width: layout.width,
+			height: layout.height,
 		})
+
+		if (updatedPaths.length === canvas.paths.length) return
+
+		// Update the canvas with new paths
+		const snapshot = createSnapshot()
+
+		const updatedCanvas = {
+			...activeCanvas,
+			paths: updatedPaths,
+			undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
+			redoStack: [],
+			updatedAt: Date.now(),
+		}
+
+		updateCanvas(updatedCanvas)
 	}
 
 	// Undo the last action by the user.

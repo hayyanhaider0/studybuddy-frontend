@@ -6,11 +6,12 @@
  */
 
 import { useTool } from "../features/notebook/contexts/ToolContext"
+import { Pencil, Eraser, Highlighter, MousePointer2, TextCursor } from "lucide-react-native"
 import { ToolType } from "../types/tools"
 
 type ToolDefinitionType = {
 	name: ToolType
-	icon: string
+	icon: React.ComponentType<{ size?: number; color?: string }>
 	action: () => void
 }
 
@@ -22,31 +23,31 @@ export function useToolDefinitions() {
 		// Pointer tool to allow for gestures.
 		{
 			name: "pointer",
-			icon: "cursor-default",
+			icon: MousePointer2,
 			action: () => setActiveTool("pointer"),
 		},
 		// Default pen tool that allows the user to draw paths.
 		{
 			name: "pen",
-			icon: "pen",
+			icon: Pencil,
 			action: () => setActiveTool("pen"),
 		},
 		// Default eraser tool that allows the user to delete paths by drawing over them.
 		{
 			name: "eraser",
-			icon: "eraser",
+			icon: Eraser,
 			action: () => setActiveTool("eraser"),
 		},
 		// Thicker pen tool with decreased opacity.
 		{
 			name: "highlighter",
-			icon: "format-color-highlight",
+			icon: Highlighter,
 			action: () => setActiveTool("highlighter"),
 		},
 		// Text tool that allows the user to type ASCII characters on the canvas.
 		{
 			name: "text",
-			icon: "format-text",
+			icon: TextCursor,
 			action: () => setActiveTool("text"),
 		},
 	]

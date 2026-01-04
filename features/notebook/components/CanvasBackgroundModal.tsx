@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text, View } from "react-native"
+import { Pressable, ScrollView, Switch, Text, View } from "react-native"
 import { Color } from "../../../types/global"
 import Swatch from "./Swatch"
 import MiniCanvas from "../../common/components/MiniCanvas"
@@ -7,10 +7,20 @@ import { useThemeContext } from "../../common/contexts/ThemeContext"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import HorizontalRule from "../../common/components/HorizontalRule"
 import { useNotebookContext } from "../contexts/NotebookContext"
-import { getCanvas } from "../../../utils/notebook"
+import { getCanvas, getChapter } from "../../../utils/notebook"
 import { useNotebookMutations } from "../hooks/useNotebookMutations"
-import { Canvas } from "../../../types/notebook"
 import { CanvasUpdateRequest } from "../api/api"
+import { useState } from "react"
+import CustomPressable from "../../common/components/CustomPressable"
+import { useModal } from "../../common/contexts/ModalContext"
+
+type SelectionType = {
+	color: Color | "default"
+	pattern: CanvasPattern | null
+	applyToAll: boolean
+	colorChanged: boolean
+	patternChanged: boolean
+}
 
 export default function CanvasBackgroundModal({
 	notebookId,
@@ -21,8 +31,17 @@ export default function CanvasBackgroundModal({
 	chapterId: string
 	canvasId: string
 }) {
+	const [selection, setSelection] = useState<SelectionType>({
+		color: null,
+		pattern: null,
+		applyToAll: false,
+		colorChanged: false,
+		patternChanged: false,
+	})
+
 	const { notebookState } = useNotebookContext()
-	const { updateCanvasServer } = useNotebookMutations()
+	const { updateCanvasesServer } = useNotebookMutations()
+	const { closeModal } = useModal()
 	const { theme, GlobalStyles } = useThemeContext()
 
 	// Always get the latest canvas from state
@@ -53,23 +72,57 @@ export default function CanvasBackgroundModal({
 		"#4A3A52", // Lavender Mist (dark)
 	]
 
-	const updateCanvas = (updates: Partial<Canvas>) => {
+	const updateCanvas = () => {
+		const chapter = getChapter(notebookState.notebooks, notebookId, chapterId)
+
+		if (!chapter) {
+			console.log("[CanvasBackgroundModal/UPDATE_CANVAS] Error: No chapter found.")
+			return
+		}
+
+		const changedColor = selection.color === "default" ? null : selection.color
+
 		const req: CanvasUpdateRequest = {
-			id: canvasId,
+			ids: selection.applyToAll
+				? chapter.canvases.map((cv) => cv.id) // All canvases
+				: [canvasId], // Just one canvas
 			chapterId: canvas.chapterId,
 			notebookId: canvas.notebookId,
-			...(updates.color !== undefined && { color: updates.color as Color }),
-			...(updates.pattern !== undefined && { pattern: updates.pattern as CanvasPattern }),
-			order: -1,
+			...(selection.colorChanged && { color: changedColor }),
+			...(selection.patternChanged && { pattern: selection.pattern as CanvasPattern }),
 		}
-		updateCanvasServer.mutate({ id: canvas.id, req })
+
+		updateCanvasesServer.mutate(req)
+		closeModal()
 	}
 
-	const selectedColor = canvas.color ?? null
-	const selectedPattern = canvas.pattern ?? "solid"
+	const selectedColor = selection.color ?? canvas.color
+	const selectedPattern = selection.pattern ?? canvas.pattern ?? "solid"
 
 	return (
 		<ScrollView contentContainerStyle={{ alignItems: "center", gap: 16 }}>
+			{/* Confirm Selection */}
+			<CustomPressable
+				type='primary'
+				title='Confirm'
+				onPress={updateCanvas}
+				style={{ width: "100%" }}
+			/>
+
+			<HorizontalRule width='100%' />
+
+			<View style={{ flexDirection: "row", maxWidth: "100%", paddingHorizontal: 8 }}>
+				<Text style={[GlobalStyles.paragraph, { flexShrink: 1, textAlign: "left" }]}>
+					Apply to all canvases in this chapter?
+				</Text>
+				<Switch
+					value={selection.applyToAll}
+					onChange={() => setSelection((prev) => ({ ...prev, applyToAll: !prev.applyToAll }))}
+				/>
+			</View>
+
+			<HorizontalRule width='100%' />
+
 			<Text style={GlobalStyles.paragraph}>Select a background color.</Text>
 
 			<View
@@ -85,8 +138,10 @@ export default function CanvasBackgroundModal({
 				<Swatch
 					color={colors[0]}
 					width={30}
-					selected={!selectedColor}
-					onPress={() => updateCanvas({ color: null })}
+					selected={selectedColor === "default" || selectedColor === null}
+					onPress={() =>
+						setSelection((prev) => ({ ...prev, color: "default", colorChanged: true }))
+					}
 					isDefault
 				/>
 
@@ -97,7 +152,7 @@ export default function CanvasBackgroundModal({
 						color={c}
 						width={30}
 						selected={c === selectedColor}
-						onPress={() => updateCanvas({ color: c })}
+						onPress={() => setSelection((prev) => ({ ...prev, color: c, colorChanged: true }))}
 					/>
 				))}
 			</View>
@@ -112,7 +167,9 @@ export default function CanvasBackgroundModal({
 					return (
 						<Pressable
 							key={p}
-							onPress={() => updateCanvas({ pattern: p })}
+							onPress={() =>
+								setSelection((prev) => ({ ...prev, pattern: p, patternChanged: true }))
+							}
 							style={{ justifyContent: "center", alignItems: "center", width: 64, gap: 8 }}
 						>
 							<MiniCanvas

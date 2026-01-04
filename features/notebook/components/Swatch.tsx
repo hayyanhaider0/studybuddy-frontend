@@ -8,6 +8,7 @@ interface SwatchProps {
 	color: Color
 	selected?: boolean
 	onPress: () => void
+	onLongPress?: () => void
 	width?: number
 	isDefault?: boolean
 }
@@ -16,7 +17,8 @@ export default function Swatch({
 	color,
 	selected = false,
 	onPress,
-	width = 24,
+	onLongPress,
+	width = 8,
 	isDefault = false,
 }: SwatchProps) {
 	const { theme } = useThemeContext()
@@ -25,7 +27,7 @@ export default function Swatch({
 	const checkMarkColor = tinycolor(color as ColorInput).isDark() ? "#FFFFFF" : "#000000"
 
 	return (
-		<TouchableOpacity onPress={onPress} activeOpacity={0.2}>
+		<TouchableOpacity onPress={onPress} onLongPress={onLongPress} activeOpacity={0.2}>
 			<View
 				style={{
 					backgroundColor: color as string,

@@ -11,11 +11,13 @@ import { AnimatePresence } from "moti"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { getCanvasStyles } from "../../../styles/canvas"
 import { useTool } from "../contexts/ToolContext"
-import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
+import { useDrawingSettings } from "../contexts/DrawingSettingsContext"
+import { isDrawingTool } from "../../../types/tools"
 
 export default function ToolOptions() {
 	// Get context values.
 	const { activeTool } = useTool()
+	const { settings } = useDrawingSettings()
 	const tools = useToolDefinitions()
 
 	// Theming
@@ -29,6 +31,14 @@ export default function ToolOptions() {
 				{/* Map all available tools */}
 				{tools.map((t, i) => {
 					const isSelected = activeTool === t.name
+					let iconColor = theme.colors.onPrimary
+
+					if (isDrawingTool(t.name)) {
+						iconColor = settings[t.name].color as string
+					}
+
+					const Icon = t.icon
+
 					return (
 						<TouchableOpacity key={i} onPress={t.action}>
 							{/* Animated image of the tool */}
@@ -36,13 +46,11 @@ export default function ToolOptions() {
 								style={{
 									backgroundColor: isSelected ? theme.colors.secondary : theme.colors.primary,
 									padding: 8,
-									borderColor: theme.colors.secondary,
-									borderWidth: 1,
 									borderRadius: 50,
 									aspectRatio: 1,
 								}}
 							>
-								<MaterialC name={t.icon} size={24} color={theme.colors.onPrimary} />
+								<Icon size={20} color={iconColor} />
 							</View>
 						</TouchableOpacity>
 					)

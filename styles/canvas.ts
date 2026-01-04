@@ -47,14 +47,13 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 			alignItems: "center",
 			justifyContent: "space-around",
 			paddingHorizontal: 16,
-			height: 76,
+			height: 56,
 			minWidth: "100%",
 		},
 		toolOptions: {
 			flexGrow: 1,
 			flexDirection: "row",
-			justifyContent: "space-around",
-			gap: 16,
+			gap: 4,
 		},
 		toolMenu: {
 			position: "relative",
@@ -73,11 +72,10 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 		},
 		// Option container styles
 		optionContainer: {
-			flexGrow: 1,
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "space-around",
-			gap: 16,
+			gap: 8,
 		},
 		options: {
 			color: colors.onSecondary,
@@ -109,6 +107,9 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 		},
 		// Color picker styles
 		colorPickerContainer: {
+			position: "absolute",
+			alignSelf: "center",
+			bottom: 20,
 			backgroundColor: colors.primary,
 			gap: 16,
 			padding: 32,
@@ -117,8 +118,8 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 		// Zoom indicator styles
 		zoomIndicator: {
 			position: "absolute",
-			top: 160,
-			right: 16,
+			top: 68,
+			right: 0,
 			padding: 8,
 			backgroundColor: colors.primary,
 			borderRadius: 999,

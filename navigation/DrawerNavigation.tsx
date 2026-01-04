@@ -6,7 +6,6 @@
 
 import { createDrawerNavigator, DrawerContentComponentProps } from "@react-navigation/drawer"
 import React, { useEffect } from "react"
-import { CanvasProvider } from "../providers/CanvasProvider"
 import CanvasScreen from "../screens/CanvasScreen"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
@@ -63,11 +62,7 @@ export default function DrawerNavigation() {
 			{/* Canvas option */}
 			<Drawer.Screen
 				name='canvas'
-				children={() => (
-					<CanvasProvider>
-						<CanvasScreen />
-					</CanvasProvider>
-				)}
+				component={CanvasScreen}
 				options={{
 					title: "Canvas",
 					drawerIcon: ({ color, size }) => <MaterialC name='draw' size={size} color={color} />,

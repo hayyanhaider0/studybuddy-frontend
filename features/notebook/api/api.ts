@@ -1,8 +1,8 @@
-import { StrokeCap, StrokeJoin } from "@shopify/react-native-skia"
 import client from "../../../api/client"
 import { ApiResponse, Color } from "../../../types/global"
 import { Canvas, Chapter, Notebook } from "../../../types/notebook"
-import { BrushType, PathPoint, PathType } from "../../drawing/types/DrawingTypes"
+import { DrawingTool, SizePresetIndex } from "../../../types/tools"
+import { PathPoint, PathType } from "../../drawing/types/DrawingTypes"
 import { CanvasPattern } from "../components/CanvasBackground"
 
 // Notebooks
@@ -48,7 +48,7 @@ export interface CanvasRequest {
 }
 
 export interface CanvasUpdateRequest {
-	id: string
+	ids: string[]
 	chapterId: string
 	notebookId: string
 	color?: Color
@@ -75,7 +75,7 @@ export interface PathRequest {
 	canvasId: string
 	points: PathPoint[]
 	brushType: string
-	baseWidth: number
+	sizePresetIndex: SizePresetIndex
 	color: string
 	opacity: number
 }
@@ -85,7 +85,7 @@ export interface PathResponse {
 	canvasId: string
 	points: PathPoint[]
 	brushType: string
-	baseWidth: number
+	sizePresetIndex: SizePresetIndex
 	color: string
 	opacity: number
 }
@@ -186,9 +186,8 @@ export const fetchCanvases = async (chapterIds: string[]): Promise<CanvasRespons
 	return res.data.data!
 }
 
-export const updateCanvas = async (id: string, req: CanvasUpdateRequest): Promise<void> => {
-	if (!id) throw new Error("[updateCanvas]: No canvas ID provided.")
-	const res = await client.patch<ApiResponse<void>>(`/canvases/${id}`, req)
+export const updateCanvases = async (req: CanvasUpdateRequest): Promise<void> => {
+	const res = await client.patch<ApiResponse<void>>("/canvases", req)
 	return res.data.data!
 }
 
@@ -242,7 +241,7 @@ export const mapToPathRequest = (path: PathType): PathRequest => {
 		canvasId: path.canvasId,
 		points: path.points,
 		brushType: path.brush.type.toUpperCase(),
-		baseWidth: path.brush.baseWidth,
+		sizePresetIndex: path.brush.sizePresetIndex,
 		color: path.brush.color,
 		opacity: path.brush.opacity,
 	}
@@ -256,14 +255,10 @@ export const mapToPathType = (res: PathResponse): PathType => {
 		canvasId: res.canvasId,
 		points: res.points,
 		brush: {
-			type: res.brushType as BrushType,
+			type: res.brushType as DrawingTool,
 			color: res.color,
-			baseWidth: res.baseWidth,
-			minWidth: res.baseWidth * 0.5,
-			maxWidth: res.baseWidth * 1.5,
+			sizePresetIndex: res.sizePresetIndex,
 			opacity: res.opacity,
-			strokeCap: StrokeCap.Round,
-			strokeJoin: StrokeJoin.Round,
 		},
 		bbox: {
 			minX: Math.min(...res.points.map((pts) => pts.x)),

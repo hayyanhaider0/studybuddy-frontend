@@ -18,6 +18,7 @@ import CanvasBackground from "./CanvasBackground"
 import PageNumber from "./PageNumber"
 import CanvasPaths from "./CanvasPaths"
 import CurrentPathRenderer from "./CurrentPathRenderer"
+import tinycolor from "tinycolor2"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
@@ -62,6 +63,12 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Gesture.
 	const drawingGestures = useCanvasDrawingGestures(canvasId)
 
+	// Background and pattern colors.
+	const backgroundColor = canvas.color ?? theme.colors.primary
+	const patternColor = tinycolor(backgroundColor).isDark()
+		? theme.colors.textPrimary
+		: theme.colors.textSecondary
+
 	return (
 		<View style={{ flex: 1 }}>
 			<GestureDetector gesture={drawingGestures}>
@@ -73,9 +80,9 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 						<CanvasBackground
 							width={layout.width}
 							height={layout.height}
-							backgroundColor={canvas.color ?? theme.colors.primary}
+							backgroundColor={backgroundColor}
 							pattern={canvas.pattern}
-							patternColor={theme.colors.textPrimary}
+							patternColor={patternColor}
 						/>
 
 						{/* Render page number on the bottom of the canvas */}

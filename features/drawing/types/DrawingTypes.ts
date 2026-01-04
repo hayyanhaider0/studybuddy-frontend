@@ -1,4 +1,4 @@
-import { ToolType } from "../../../types/tools"
+import { SizePresetIndex, ToolType } from "../../../types/tools"
 
 // Single point in a drawing stroke.
 export interface PathPoint {
@@ -11,9 +11,7 @@ export interface PathPoint {
 export interface BrushSettings {
 	type: ToolType // type of brush.
 	color: string // hex color.
-	baseWidth: number // base stroke width in pixels.
-	minWidth: number // thinnest width (light pressure).
-	maxWidth: number // thicket width (high pressure).
+	sizePresetIndex: SizePresetIndex // size preset index.
 	opacity: number // 0-1 transparency.
 }
 

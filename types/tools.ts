@@ -127,36 +127,43 @@ export const DEFAULT_HIGHLIGHTER_SWATCHES: Color[] = [
 
 // Pen size presets with pressure sensitivity
 export const PEN_SIZE_PRESETS: readonly DrawingSizePreset[] = [
-	{ base: 2, minWidth: 1, maxWidth: 4 },
-	{ base: 4, minWidth: 2, maxWidth: 8 },
-	{ base: 8, minWidth: 4, maxWidth: 16 },
-	{ base: 16, minWidth: 8, maxWidth: 32 },
-	{ base: 32, minWidth: 16, maxWidth: 64 },
-	{ base: 48, minWidth: 24, maxWidth: 96 },
+	{ base: 0.002, minWidth: 0.001, maxWidth: 0.004 }, // ~2px on 1000px canvas
+	{ base: 0.004, minWidth: 0.002, maxWidth: 0.008 }, // ~4px
+	{ base: 0.008, minWidth: 0.004, maxWidth: 0.016 }, // ~8px
+	{ base: 0.016, minWidth: 0.008, maxWidth: 0.032 }, // ~16px
+	{ base: 0.032, minWidth: 0.016, maxWidth: 0.064 }, // ~32px
+	{ base: 0.048, minWidth: 0.024, maxWidth: 0.096 }, // ~48px
 ] as const
 
 // Pencil size presets with subtle pressure sensitivity
 export const PENCIL_SIZE_PRESETS: readonly DrawingSizePreset[] = [
-	{ base: 0.5, minWidth: 0.3, maxWidth: 1 },
-	{ base: 1, minWidth: 0.5, maxWidth: 2 },
-	{ base: 2, minWidth: 1, maxWidth: 3 },
-	{ base: 3, minWidth: 1.5, maxWidth: 5 },
-	{ base: 5, minWidth: 2.5, maxWidth: 8 },
-	{ base: 8, minWidth: 4, maxWidth: 12 },
+	{ base: 0.0005, minWidth: 0.0003, maxWidth: 0.001 }, // ~0.5px
+	{ base: 0.001, minWidth: 0.0005, maxWidth: 0.002 }, // ~1px
+	{ base: 0.002, minWidth: 0.001, maxWidth: 0.003 }, // ~2px
+	{ base: 0.003, minWidth: 0.0015, maxWidth: 0.005 }, // ~3px
+	{ base: 0.005, minWidth: 0.0025, maxWidth: 0.008 }, // ~5px
+	{ base: 0.008, minWidth: 0.004, maxWidth: 0.012 }, // ~8px
 ] as const
 
 // Highlighter size presets with wide pressure range
 export const HIGHLIGHTER_SIZE_PRESETS: readonly DrawingSizePreset[] = [
-	{ base: 16, minWidth: 12, maxWidth: 24 },
-	{ base: 24, minWidth: 16, maxWidth: 32 },
-	{ base: 32, minWidth: 20, maxWidth: 40 },
-	{ base: 40, minWidth: 28, maxWidth: 52 },
-	{ base: 48, minWidth: 36, maxWidth: 64 },
-	{ base: 64, minWidth: 48, maxWidth: 80 },
+	{ base: 0.016, minWidth: 0.012, maxWidth: 0.024 }, // ~16px
+	{ base: 0.024, minWidth: 0.016, maxWidth: 0.032 }, // ~24px
+	{ base: 0.032, minWidth: 0.02, maxWidth: 0.04 }, // ~32px
+	{ base: 0.04, minWidth: 0.028, maxWidth: 0.052 }, // ~40px
+	{ base: 0.048, minWidth: 0.036, maxWidth: 0.064 }, // ~48px
+	{ base: 0.064, minWidth: 0.048, maxWidth: 0.08 }, // ~64px
 ] as const
 
-// Highlighter size presets with pressure sensitivity.
-export const ERASER_SIZE_PRESETS: readonly EraserSizePreset[] = [2, 4, 8, 16, 32, 64] as const
+// Eraser size presets (normalized)
+export const ERASER_SIZE_PRESETS: readonly EraserSizePreset[] = [
+	0.002, // ~2px
+	0.004, // ~4px
+	0.008, // ~8px
+	0.016, // ~16px
+	0.032, // ~32px
+	0.064, // ~64px
+] as const
 
 /**
  * Default Settings

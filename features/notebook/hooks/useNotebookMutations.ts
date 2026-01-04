@@ -23,8 +23,8 @@ import {
 	PathCreateResponse,
 	PathRequest,
 	sync,
-	updateCanvas,
 	CanvasUpdateRequest,
+	updateCanvases,
 } from "../api/api"
 import {
 	addCanvas,
@@ -245,27 +245,35 @@ export const useNotebookMutations = () => {
 		},
 	})
 
-	const updateCanvasServer = useMutation({
-		mutationFn: ({ id, req }: { id: string; req: CanvasUpdateRequest }) => updateCanvas(id, req),
-		onMutate: async ({ id, req }: { id: string; req: CanvasUpdateRequest }) => {
-			const canvas = getCanvas(notebookState.notebooks, req.notebookId, req.chapterId, id)!
+	const updateCanvasesServer = useMutation({
+		mutationFn: (req: CanvasUpdateRequest) => updateCanvases(req),
+		onMutate: async (req: CanvasUpdateRequest) => {
+			// Update all canvases in the request
+			req.ids.forEach((canvasId) => {
+				const canvas = getCanvas(notebookState.notebooks, req.notebookId, req.chapterId, canvasId)
 
-			dispatch({
-				type: "UPDATE_CANVAS",
-				payload: {
-					notebookId: canvas.notebookId,
-					chapterId: canvas.chapterId,
-					id,
-					updates: {
-						...(req.color !== undefined && { color: req.color as Color }),
-						...(req.pattern !== undefined && { pattern: req.pattern as CanvasPattern }),
-						...(req.order !== -1 && { order: req.order }),
+				if (!canvas) {
+					console.warn(`[useNotebookMutations/UPDATE_CANVASES] Canvas ${canvasId} not found`)
+					return
+				}
+
+				dispatch({
+					type: "UPDATE_CANVAS",
+					payload: {
+						notebookId: canvas.notebookId,
+						chapterId: canvas.chapterId,
+						id: canvasId,
+						updates: {
+							...(req.color !== undefined && { color: req.color as Color }),
+							...(req.pattern !== undefined && { pattern: req.pattern as CanvasPattern }),
+							...(req.order !== undefined && { order: req.order }),
+						},
 					},
-				},
+				})
 			})
 		},
 		onError: (err) => {
-			console.error("[useNotebookMutations.ts/UPDATE_CANVAS_SERVER]: Mutation failed.", err)
+			console.error("[useNotebookMutations.ts/UPDATE_CANVASES_SERVER]: Mutation failed.", err)
 		},
 	})
 
@@ -348,7 +356,7 @@ export const useNotebookMutations = () => {
 		updateChapterServer,
 		deleteChapterServer,
 		createCanvasServer,
-		updateCanvasServer,
+		updateCanvasesServer,
 		deleteCanvasServer,
 		createPathsServer,
 		deletePathsServer,

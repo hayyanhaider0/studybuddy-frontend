@@ -20,6 +20,7 @@ import useNotebookActions from "../hooks/useNotebookActions"
 import ChapterList from "./ChapterList"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useContextMenu } from "../../common/contexts/ContextMenuContext"
+import ZoomIndicator from "./ZoomIndicator"
 
 export default function ChapterTab() {
 	// Get context values.
@@ -103,6 +104,7 @@ export default function ChapterTab() {
 						)}
 					</>
 				)}
+				<ZoomIndicator />
 			</View>
 			{/* Renders all the chapters in the active notebook and allows navigation through them */}
 			<AnimatePresence>

@@ -14,6 +14,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "../api/queryClient"
 import { GenerateProvider } from "../features/llm/contexts/GenerateContext"
 import { LLMProvider } from "../features/llm/contexts/LLMContext"
+import { CanvasProvider } from "./CanvasProvider"
 
 export function AppProvider({ children }: { children: ReactNode }) {
 	return (
@@ -24,7 +25,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 						<ThemeProvider>
 							<SettingsProvider>
 								<SortProvider>
-									<GenerateProvider>{children}</GenerateProvider>
+									<GenerateProvider>
+										<CanvasProvider>{children}</CanvasProvider>
+									</GenerateProvider>
 								</SortProvider>
 							</SettingsProvider>
 						</ThemeProvider>
