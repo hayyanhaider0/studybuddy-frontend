@@ -1,107 +1,143 @@
 import { Gesture } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import useNotebookActions from "./useNotebookActions"
-import { PathType } from "../../drawing/types/DrawingTypes"
 import { useTool } from "../contexts/ToolContext"
-import {
-	canDraw,
-	DrawingTool,
-	DrawingToolSettings,
-	EraserSettings,
-	getEraserSizePreset,
-	isDrawingTool,
-	isEraserTool,
-} from "../../../types/tools"
+import { canDraw, DrawingTool, getEraserSizePreset } from "../../../types/tools"
 import { useDrawingSettings } from "../contexts/DrawingSettingsContext"
+import { PathType } from "../../drawing/types/DrawingTypes"
+import { runOnJS } from "react-native-reanimated"
 
 export default function useCanvasDrawingGestures(canvasId: string) {
-	// Get context values.
-	const { current, setCurrentPath, updateCurrentPath, clearCurrentPath, layout } =
-		useCanvasContext()
+	const { getCurrentPathPoints, layout } = useCanvasContext()
 	const { activeTool } = useTool()
 	const { settings } = useDrawingSettings()
-	const { handleCreatePath, addPathToCanvas, handleErase } = useNotebookActions()
+	const { addPathToCanvas, handleErase } = useNotebookActions()
 
-	// Draw gesture: Allows user to draw on the canvas.
+	// Get the SharedValue for this canvas from context.
+	const currentPathPoints = getCurrentPathPoints(canvasId)
+
+	// Check if it's a drawing tool outside the worklet.
+	const isDrawing = activeTool === "pen" || activeTool === "pencil" || activeTool === "highlighter"
+	const isEraser = activeTool === "eraser"
+
+	// Pre-compute eraser size.
+	const eraserSize = isEraser
+		? getEraserSizePreset(settings.eraser.activeSizePreset) / layout.width
+		: 0
+
 	const drawGesture = Gesture.Pan()
 		.enabled(canDraw(activeTool))
 		.minPointers(1)
 		.maxPointers(1)
 		.onBegin((e) => {
-			const normX = e.x / layout.width
-			const normY = e.y / layout.height
-			const pressure = e.stylusData?.pressure ?? 1
+			"worklet"
 
-			let toolSettings: DrawingToolSettings | EraserSettings
-
-			if (isDrawingTool(activeTool)) {
-				toolSettings = settings[activeTool]
-			} else if (isEraserTool(activeTool)) {
-				toolSettings = settings.eraser
-				const size = getEraserSizePreset(toolSettings.activeSizePreset)
-				const normSize = size / layout.width
-
-				handleErase(normX, normY, normSize, canvasId)
-			}
-
-			const newPath = handleCreatePath(normX, normY, pressure, canvasId, toolSettings)
-			if (!newPath) return
-			setCurrentPath(canvasId, newPath)
-		})
-		.onUpdate((e) => {
+			// Normalize coordinates.
 			const normX = e.x / layout.width
 			const normY = e.y / layout.height
 			const pressure = e.stylusData?.pressure ?? 0.5
 
-			if (isEraserTool(activeTool)) {
-				const eraserSettings = settings.eraser
-				const size = getEraserSizePreset(eraserSettings.activeSizePreset)
-				const normSize = size / layout.width
+			// Start creating a path on the UI thread.
+			currentPathPoints.value = [{ x: normX, y: normY, pressure }]
+		})
+		.onUpdate((e) => {
+			"worklet"
 
-				handleErase(normX, normY, normSize, canvasId)
+			// Normalize coordinates.
+			const normX = e.x / layout.width
+			const normY = e.y / layout.height
+			const pressure = e.stylusData?.pressure ?? 0.5
+
+			// Append path.
+			currentPathPoints.value = [...currentPathPoints.value, { x: normX, y: normY, pressure }]
+
+			// Bridge to the JS thread for erasing.
+			if (isEraser) {
+				runOnJS(handleErase)(normX, normY, eraserSize, canvasId)
 			}
-
-			updateCurrentPath(canvasId, { x: normX, y: normY, pressure })
 		})
 		.onEnd(() => {
-			if (isDrawingTool(activeTool)) {
-				const finishedPath = current[canvasId]
-				if (finishedPath) {
-					const pathWithBBox: PathType = {
-						...finishedPath,
-						bbox: {
-							minX: Math.min(...finishedPath.points.map((p) => p.x)),
-							maxX: Math.max(...finishedPath.points.map((p) => p.x)),
-							minY: Math.min(...finishedPath.points.map((p) => p.y)),
-							maxY: Math.max(...finishedPath.points.map((p) => p.y)),
-						},
-					}
+			"worklet"
 
-					addPathToCanvas(pathWithBBox)
-				}
+			// Use the pre-computed boolean.
+			if (!isDrawing) {
+				currentPathPoints.value = []
+				return
 			}
 
-			clearCurrentPath(canvasId)
+			// Save the points.
+			const points = [...currentPathPoints.value]
+
+			// Return if no points.
+			if (points.length === 0) return
+
+			// Calculate bounding box.
+			const xs = points.map((p) => p.x)
+			const ys = points.map((p) => p.y)
+			const minX = Math.min(...xs)
+			const maxX = Math.max(...xs)
+			const minY = Math.min(...ys)
+			const maxY = Math.max(...ys)
+
+			// Create the finalized path.
+			const toolSettings = settings[activeTool as DrawingTool]
+			const finalizedPath: PathType = {
+				id: `temp-${Date.now()}`,
+				canvasId,
+				points: points,
+				brush: {
+					type: activeTool,
+					color: toolSettings.color as string,
+					sizePresetIndex: toolSettings.activeSizePreset,
+					opacity: toolSettings.opacity,
+				},
+				bbox: {
+					minX,
+					maxX,
+					minY,
+					maxY,
+				},
+			}
+
+			// Bridge to the JS thread to add path to the canvas.
+			runOnJS(addPathToCanvas)(finalizedPath)
+
+			// Clear the current path after 50ms.
+			setTimeout(() => {
+				currentPathPoints.value = []
+			}, 60)
 		})
-		.runOnJS(true)
 
 	const tapGesture = Gesture.Tap()
 		.maxDuration(200)
-		.enabled(isDrawingTool(activeTool))
+		.enabled(isDrawing)
 		.onEnd((e) => {
 			const normX = e.x / layout.width
 			const normY = e.y / layout.height
-			const pressure = 1
+			const pressure = 0.5
 
 			const toolSettings = settings[activeTool as DrawingTool]
 
-			const dotPath = handleCreatePath(normX, normY, pressure, canvasId, toolSettings)
+			const dotPath: PathType = {
+				id: `temp-${Date.now()}`,
+				canvasId,
+				points: [{ x: normX, y: normY, pressure }],
+				brush: {
+					type: activeTool,
+					color: toolSettings.color as string,
+					sizePresetIndex: toolSettings.activeSizePreset,
+					opacity: toolSettings.opacity,
+				},
+				bbox: {
+					minX: normX,
+					maxX: normX,
+					minY: normY,
+					maxY: normY,
+				},
+			}
 
-			if (!dotPath) return
-
-			addPathToCanvas(dotPath)
+			runOnJS(addPathToCanvas)(dotPath)
 		})
-		.runOnJS(true)
 
 	return Gesture.Race(drawGesture, tapGesture)
 }

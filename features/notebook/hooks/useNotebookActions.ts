@@ -262,7 +262,7 @@ export default function useNotebookActions() {
 		if (!activeCanvas || !canvas) return
 
 		// Get updated paths after erasing
-		const updatedPaths = EraserProcessor({
+		const deletedPath = EraserProcessor({
 			eraserX: normX,
 			eraserY: normY,
 			eraserSize: normSize,
@@ -271,7 +271,11 @@ export default function useNotebookActions() {
 			height: layout.height,
 		})
 
-		if (updatedPaths.length === canvas.paths.length) return
+		if (!deletedPath) return
+
+		deletePathsServer.mutate([deletedPath.id])
+
+		const updatedPaths = canvas.paths.filter((p) => p.id !== deletedPath.id)
 
 		// Update the canvas with new paths
 		const snapshot = createSnapshot()
