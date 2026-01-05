@@ -61,8 +61,6 @@ const mapCanvas = (cv: Canvas, paths: PathType[]): Canvas => {
 	return {
 		...cv,
 		paths: canvasPaths,
-		undoStack: cv.undoStack || [],
-		redoStack: cv.redoStack || [],
 	}
 }
 

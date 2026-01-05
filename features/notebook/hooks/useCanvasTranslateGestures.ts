@@ -6,21 +6,9 @@
 
 import { Gesture } from "react-native-gesture-handler"
 import { useTransformContext } from "../contexts/TransformContext"
-import { useCanvasContext } from "../contexts/CanvasStateContext"
-import { useNotebookContext } from "../contexts/NotebookContext"
-import { getCanvas } from "../../../utils/notebook"
 
 export function useCanvasTranslateGestures() {
 	const { offsetX, offsetY, translateX, translateY, scale, savedScale } = useTransformContext()
-	const { clearCurrentPath } = useCanvasContext()
-	const { notebookState } = useNotebookContext()
-
-	const activeCanvas = getCanvas(
-		notebookState.notebooks,
-		notebookState.selectedNotebookId,
-		notebookState.selectedChapterId,
-		notebookState.selectedCanvasId
-	)
 
 	// Pinch gesture: Allows user to zoom in or out within a defined limit.
 	const pinchGesture = Gesture.Pinch()
@@ -45,7 +33,6 @@ export function useCanvasTranslateGestures() {
 		.minPointers(2)
 		.maxPointers(2)
 		.onBegin(() => {
-			if (activeCanvas) clearCurrentPath(activeCanvas.id)
 			// Set the offsets according the translate values.
 			offsetX.value = translateX.value
 			offsetY.value = translateY.value

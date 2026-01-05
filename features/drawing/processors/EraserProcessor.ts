@@ -18,14 +18,13 @@ export default function EraserProcessor({
 	canvasPaths,
 	width,
 	height,
-}: EraserProcessorProps): PathType[] {
+}: EraserProcessorProps): PathType | null {
 	// Create eraser circle path
 	const eraserSkPath = Skia.Path.Make()
 	eraserSkPath.addCircle(eraserX * width, eraserY * height, eraserSize * width)
 
-	// Filter out paths that intersect with eraser
-	return canvasPaths.filter((path) => {
-		// Quick bounding box check first (optimization)
+	for (const path of canvasPaths) {
+		// quick bounding box reject
 		const eraserBBox = {
 			minX: eraserX - eraserSize,
 			maxX: eraserX + eraserSize,
@@ -33,22 +32,18 @@ export default function EraserProcessor({
 			maxY: eraserY + eraserSize,
 		}
 
-		// If bboxes don't overlap, keep the path
-		if (!bboxIntersects(path.bbox, eraserBBox)) {
-			return true
-		}
+		if (!bboxIntersects(path.bbox, eraserBBox)) continue
 
-		// Convert path to Skia path
 		const pathSkPath = toSkiaPath(path.points, path.brush, width, height)
-		if (!pathSkPath) return true
+		if (!pathSkPath) continue
 
-		// Check for intersection
 		const intersection = Skia.Path.MakeFromOp(pathSkPath, eraserSkPath, PathOp.Intersect)
 		const doesIntersect = intersection && !intersection.isEmpty()
 
-		// Keep path if it does NOT intersect
-		return !doesIntersect
-	})
+		if (doesIntersect) return path
+	}
+
+	return null
 }
 
 // Helper function for bbox intersection check

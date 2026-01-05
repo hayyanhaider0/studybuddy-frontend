@@ -255,7 +255,7 @@ export const mapToPathType = (res: PathResponse): PathType => {
 		canvasId: res.canvasId,
 		points: res.points,
 		brush: {
-			type: res.brushType as DrawingTool,
+			type: res.brushType.toLowerCase() as DrawingTool,
 			color: res.color,
 			sizePresetIndex: res.sizePresetIndex,
 			opacity: res.opacity,

@@ -19,13 +19,17 @@ import PageNumber from "./PageNumber"
 import CanvasPaths from "./CanvasPaths"
 import CurrentPathRenderer from "./CurrentPathRenderer"
 import tinycolor from "tinycolor2"
+import { useDrawingToolSettings } from "../contexts/DrawingSettingsContext"
+import { useTool } from "../contexts/ToolContext"
+import { DrawingTool } from "../../../types/tools"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
-	const { current, layout } = useCanvasContext()
+	const { getCurrentPathPoints, layout } = useCanvasContext()
 	const { notebookState } = useNotebookContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
+	const { activeTool } = useTool()
 
 	// Get the currently selected chapter.
 	const chapter = getChapter(
@@ -62,12 +66,15 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 
 	// Gesture.
 	const drawingGestures = useCanvasDrawingGestures(canvasId)
+	const currentPathPoints = getCurrentPathPoints(canvasId)
 
 	// Background and pattern colors.
 	const backgroundColor = canvas.color ?? theme.colors.primary
 	const patternColor = tinycolor(backgroundColor).isDark()
 		? theme.colors.textPrimary
 		: theme.colors.textSecondary
+
+	const brush = useDrawingToolSettings(activeTool as DrawingTool).settings
 
 	return (
 		<View style={{ flex: 1 }}>
@@ -101,7 +108,9 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 
 						{/* Current path (the one the user is currently drawing) */}
 						<CurrentPathRenderer
-							currentPath={current[canvasId]}
+							currentPath={currentPathPoints}
+							tool={activeTool as DrawingTool}
+							brush={brush}
 							width={layout.width}
 							height={layout.height}
 						/>
