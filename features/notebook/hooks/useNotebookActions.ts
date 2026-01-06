@@ -230,25 +230,105 @@ export default function useNotebookActions() {
 
 	/**
 	 * Helper function that adds a new path to the canvas.
-	 * @param newPath - The new path drawn by the user.
+	 * @param path - The new path drawn by the user.
+	 * @param width - Width of the canvas.
+	 * @param height - Height of the canvas.
+	 * @param isStylus - Whether the pointer type is a stylus.
 	 */
-	const addPathToCanvas = (newPathObject: PathType) => {
+	const addPathToCanvas = (path: PathType, width: number, height: number, isStylus: boolean) => {
 		if (!activeCanvas) return
+
+		const resampledPath = resamplePath(path, width, height, isStylus)
 
 		const snapshot = createSnapshot()
 
 		const updatedCanvas = {
 			...activeCanvas,
-			paths: [...activeCanvas.paths, newPathObject],
+			paths: [...activeCanvas.paths, resampledPath],
 			undoStack: limitStackSize([...activeCanvas.undoStack, snapshot], MAX_UNDO_HISTORY),
 			redoStack: [],
 			updatedAt: Date.now(),
 		}
 
 		// Create path here
-		createPathsServer.mutate([mapToPathRequest(newPathObject)])
+		createPathsServer.mutate([mapToPathRequest(resampledPath)])
 
 		updateCanvas(updatedCanvas)
+	}
+
+	/**
+	 * Resamples a path's point by distance. If the distance between 2 points is
+	 * below the threshold, the first of the 2 points is not included in the
+	 * resampled path. It also includes a point if the pressure change between
+	 * the 2 points is significant enough.
+	 *
+	 * @param path - Original path created by the user.
+	 * @param width - Width of the canvas.
+	 * @param height - Height of the canvas.
+	 * @param isStylus - Whether the pointer type is a stylus.
+	 *
+	 * @returns A resampled path with less points (potentially).
+	 */
+	const resamplePath = (
+		path: PathType,
+		width: number,
+		height: number,
+		isStylus: boolean
+	): PathType => {
+		const points = path.points
+		let resampledPath = path
+
+		if (points.length <= 2) return path
+
+		// Resample the path for less points.
+		const resampledPoints = [points[0]] // Include the first point.
+		let lastAdded = points[0]
+
+		for (let i = 1; i < points.length; i++) {
+			const dx = (points[i].x - lastAdded.x) * width
+			const dy = (points[i].y - lastAdded.y) * height
+			const distance = Math.sqrt(dx * dx + dy * dy)
+
+			// If the distance is significant enough, or the pressure changes enough, include the point.
+			if (distance > 0.2 || Math.abs(points[i].pressure - lastAdded.pressure) > 0.05) {
+				resampledPoints.push(points[i])
+				lastAdded = points[i]
+			}
+		}
+
+		// Include the last point.
+		resampledPoints.push(points[points.length - 1])
+
+		let finalPoints = resampledPoints
+
+		if (isStylus) {
+			// Detect if the stylus is inputting fake pressure.
+			const pressures = resampledPoints.map((p) => p.pressure)
+			const minP = Math.min(...pressures)
+			const maxP = Math.max(...pressures)
+			const meanP = pressures.reduce((a, b) => a + b, 0) / pressures.length
+			const variance = pressures.reduce((a, b) => a + (b - meanP) ** 2, 0) / pressures.length
+
+			// Only consider pressure real if range or variance is meaningful
+			const usePressure = maxP - minP > 0.05 || variance > 0.0005
+
+			// If the stylus is using some fake pressure value, just default to 0.5.
+			finalPoints = resampledPoints.map((p) => ({
+				x: p.x,
+				y: p.y,
+				pressure: usePressure ? p.pressure : 0.5,
+			}))
+		}
+
+		resampledPath = {
+			id: path.id,
+			canvasId: path.canvasId,
+			points: finalPoints,
+			brush: path.brush,
+			bbox: path.bbox,
+		}
+
+		return resampledPath
 	}
 
 	const handleErase = (normX: number, normY: number, normSize: number, canvasId: string) => {

@@ -1,4 +1,4 @@
-import { Gesture } from "react-native-gesture-handler"
+import { Gesture, PointerType } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import useNotebookActions from "./useNotebookActions"
 import { useTool } from "../contexts/ToolContext"
@@ -56,7 +56,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 				runOnJS(handleErase)(normX, normY, eraserSize, canvasId)
 			}
 		})
-		.onEnd(() => {
+		.onEnd((e) => {
 			"worklet"
 
 			// Use the pre-computed boolean.
@@ -100,7 +100,8 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			}
 
 			// Bridge to the JS thread to add path to the canvas.
-			runOnJS(addPathToCanvas)(finalizedPath)
+			const isStylus = e.pointerType === PointerType.STYLUS
+			runOnJS(addPathToCanvas)(finalizedPath, layout.width, layout.height, isStylus)
 
 			// Clear the current path after 50ms.
 			setTimeout(() => {
@@ -136,7 +137,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 				},
 			}
 
-			runOnJS(addPathToCanvas)(dotPath)
+			runOnJS(addPathToCanvas)(dotPath, layout.width, layout.height, false)
 		})
 
 	return Gesture.Race(drawGesture, tapGesture)
