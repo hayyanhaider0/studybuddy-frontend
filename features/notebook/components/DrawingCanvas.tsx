@@ -5,7 +5,7 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import { Canvas } from "@shopify/react-native-skia"
+import { Canvas, Group } from "@shopify/react-native-skia"
 import { View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import { getChapter, getCanvas } from "../../../utils/notebook"
@@ -22,11 +22,13 @@ import tinycolor from "tinycolor2"
 import { useDrawingToolSettings } from "../contexts/DrawingSettingsContext"
 import { useTool } from "../contexts/ToolContext"
 import { DrawingTool } from "../../../types/tools"
+import { useEffect, useMemo, useRef } from "react"
+import { toSkiaPath } from "../../drawing/processors/PathProcessor"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
 	const { getCurrentPathPoints, layout } = useCanvasContext()
-	const { notebookState } = useNotebookContext()
+	const { notebookState, dispatch } = useNotebookContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
 	const { activeTool } = useTool()
@@ -76,6 +78,35 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 
 	const brush = useDrawingToolSettings(activeTool as DrawingTool).settings
 
+	// Precompute Skia paths once for rendering.
+	const preparedPaths = useMemo(() => {
+		return canvas.paths.map((p) => ({
+			...p,
+			skPath: p.skPath ?? toSkiaPath(p.points, p.brush, layout.width, layout.height),
+		}))
+	}, [canvas.paths, layout.width, layout.height])
+
+	// Only dispatch once if skPaths were missing before
+	const hasPatched = useRef(false)
+
+	useEffect(() => {
+		if (!canvas || hasPatched.current) return
+
+		const needsUpdate = canvas.paths.some((p) => !p.skPath)
+		if (needsUpdate) {
+			dispatch({
+				type: "UPDATE_CANVAS",
+				payload: {
+					notebookId: canvas.notebookId,
+					chapterId: canvas.chapterId,
+					id: canvasId,
+					updates: { paths: preparedPaths },
+				},
+			})
+			hasPatched.current = true
+		}
+	}, [canvas?.id])
+
 	return (
 		<View style={{ flex: 1 }}>
 			<GestureDetector gesture={drawingGestures}>
@@ -104,16 +135,18 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 						)}
 
 						{/* Paths that already exist */}
-						<CanvasPaths paths={canvas.paths} width={layout.width} height={layout.height} />
+						<Group layer>
+							<CanvasPaths paths={preparedPaths} width={layout.width} height={layout.height} />
 
-						{/* Current path (the one the user is currently drawing) */}
-						<CurrentPathRenderer
-							currentPath={currentPathPoints}
-							tool={activeTool as DrawingTool}
-							brush={brush}
-							width={layout.width}
-							height={layout.height}
-						/>
+							{/* Current path (the one the user is currently drawing) */}
+							<CurrentPathRenderer
+								currentPath={currentPathPoints}
+								tool={activeTool as DrawingTool}
+								brush={brush}
+								width={layout.width}
+								height={layout.height}
+							/>
+						</Group>
 					</Canvas>
 				</View>
 			</GestureDetector>

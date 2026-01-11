@@ -1,13 +1,8 @@
-/**
- * PathRenderer Component
- *
- * This includes the logic of turning the user drawn path into a Skia path and rendering it.
- */
-
 import React, { useMemo } from "react"
 import { Path, Skia } from "@shopify/react-native-skia"
 import { PathType } from "./types/DrawingTypes"
 import { toSkiaPath } from "./processors/PathProcessor"
+import { getDrawingSizePreset } from "../../types/tools"
 
 interface PathRendererProps {
 	path: PathType
@@ -22,13 +17,20 @@ function PathRenderer({ path, width, height }: PathRendererProps) {
 		return toSkiaPath(path.points, brush, width, height)
 	}, [path.points, brush, width, height])
 
-	const paint = useMemo(() => {
+	let paint = useMemo(() => {
 		const p = Skia.Paint()
 		p.setColor(Skia.Color(brush.color))
 		p.setAlphaf(brush.opacity)
 		p.setStyle(0)
 		return p
 	}, [brush.color, brush.opacity])
+
+	if (brush.type === "pencil") {
+		const preset = getDrawingSizePreset(brush.type, brush.sizePresetIndex)
+		paint.setStyle(1)
+		paint.setStrokeWidth(preset.base * width)
+		paint.setStrokeCap(1)
+	}
 
 	if (!skPath || path.points.length === 0) return null
 

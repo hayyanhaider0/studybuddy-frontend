@@ -28,15 +28,19 @@ export default function CurrentPathRenderer({
 	const path = useDerivedValue(() => {
 		const pts = currentPath.value
 
-		if (pts.length === 0) {
-			return Skia.Path.Make()
-		}
+		if (pts.length === 0) return Skia.Path.Make()
 
 		const skPath = Skia.Path.Make()
 		skPath.moveTo(pts[0].x * width, pts[0].y * height)
 
 		for (let i = 1; i < pts.length; i++) {
-			skPath.lineTo(pts[i].x * width, pts[i].y * height)
+			// Use the midpoint between the previous point and the current point as the control point
+			const prev = pts[i - 1]
+			const curr = pts[i]
+			const cx = ((prev.x + curr.x) / 2) * width
+			const cy = ((prev.y + curr.y) / 2) * height
+
+			skPath.quadTo(prev.x * width, prev.y * height, cx, cy)
 		}
 
 		return skPath
@@ -64,7 +68,7 @@ export default function CurrentPathRenderer({
 	paint.setAlphaf(opacity)
 	paint.setStyle(1)
 	paint.setStrokeWidth(strokeWidth * 1.25)
-	paint.setStrokeCap(1)
+	tool === "highlighter" ? paint.setStrokeCap(2) : paint.setStrokeCap(1)
 	paint.setStrokeJoin(1)
 
 	return <Path path={path} paint={paint} />

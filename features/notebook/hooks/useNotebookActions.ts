@@ -19,6 +19,7 @@ import { DrawingToolSettings, isDrawingTool, EraserSettings, canDraw } from "../
 import { useTool } from "../contexts/ToolContext"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import EraserProcessor from "../../drawing/processors/EraserProcessor"
+import { toSkiaPath } from "../../drawing/processors/PathProcessor"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -198,7 +199,6 @@ export default function useNotebookActions() {
 					sizePresetIndex: drawingSettings.activeSizePreset,
 					opacity: drawingSettings.opacity,
 				},
-				bbox: { minX: x, maxX: x, minY: y, maxY: y },
 			}
 		} else if (activeTool === "eraser") {
 			return {
@@ -211,7 +211,6 @@ export default function useNotebookActions() {
 					sizePresetIndex: toolSettings.activeSizePreset,
 					opacity: 0.5,
 				},
-				bbox: { minX: x, maxX: x, minY: y, maxY: y },
 			}
 		}
 	}
@@ -325,13 +324,20 @@ export default function useNotebookActions() {
 			canvasId: path.canvasId,
 			points: finalPoints,
 			brush: path.brush,
-			bbox: path.bbox,
+			skPath: toSkiaPath(finalPoints, path.brush, width, height),
 		}
 
 		return resampledPath
 	}
 
-	const handleErase = (normX: number, normY: number, normSize: number, canvasId: string) => {
+	const handleErase = (
+		normX: number,
+		normY: number,
+		normSize: number,
+		prevEraserX: number,
+		prevEraserY: number,
+		canvasId: string
+	) => {
 		const canvas = getCanvas(
 			notebookState.notebooks,
 			notebookState.selectedNotebookId,
@@ -342,20 +348,22 @@ export default function useNotebookActions() {
 		if (!activeCanvas || !canvas) return
 
 		// Get updated paths after erasing
-		const deletedPath = EraserProcessor({
+		const deletedPathId = EraserProcessor({
 			eraserX: normX,
 			eraserY: normY,
 			eraserSize: normSize,
+			prevEraserX,
+			prevEraserY,
 			canvasPaths: canvas.paths,
 			width: layout.width,
 			height: layout.height,
 		})
 
-		if (!deletedPath) return
+		if (!deletedPathId) return
 
-		deletePathsServer.mutate([deletedPath.id])
+		deletePathsServer.mutate([deletedPathId])
 
-		const updatedPaths = canvas.paths.filter((p) => p.id !== deletedPath.id)
+		const updatedPaths = canvas.paths.filter((p) => p.id !== deletedPathId)
 
 		// Update the canvas with new paths
 		const snapshot = createSnapshot()
