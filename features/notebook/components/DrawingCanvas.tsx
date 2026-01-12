@@ -5,8 +5,8 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import { Canvas, Group, useCanvasRef } from "@shopify/react-native-skia"
-import { PermissionsAndroid, Platform, View } from "react-native"
+import { Canvas, Group } from "@shopify/react-native-skia"
+import { View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import { getChapter, getCanvas } from "../../../utils/notebook"
 import { useSettings } from "../../common/contexts/SettingsContext"
@@ -24,13 +24,10 @@ import { useTool } from "../contexts/ToolContext"
 import { DrawingTool } from "../../../types/tools"
 import { useEffect, useMemo, useRef } from "react"
 import { toSkiaPath } from "../../drawing/processors/PathProcessor"
-import CustomPressable from "../../common/components/CustomPressable"
-import { Paths, Directory, File } from "expo-file-system"
-import * as MediaLibrary from "expo-media-library"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
-	const { getCurrentPathPoints, layout } = useCanvasContext()
+	const { canvasRef, getCurrentPathPoints, layout } = useCanvasContext()
 	const { notebookState, dispatch } = useNotebookContext()
 	const { theme } = useThemeContext()
 	const { showPageNumber } = useSettings()
@@ -110,12 +107,6 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 		}
 	}, [canvas?.id])
 
-	const canvasRef = useCanvasRef()
-
-	const makeSnapshot = async () => {
-		console.log("not implemented")
-	}
-
 	return (
 		<View style={{ flex: 1 }}>
 			<GestureDetector gesture={drawingGestures}>
@@ -143,8 +134,8 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 							/>
 						)}
 
-						{/* Paths that already exist */}
 						<Group layer>
+							{/* Paths that already exist */}
 							<CanvasPaths paths={preparedPaths} width={layout.width} height={layout.height} />
 
 							{/* Current path (the one the user is currently drawing) */}
@@ -159,7 +150,6 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 					</Canvas>
 				</View>
 			</GestureDetector>
-			<CustomPressable type='primary' title='Export' onPress={makeSnapshot} />
 		</View>
 	)
 }

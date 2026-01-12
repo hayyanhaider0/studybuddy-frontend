@@ -1,5 +1,5 @@
 import { SharedValue, useDerivedValue } from "react-native-reanimated"
-import { Path, Skia } from "@shopify/react-native-skia"
+import { BlendMode, Path, Skia } from "@shopify/react-native-skia"
 import { PathPoint } from "../../drawing/types/DrawingTypes"
 import {
 	DrawingTool,
@@ -67,9 +67,19 @@ export default function CurrentPathRenderer({
 	paint.setColor(Skia.Color(color))
 	paint.setAlphaf(opacity)
 	paint.setStyle(1)
-	paint.setStrokeWidth(strokeWidth * 1.25)
+	paint.setStrokeWidth(strokeWidth)
 	tool === "highlighter" ? paint.setStrokeCap(2) : paint.setStrokeCap(1)
 	paint.setStrokeJoin(1)
+
+	if (tool === "pencil") {
+		const noise = Skia.Shader.MakeTurbulence(1, 1, 1, 0, 1, 0.1)
+		const pencilShader = Skia.Shader.MakeBlend(
+			BlendMode.Luminosity,
+			Skia.Shader.MakeColor(Skia.Color(color)),
+			noise
+		)
+		paint.setShader(pencilShader)
+	}
 
 	return <Path path={path} paint={paint} />
 }
