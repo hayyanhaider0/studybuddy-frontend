@@ -20,6 +20,9 @@ import { useTool } from "../contexts/ToolContext"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import EraserProcessor from "../../drawing/processors/EraserProcessor"
 import { toSkiaPath } from "../../drawing/processors/PathProcessor"
+import { CanvasRef, ImageFormat } from "@shopify/react-native-skia"
+import * as FileSystem from "expo-file-system"
+import { Paths, Directory } from "expo-file-system"
 
 export default function useNotebookActions() {
 	// Get context values.
@@ -174,6 +177,15 @@ export default function useNotebookActions() {
 	// Helper function to delete a canvas.
 	const handleDeleteCanvas = (canvas: Canvas) => {
 		deleteCanvasServer.mutate(canvas)
+	}
+
+	const handlePNGExport = async (
+		notebookTitle: string,
+		chapterTitle: string,
+		canvasNumber: number,
+		canvasRef: React.RefObject<CanvasRef | null>
+	) => {
+		console.log("Not implemented yet.")
 	}
 
 	// Helper function to create a path on some canvas.
@@ -529,6 +541,7 @@ export default function useNotebookActions() {
 		handleCreateCanvas,
 		handleChangeBackground,
 		handleDeleteCanvas,
+		handlePNGExport,
 		handleCreatePath,
 		addPathToCanvas,
 		handleErase,

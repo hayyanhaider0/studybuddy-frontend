@@ -5,8 +5,8 @@
  * Separated from CanvasScreen to reduce complexity.
  */
 
-import { Canvas, Group } from "@shopify/react-native-skia"
-import { View } from "react-native"
+import { Canvas, Group, useCanvasRef } from "@shopify/react-native-skia"
+import { PermissionsAndroid, Platform, View } from "react-native"
 import { GestureDetector } from "react-native-gesture-handler"
 import { getChapter, getCanvas } from "../../../utils/notebook"
 import { useSettings } from "../../common/contexts/SettingsContext"
@@ -24,6 +24,9 @@ import { useTool } from "../contexts/ToolContext"
 import { DrawingTool } from "../../../types/tools"
 import { useEffect, useMemo, useRef } from "react"
 import { toSkiaPath } from "../../drawing/processors/PathProcessor"
+import CustomPressable from "../../common/components/CustomPressable"
+import { Paths, Directory, File } from "expo-file-system"
+import * as MediaLibrary from "expo-media-library"
 
 export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 	// Get values from context.
@@ -107,13 +110,19 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 		}
 	}, [canvas?.id])
 
+	const canvasRef = useCanvasRef()
+
+	const makeSnapshot = async () => {
+		console.log("not implemented")
+	}
+
 	return (
 		<View style={{ flex: 1 }}>
 			<GestureDetector gesture={drawingGestures}>
 				{/* Container for Skia Canvas + Overlay UI */}
 				<View style={{ flex: 1 }} collapsable={false}>
 					{/* The drawing canvas */}
-					<Canvas style={{ height: layout.height, width: layout.width }}>
+					<Canvas ref={canvasRef} style={{ height: layout.height, width: layout.width }}>
 						{/* Background */}
 						<CanvasBackground
 							width={layout.width}
@@ -150,6 +159,7 @@ export default function DrawingCanvas({ canvasId }: { canvasId: string }) {
 					</Canvas>
 				</View>
 			</GestureDetector>
+			<CustomPressable type='primary' title='Export' onPress={makeSnapshot} />
 		</View>
 	)
 }

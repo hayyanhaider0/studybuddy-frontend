@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useState, useRef } fro
 import { ScaledSize, useWindowDimensions } from "react-native"
 import { PathPoint } from "../../drawing/types/DrawingTypes"
 import { SharedValue, makeMutable } from "react-native-reanimated"
+import { CanvasRef, useCanvasRef } from "@shopify/react-native-skia"
 
 // Types
 type LayoutType = {
@@ -16,6 +17,8 @@ type CurrentPathPointsMap = {
 }
 
 export type CanvasContextType = {
+	// Reference to the canvas object.
+	canvasRef: React.RefObject<CanvasRef | null>
 	// Current layout rectangle of the canvas.
 	layout: LayoutType
 	// Setter for updating canvas dimensions.
@@ -40,6 +43,7 @@ function computeCanvasLayout(window: ScaledSize): LayoutType {
 }
 
 export function CanvasStateProvider({ children }: { children: ReactNode }) {
+	const canvasRef = useCanvasRef()
 	const window = useWindowDimensions()
 	const [layout, setLayout] = useState<LayoutType>(() => computeCanvasLayout(window))
 
@@ -62,6 +66,7 @@ export function CanvasStateProvider({ children }: { children: ReactNode }) {
 	return (
 		<CanvasStateContext.Provider
 			value={{
+				canvasRef,
 				layout,
 				setLayout,
 				getCurrentPathPoints,
