@@ -2,7 +2,7 @@ import React, { useMemo } from "react"
 import { BlendMode, Path, Skia } from "@shopify/react-native-skia"
 import { PathType } from "./types/DrawingTypes"
 import { toSkiaPath } from "./processors/PathProcessor"
-import { getDrawingSizePreset } from "../../types/tools"
+import { getDrawingSizePreset, getEraserSizePreset } from "../../types/tools"
 
 interface PathRendererProps {
 	path: PathType
@@ -20,6 +20,20 @@ function PathRenderer({ path, width, height }: PathRendererProps) {
 
 	const paint = useMemo(() => {
 		const p = Skia.Paint()
+
+		if (brush.type === "eraser") {
+			p.setColor(Skia.Color("#FFFFFF50"))
+			p.setAlphaf(1)
+			p.setStyle(1)
+
+			const eraserWidth = getEraserSizePreset(brush.sizePresetIndex)
+			p.setStrokeWidth(eraserWidth * width)
+			p.setStrokeCap(1)
+			p.setBlendMode(BlendMode.Clear)
+
+			return p
+		}
+
 		p.setColor(Skia.Color(brush.color))
 		p.setAlphaf(brush.opacity)
 		p.setStyle(brush.type === "pencil" ? 1 : 0)

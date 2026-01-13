@@ -6,7 +6,12 @@
 
 import { Skia, SkPath } from "@shopify/react-native-skia"
 import { BrushSettings, PathPoint } from "../types/DrawingTypes"
-import { DrawingTool, getDrawingSizePreset, ToolType } from "../../../types/tools"
+import {
+	DrawingTool,
+	getDrawingSizePreset,
+	getEraserSizePreset,
+	ToolType,
+} from "../../../types/tools"
 
 // Types and Interfaces
 type Point = { x: number; y: number } // Simplified point (without pressure)
@@ -136,6 +141,7 @@ const createPolygonVerts = (
 }
 
 /**
+ * Generates tool-based endcaps.
  *
  * @param tool - Tool used to draw the path.
  * @param path - Path being rendered.
@@ -203,6 +209,7 @@ const generatePath: PathGeneratorFn = (config: PathConfig): SkPath => {
 
 /**
  * Generate a pressure-sensitive polygon path.
+ *
  * @param config - Config used to render the path.
  * @returns A Skia polygon path that uses config.
  */
@@ -324,7 +331,11 @@ export const toSkiaPath = (
 	if (widthCalculator) {
 		widths = points.map((p, i) => widthCalculator(p, i, points.length))
 	} else {
-		widths = [getDrawingSizePreset(brush.type as DrawingTool, brush.sizePresetIndex).base]
+		if (brush.type === "eraser") {
+			widths = [getEraserSizePreset(brush.sizePresetIndex)]
+		} else {
+			widths = [getDrawingSizePreset(brush.type as DrawingTool, brush.sizePresetIndex).base]
+		}
 	}
 
 	const config: PathConfig = {

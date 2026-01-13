@@ -32,12 +32,6 @@ export function useToolDefinitions() {
 			icon: Pen,
 			action: () => setActiveTool("pen"),
 		},
-		// Default pen tool that allows the user to draw paths.
-		{
-			name: "pencil",
-			icon: Pencil,
-			action: () => setActiveTool("pencil"),
-		},
 		// Default eraser tool that allows the user to delete paths by drawing over them.
 		{
 			name: "eraser",

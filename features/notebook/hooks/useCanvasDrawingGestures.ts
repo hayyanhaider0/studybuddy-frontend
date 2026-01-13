@@ -25,6 +25,8 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 		? getEraserSizePreset(settings.eraser.activeSizePreset) / layout.width
 		: 0
 
+	const isStrokeEraser = settings["eraser"].type === "stroke"
+
 	const drawGesture = Gesture.Pan()
 		.enabled(canDraw(activeTool))
 		.minPointers(1)
@@ -52,7 +54,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			currentPathPoints.value = [...currentPathPoints.value, { x: normX, y: normY, pressure }]
 
 			// Bridge to the JS thread for erasing.
-			if (isEraser && currentPathPoints.value.length > 1) {
+			if (isEraser && isStrokeEraser && currentPathPoints.value.length > 1) {
 				const prevEraserX = currentPathPoints.value[currentPathPoints.value.length - 2].x
 				const prevEraserY = currentPathPoints.value[currentPathPoints.value.length - 2].y
 				runOnJS(handleErase)(normX, normY, eraserSize, prevEraserX, prevEraserY, canvasId)
@@ -62,7 +64,7 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			"worklet"
 
 			// Use the pre-computed boolean.
-			if (!isDrawing) {
+			if (isEraser && isStrokeEraser) {
 				currentPathPoints.value = []
 				return
 			}

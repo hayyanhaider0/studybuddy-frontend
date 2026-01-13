@@ -14,7 +14,13 @@ import { useTool } from "../contexts/ToolContext"
 import { useDrawingSettings } from "../contexts/DrawingSettingsContext"
 import { isDrawingTool } from "../../../types/tools"
 
-export default function ToolOptions() {
+export default function ToolOptions({
+	isExpanded,
+	setIsExpanded,
+}: {
+	isExpanded: boolean
+	setIsExpanded: (expanded: boolean) => void
+}) {
 	// Get context values.
 	const { activeTool } = useTool()
 	const { settings } = useDrawingSettings()
@@ -40,7 +46,10 @@ export default function ToolOptions() {
 					const Icon = t.icon
 
 					return (
-						<TouchableOpacity key={i} onPress={t.action}>
+						<TouchableOpacity
+							key={i}
+							onPress={isSelected ? () => setIsExpanded(!isExpanded) : t.action}
+						>
 							{/* Animated image of the tool */}
 							<View
 								style={{
