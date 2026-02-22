@@ -1,4 +1,4 @@
-import { Gesture } from "react-native-gesture-handler"
+import { Gesture, PointerType } from "react-native-gesture-handler"
 import { useCanvasContext } from "../contexts/CanvasStateContext"
 import useNotebookActions from "./useNotebookActions"
 import { useTool } from "../contexts/ToolContext"
@@ -24,6 +24,8 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 	const eraserSize = isEraser
 		? getEraserSizePreset(settings.eraser.activeSizePreset) / layout.width
 		: 0
+
+	const isStrokeEraser = settings["eraser"].type === "stroke"
 
 	const drawGesture = Gesture.Pan()
 		.enabled(canDraw(activeTool))
@@ -52,15 +54,17 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 			currentPathPoints.value = [...currentPathPoints.value, { x: normX, y: normY, pressure }]
 
 			// Bridge to the JS thread for erasing.
-			if (isEraser) {
-				runOnJS(handleErase)(normX, normY, eraserSize, canvasId)
+			if (isEraser && isStrokeEraser && currentPathPoints.value.length > 1) {
+				const prevEraserX = currentPathPoints.value[currentPathPoints.value.length - 2].x
+				const prevEraserY = currentPathPoints.value[currentPathPoints.value.length - 2].y
+				runOnJS(handleErase)(normX, normY, eraserSize, prevEraserX, prevEraserY, canvasId)
 			}
 		})
-		.onEnd(() => {
+		.onEnd((e) => {
 			"worklet"
 
 			// Use the pre-computed boolean.
-			if (!isDrawing) {
+			if (isEraser && isStrokeEraser) {
 				currentPathPoints.value = []
 				return
 			}
@@ -70,14 +74,6 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 
 			// Return if no points.
 			if (points.length === 0) return
-
-			// Calculate bounding box.
-			const xs = points.map((p) => p.x)
-			const ys = points.map((p) => p.y)
-			const minX = Math.min(...xs)
-			const maxX = Math.max(...xs)
-			const minY = Math.min(...ys)
-			const maxY = Math.max(...ys)
 
 			// Create the finalized path.
 			const toolSettings = settings[activeTool as DrawingTool]
@@ -91,16 +87,11 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 					sizePresetIndex: toolSettings.activeSizePreset,
 					opacity: toolSettings.opacity,
 				},
-				bbox: {
-					minX,
-					maxX,
-					minY,
-					maxY,
-				},
 			}
 
 			// Bridge to the JS thread to add path to the canvas.
-			runOnJS(addPathToCanvas)(finalizedPath)
+			const isStylus = e.pointerType === PointerType.STYLUS
+			runOnJS(addPathToCanvas)(finalizedPath, layout.width, layout.height, isStylus)
 
 			// Clear the current path after 50ms.
 			setTimeout(() => {
@@ -128,15 +119,9 @@ export default function useCanvasDrawingGestures(canvasId: string) {
 					sizePresetIndex: toolSettings.activeSizePreset,
 					opacity: toolSettings.opacity,
 				},
-				bbox: {
-					minX: normX,
-					maxX: normX,
-					minY: normY,
-					maxY: normY,
-				},
 			}
 
-			runOnJS(addPathToCanvas)(dotPath)
+			runOnJS(addPathToCanvas)(dotPath, layout.width, layout.height, false)
 		})
 
 	return Gesture.Race(drawGesture, tapGesture)

@@ -11,6 +11,7 @@ import { AnimatePresence, MotiView } from "moti"
 import { getCanvasStyles } from "../../../styles/canvas"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
 import { useTransformContext } from "../contexts/TransformContext"
+import { RefreshCcw } from "lucide-react-native"
 
 export default function ZoomIndicator() {
 	// Get values from context.
@@ -68,7 +69,17 @@ export default function ZoomIndicator() {
 					exit={{ opacity: 0 }}
 					style={styles.zoomIndicator}
 				>
-					<Pressable onPress={() => resetTransformations()}>
+					<Pressable
+						onPress={resetTransformations}
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 4,
+							paddingHorizontal: 4,
+						}}
+					>
+						<RefreshCcw size={16} color={theme.colors.textPrimary} />
 						<Text style={[GlobalStyles.paragraph, { fontWeight: "bold" }]}>{zoomText}</Text>
 					</Pressable>
 				</MotiView>

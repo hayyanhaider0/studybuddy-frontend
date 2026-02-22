@@ -6,7 +6,7 @@
  */
 
 import { useTool } from "../features/notebook/contexts/ToolContext"
-import { Pencil, Eraser, Highlighter, MousePointer2, TextCursor } from "lucide-react-native"
+import { Pencil, Eraser, Highlighter, MousePointer2, TextCursor, Pen } from "lucide-react-native"
 import { ToolType } from "../types/tools"
 
 type ToolDefinitionType = {
@@ -29,7 +29,7 @@ export function useToolDefinitions() {
 		// Default pen tool that allows the user to draw paths.
 		{
 			name: "pen",
-			icon: Pencil,
+			icon: Pen,
 			action: () => setActiveTool("pen"),
 		},
 		// Default eraser tool that allows the user to delete paths by drawing over them.

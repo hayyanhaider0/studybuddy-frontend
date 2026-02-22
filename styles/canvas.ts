@@ -109,7 +109,7 @@ export const getCanvasStyles = (colors: ThemeColors) =>
 		colorPickerContainer: {
 			position: "absolute",
 			alignSelf: "center",
-			bottom: 20,
+			bottom: 64,
 			backgroundColor: colors.primary,
 			gap: 16,
 			padding: 32,

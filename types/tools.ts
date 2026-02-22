@@ -60,6 +60,7 @@ export type DrawingToolSettings = {
 
 // Settings for the eraser.
 export type EraserSettings = {
+	type: "stroke" | "path"
 	activeSizePreset: SizePresetIndex
 }
 
@@ -195,6 +196,7 @@ export const DEFAULT_HIGHLIGHTER_SETTINGS: DrawingToolSettings = {
 
 // Default settings for the eraser tool.
 export const DEFAULT_ERASER_SETTINGS: EraserSettings = {
+	type: "stroke",
 	activeSizePreset: 0,
 }
 

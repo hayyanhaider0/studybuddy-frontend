@@ -4,6 +4,7 @@ import {
 	DrawingSettingsState,
 	DrawingTool,
 	DrawingToolSettings,
+	EraserSettings,
 	SizePresetIndex,
 } from "../../../types/tools"
 import { Color } from "../../../types/global"
@@ -22,8 +23,8 @@ interface DrawingSettingsContextType {
 		value: DrawingToolSettings[K]
 	) => void
 
-	// Update eraser size preset.
-	updateEraserSizePreset: (presetIndex: SizePresetIndex) => void
+	// Update eraser setting.
+	updateEraserSetting: <K extends keyof EraserSettings>(key: K, value: EraserSettings[K]) => void
 
 	// Update a swatch color for some tool.
 	updateSwatch: (tool: DrawingTool, index: number, color: Color) => void
@@ -67,14 +68,20 @@ export const DrawingSettingsProvider = ({ children }: { children: ReactNode }) =
 		})
 	}
 
-	const updateEraserSizePreset = (presetIndex: SizePresetIndex) => {
+	const updateEraserSetting = <K extends keyof EraserSettings>(
+		key: K,
+		value: EraserSettings[K]
+	) => {
 		setSettings((prev) => {
 			const updated = {
 				...prev,
-				eraser: { activeSizePreset: presetIndex },
+				eraser: {
+					...prev.eraser,
+					[key]: value,
+				},
 			}
 
-			storeJSON("eraser_settings", JSON.stringify(updated["eraser"]))
+			storeJSON("eraser_settings", JSON.stringify(updated.eraser))
 			return updated
 		})
 	}
@@ -116,7 +123,7 @@ export const DrawingSettingsProvider = ({ children }: { children: ReactNode }) =
 
 	const setActiveSizePreset = (tool: DrawingTool | "eraser", presetIndex: SizePresetIndex) => {
 		if (tool === "eraser") {
-			updateEraserSizePreset(presetIndex)
+			updateEraserSetting("activeSizePreset", presetIndex)
 		} else {
 			updateDrawingToolSetting(tool, "activeSizePreset", presetIndex)
 		}
@@ -142,7 +149,7 @@ export const DrawingSettingsProvider = ({ children }: { children: ReactNode }) =
 				settings,
 				swatches,
 				updateDrawingToolSetting,
-				updateEraserSizePreset,
+				updateEraserSetting,
 				updateSwatch,
 				setActiveSwatch,
 				setActiveSizePreset,
@@ -170,10 +177,11 @@ export const useDrawingToolSettings = (tool: DrawingTool) => {
 }
 
 export const useEraserSettings = () => {
-	const { settings, updateEraserSizePreset } = useDrawingSettings()
+	const { settings, updateEraserSetting } = useDrawingSettings()
 	return {
 		settings: settings.eraser,
-		updateSizePreset: updateEraserSizePreset,
+		updateSetting: <K extends keyof EraserSettings>(key: K, value: EraserSettings[K]) =>
+			updateEraserSetting(key, value),
 	}
 }
 

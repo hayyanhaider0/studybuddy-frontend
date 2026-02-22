@@ -260,12 +260,6 @@ export const mapToPathType = (res: PathResponse): PathType => {
 			sizePresetIndex: res.sizePresetIndex,
 			opacity: res.opacity,
 		},
-		bbox: {
-			minX: Math.min(...res.points.map((pts) => pts.x)),
-			maxX: Math.max(...res.points.map((pts) => pts.x)),
-			minY: Math.min(...res.points.map((pts) => pts.y)),
-			maxY: Math.max(...res.points.map((pts) => pts.y)),
-		},
 	}
 
 	return path

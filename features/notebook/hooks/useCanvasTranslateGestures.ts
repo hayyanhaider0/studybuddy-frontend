@@ -13,14 +13,17 @@ export function useCanvasTranslateGestures() {
 	// Pinch gesture: Allows user to zoom in or out within a defined limit.
 	const pinchGesture = Gesture.Pinch()
 		.onUpdate((e) => {
+			"worklet"
+
 			const nextScale = savedScale.value * e.scale // Determine the next scale.
 			// Set the scale value if it is 0.7x or 4x the original scale.
 			scale.value = Math.min(Math.max(nextScale, 0.3), 5)
 		})
 		.onEnd(() => {
+			"worklet"
+
 			savedScale.value = scale.value
 		})
-		.runOnJS(true)
 
 	// panGesture limits
 	const minX = -1200
@@ -33,16 +36,19 @@ export function useCanvasTranslateGestures() {
 		.minPointers(2)
 		.maxPointers(2)
 		.onBegin(() => {
+			"worklet"
+
 			// Set the offsets according the translate values.
 			offsetX.value = translateX.value
 			offsetY.value = translateY.value
 		})
 		.onUpdate((e) => {
+			"worklet"
+
 			// Translate accordingly within panGesture limits.
 			translateX.value = Math.max(minX, Math.min(offsetX.value + e.translationX, maxX))
 			translateY.value = Math.max(minY, Math.min(offsetY.value + e.translationY, maxY))
 		})
-		.runOnJS(true)
 
 	return Gesture.Simultaneous(panGesture, pinchGesture)
 }

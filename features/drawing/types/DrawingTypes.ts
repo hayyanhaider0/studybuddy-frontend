@@ -1,3 +1,4 @@
+import { SkPath, SkRect } from "@shopify/react-native-skia"
 import { SizePresetIndex, ToolType } from "../../../types/tools"
 
 // Single point in a drawing stroke.
@@ -21,13 +22,6 @@ export interface PathType {
 	canvasId: string // which canvas this path belongs to.
 	points: PathPoint[] // points in the path.
 	brush: BrushSettings // how the path should look.
-	bbox: BoundingBox // bounding box for the path.
-}
-
-// Bounding box for a path.
-export interface BoundingBox {
-	minX: number
-	maxX: number
-	minY: number
-	maxY: number
+	bounds?: SkRect // bounding box for the path.
+	skPath?: SkPath | null // cached Skia path.
 }

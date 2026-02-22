@@ -21,11 +21,13 @@ import ChapterList from "./ChapterList"
 import MaterialC from "react-native-vector-icons/MaterialCommunityIcons"
 import { useContextMenu } from "../../common/contexts/ContextMenuContext"
 import ZoomIndicator from "./ZoomIndicator"
+import { useCanvasContext } from "../contexts/CanvasStateContext"
 
 export default function ChapterTab() {
 	// Get context values.
+	const { canvasRef } = useCanvasContext()
 	const { notebookState } = useNotebookContext()
-	const { handleChangeBackground, handleDeleteCanvas } = useNotebookActions()
+	const { handleChangeBackground, handleDeleteCanvas, handlePNGExport } = useNotebookActions()
 	const { openMenu } = useContextMenu()
 	const nav = useNavigation<DrawerNavigationProp<DrawerParamList>>()
 
@@ -48,6 +50,8 @@ export default function ChapterTab() {
 	const { theme, GlobalStyles } = useThemeContext()
 	const styles = getChapterTabStyles(theme.colors)
 
+	if (!notebook || !chapter || !canvas) return null
+
 	// Open a context menu for the current canvas.
 	const handleCanvasMenu = (canvas: CanvasType, event: GestureResponderEvent) => {
 		const { pageX, pageY } = event.nativeEvent
@@ -57,7 +61,10 @@ export default function ChapterTab() {
 			options: [
 				{ label: "Change Background", onPress: () => handleChangeBackground(canvas) },
 				{ label: "Duplicate", onPress: () => console.log("Duplicate") },
-				{ label: "Export", onPress: () => console.log("Export") },
+				{
+					label: "Export",
+					onPress: () => handlePNGExport(notebook.title, chapter.title, canvas.order, canvasRef),
+				},
 				{ label: "Delete", onPress: () => handleDeleteCanvas(canvas) },
 			],
 		})

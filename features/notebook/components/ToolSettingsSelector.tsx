@@ -1,9 +1,16 @@
 import { TouchableOpacity, View } from "react-native"
 import { useDrawingSettings } from "../contexts/DrawingSettingsContext"
 import { useTool } from "../contexts/ToolContext"
-import { canDraw, DrawingTool, isDrawingTool, SizePresetIndex } from "../../../types/tools"
+import {
+	canDraw,
+	DrawingTool,
+	isDrawingTool,
+	isEraserTool,
+	SizePresetIndex,
+} from "../../../types/tools"
 import Swatch from "./Swatch"
 import { useThemeContext } from "../../common/contexts/ThemeContext"
+import EraserSelector from "./EraserSelector"
 
 export default function ToolSettingsSelector({
 	colorPickerState,
@@ -17,7 +24,16 @@ export default function ToolSettingsSelector({
 	const { theme } = useThemeContext()
 
 	return (
-		<View style={{ flexGrow: 1, flexDirection: "row", gap: 16 }}>
+		<View
+			style={{
+				flexGrow: 1,
+				flexDirection: "row",
+				gap: 16,
+				alignItems: "center",
+				justifyContent: "space-between",
+			}}
+		>
+			{isEraserTool(activeTool) && <EraserSelector />}
 			{isDrawingTool(activeTool) && (
 				<View style={{ flexDirection: "row", gap: 8 }}>
 					{swatches[activeTool as DrawingTool].map((c, i) => (
